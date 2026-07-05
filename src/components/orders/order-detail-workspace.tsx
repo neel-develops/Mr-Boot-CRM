@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { OrderStatus } from "@prisma/client";
 import { GlassCard } from "@/components/ui/glass-card";
-import { updateOrderStatus, assignArtisan, uploadProofPhoto, logReviewRequest, createInvoiceForOrder, deleteOrder, revertOrderToPending } from "@/app/actions/orders";
+import { updateOrderStatus, assignArtisan, uploadProofPhoto, logReviewRequest, createInvoiceForOrder, deleteOrder, revertOrderToPending, togglePorterService } from "@/app/actions/orders";
 import { uploadImage } from "@/lib/upload";
 import Link from "next/link";
 
@@ -22,9 +22,36 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
   const [status, setStatus] = useState<OrderStatus>(order.status);
   const [artisanId, setArtisanId] = useState(order.artisanId || "");
   const [uploading, setUploading] = useState(false);
+  const [generatingInvoice, setGeneratingInvoice] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [invoicePaymentMode, setInvoicePaymentMode] = useState("UPI");
-  const [generatingInvoice, setGeneratingInvoice] = useState(false);
+  const [isPorterChecked, setIsPorterChecked] = useState(order.isPorter || false);
+  const [porterFee, setPorterFee] = useState(Number(order.porterCharge || 150));
+  const [updatingPorter, setUpdatingPorter] = useState(false);
+
+  const handlePorterToggle = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const checked = e.target.checked;
+    setIsPorterChecked(checked);
+    setUpdatingPorter(true);
+    const res = await togglePorterService(order.id, checked, porterFee);
+    setUpdatingPorter(false);
+    if (res.success) {
+      window.location.reload();
+    } else {
+      alert("Error toggling Porter service: " + res.error);
+    }
+  };
+
+  const handleSavePorterFee = async () => {
+    setUpdatingPorter(true);
+    const res = await togglePorterService(order.id, isPorterChecked, porterFee);
+    setUpdatingPorter(false);
+    if (res.success) {
+      window.location.reload();
+    } else {
+      alert("Error updating Porter fee: " + res.error);
+    }
+  };
 
   const customerName = order.customer.firstName;
   const phone = order.customer.phone.replace(/[^0-9]/g, "");
@@ -230,6 +257,54 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
               </option>
             ))}
           </select>
+        </GlassCard>
+
+        {/* Logistics & Delivery */}
+        <GlassCard>
+          <h3 className="font-semibold text-sm mb-3 text-primary dark:text-primary-fixed uppercase tracking-wider flex items-center gap-2">
+            <span className="material-symbols-outlined text-[18px]">local_shipping</span>
+            Logistics & Delivery
+          </h3>
+          <div className="flex flex-col gap-3">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={isPorterChecked}
+                onChange={handlePorterToggle}
+                disabled={updatingPorter}
+                className="rounded border-gray-300 text-primary focus:ring-primary w-4 h-4"
+              />
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-on-surface">Pick & Drop Service (via Porter)</span>
+                <span className="text-[10px] text-on-surface-variant">Activate Porter courier delivery & add fee to invoice</span>
+              </div>
+            </label>
+            {isPorterChecked && (
+              <div className="flex items-center justify-between mt-2 pt-2 border-t border-black/5">
+                <span className="text-xs text-on-surface-variant">Porter Service Charge</span>
+                <div className="flex items-center gap-2">
+                  <div className="relative w-24">
+                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-xs">₹</span>
+                    <input
+                      type="number"
+                      value={porterFee}
+                      onChange={(e) => setPorterFee(Number(e.target.value))}
+                      className="w-full bg-white/50 border border-black/5 rounded-md py-1 pl-5 pr-2 text-xs text-right focus:outline-none"
+                      placeholder="150"
+                    />
+                  </div>
+                  <button
+                    onClick={handleSavePorterFee}
+                    disabled={updatingPorter}
+                    className="p-1 text-primary hover:bg-black/5 rounded flex items-center justify-center"
+                    title="Save Porter Fee"
+                  >
+                    <span className="material-symbols-outlined text-[18px]">check_circle</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </GlassCard>
 
         {/* Fulfillment Workspace */}

@@ -354,3 +354,49 @@ export async function revertOrderToPending(orderId: string) {
   }
 }
 
+export async function togglePorterService(orderId: string, isPorter: boolean, porterCharge: number, actorEmail: string = "sarah@mrboot.com") {
+  try {
+    const order = await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        isPorter,
+        porterCharge,
+      },
+      include: {
+        invoices: true,
+      }
+    });
+
+    if (order.invoices.length > 0) {
+      const invoice = order.invoices[0];
+      const finalAmount = Number(order.price) + (isPorter ? porterCharge : 0);
+      const balanceDue = finalAmount - Number(invoice.advancePaid);
+      await prisma.invoice.update({
+        where: { id: invoice.id },
+        data: {
+          amount: finalAmount,
+          balanceDue,
+        }
+      });
+    }
+
+    await prisma.activityLog.create({
+      data: {
+        orderId,
+        event: isPorter 
+          ? `Pick & Drop via Porter activated (Charge: ₹${porterCharge})` 
+          : "Pick & Drop via Porter deactivated",
+        actor: actorEmail,
+      }
+    });
+
+    revalidatePath(`/orders/${orderId}`);
+    revalidatePath(`/invoices/${orderId}`);
+    revalidatePath("/logistics");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to toggle Porter service:", error);
+    return { success: false, error: error.message };
+  }
+}
+
