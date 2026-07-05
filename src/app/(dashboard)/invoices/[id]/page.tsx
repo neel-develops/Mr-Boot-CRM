@@ -202,7 +202,22 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
                 </div>
               </div>
 
-
+              {/* PAID / UNPAID stamp */}
+              {Number(invoice.balanceDue) === 0 ? (
+                <div className="absolute right-8 bottom-[160px] transform -rotate-12 pointer-events-none select-none">
+                  <div className="border-[3px] border-emerald-600 text-emerald-600 font-black text-3xl px-8 py-2 rounded-lg uppercase tracking-[0.3em] opacity-75"
+                    style={{ fontFamily: "serif", textShadow: "0 0 1px #16a34a" }}>
+                    PAID
+                  </div>
+                </div>
+              ) : (
+                <div className="absolute right-8 bottom-[160px] transform -rotate-12 pointer-events-none select-none">
+                  <div className="border-[3px] border-red-600 text-red-600 font-black text-3xl px-6 py-2 rounded-lg uppercase tracking-[0.25em] opacity-70"
+                    style={{ fontFamily: "serif", textShadow: "0 0 1px #dc2626" }}>
+                    UNPAID
+                  </div>
+                </div>
+              )}
 
             </div>
 
