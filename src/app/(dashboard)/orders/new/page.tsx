@@ -233,10 +233,12 @@ export default function NewOrderPage() {
     setIsSubmitting(false);
 
     if (res.success) {
-      router.push("/orders");
+      // Redirect to invoice page with auto-print flag
+      router.push(`/invoices/${res.orderId}?print=1`);
     } else {
       alert("Error creating order: " + res.error);
     }
+
   };
 
   return (

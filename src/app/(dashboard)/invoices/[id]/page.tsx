@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import QRCode from "qrcode";
@@ -72,7 +72,9 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
         <div className="h-2.5 w-full bg-primary"></div>
         <div className="p-8 md:p-12">
           {/* Interactive Actions: Print + WhatsApp (Client Component) */}
-          <InvoiceActions waShareUrl={waShareUrl} />
+          <Suspense fallback={null}>
+            <InvoiceActions waShareUrl={waShareUrl} />
+          </Suspense>
 
           {/* Header Row */}
           <div className="flex flex-col sm:flex-row justify-between items-start gap-6 mb-8">

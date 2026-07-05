@@ -1,12 +1,26 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 interface InvoiceActionsProps {
   waShareUrl: string;
 }
 
 export const InvoiceActions: React.FC<InvoiceActionsProps> = ({ waShareUrl }) => {
+  const searchParams = useSearchParams();
+
+  // Auto-print when redirected from new order creation with ?print=1
+  useEffect(() => {
+    if (searchParams.get("print") === "1") {
+      // Small delay to let the page fully render before printing
+      const timer = setTimeout(() => {
+        window.print();
+      }, 800);
+      return () => clearTimeout(timer);
+    }
+  }, [searchParams]);
+
   return (
     <>
       {/* Print Button */}
@@ -35,3 +49,4 @@ export const InvoiceActions: React.FC<InvoiceActionsProps> = ({ waShareUrl }) =>
     </>
   );
 };
+
