@@ -67,11 +67,20 @@ export default function NewOrderPage() {
   useEffect(() => {
     import("@/lib/supabase").then(({ supabase }) => {
       supabase.auth.getUser().then(({ data }) => {
-        const email = data?.user?.email;
-        if (email) {
-          const username = email.split('@')[0];
-          const name = username.split(/[._-]/).map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
-          setCurrentUser(name);
+        if (data?.user) {
+          // Check metadata first
+          const metaName = data.user.user_metadata?.full_name || data.user.user_metadata?.name;
+          if (metaName) {
+            setCurrentUser(metaName);
+            return;
+          }
+          // Fallback to email
+          const email = data.user.email;
+          if (email) {
+            const username = email.split('@')[0];
+            const name = username.split(/[._-]/).map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+            setCurrentUser(name);
+          }
         }
       });
     });

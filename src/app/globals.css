@@ -10,11 +10,6 @@
   --foreground: #1a1c1d;
 }
 
-.dark {
-  --background: #1a1c1d;
-  --foreground: #f9f9fa;
-}
-
 body {
   background-color: var(--background);
   color: var(--foreground);
@@ -33,13 +28,6 @@ body {
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
 }
 
-.dark .glass-card {
-  background-color: rgba(54, 31, 26, 0.45);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-}
-
 .glass-card-hover {
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -47,11 +35,6 @@ body {
 .glass-card-hover:hover {
   box-shadow: 0 12px 48px rgba(0, 0, 0, 0.08);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.75) 0%, rgba(255, 255, 255, 0.65) 100%);
-}
-
-.dark .glass-card-hover:hover {
-  box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
-  background: linear-gradient(180deg, rgba(54, 31, 26, 0.55) 0%, rgba(54, 31, 26, 0.45) 100%);
 }
 
 .status-pulse {

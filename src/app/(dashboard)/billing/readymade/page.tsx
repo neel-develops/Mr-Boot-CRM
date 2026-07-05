@@ -135,7 +135,7 @@ export default function ReadymadeBillingPage() {
         {/* Left Form Panel */}
         <div className="lg:col-span-8 space-y-6">
           {/* Customer Identity Card */}
-          <section className="bg-white/60 dark:bg-primary/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+          <section className="bg-white/60  backdrop-blur-xl border border-white/20  rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
             <div className="flex items-center gap-3 border-b border-black/5 pb-4">
               <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-lg">
                 person
@@ -167,7 +167,7 @@ export default function ReadymadeBillingPage() {
           </section>
 
           {/* Shoe Details Card */}
-          <section className="bg-white/60 dark:bg-primary/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+          <section className="bg-white/60  backdrop-blur-xl border border-white/20  rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
             <div className="flex justify-between items-center border-b border-black/5 pb-4">
               <div className="flex items-center gap-3">
                 <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-lg">
@@ -177,7 +177,7 @@ export default function ReadymadeBillingPage() {
               </div>
 
               {/* Handmade toggle */}
-              <div className="flex items-center gap-3 bg-zinc-50 dark:bg-white/5 p-2 rounded-xl border border-black/5">
+              <div className="flex items-center gap-3 bg-zinc-50  p-2 rounded-xl border border-black/5">
                 <div className="text-right">
                   <p className="text-xs font-bold text-zinc-800">Handmade shoe?</p>
                   <p className="text-[10px] text-zinc-400">Transition to Bespoke Workspace</p>
@@ -240,7 +240,7 @@ export default function ReadymadeBillingPage() {
           </section>
 
           {/* Upload Shoe Image */}
-          <section className="bg-white/60 dark:bg-primary/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+          <section className="bg-white/60  backdrop-blur-xl border border-white/20  rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
             <div className="flex items-center gap-3 border-b border-black/5 pb-4">
               <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-lg">
                 photo_camera
@@ -273,7 +273,7 @@ export default function ReadymadeBillingPage() {
 
         {/* Right Financials Sidebar */}
         <div className="lg:col-span-4 sticky top-6 space-y-4">
-          <section className="bg-white/60 dark:bg-primary/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-6 shadow-sm space-y-6">
+          <section className="bg-white/60  backdrop-blur-xl border border-white/20  rounded-2xl p-6 shadow-sm space-y-6">
             <div className="flex items-center gap-2 border-b border-black/5 pb-4">
               <span className="material-symbols-outlined text-primary">payments</span>
               <h3 className="font-bold text-[#361f1a] text-lg">Payment</h3>

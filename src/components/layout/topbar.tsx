@@ -27,29 +27,6 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    setIsDark(document.documentElement.classList.contains("dark"));
-  }, []);
-
-  const handleToggleDarkMode = async () => {
-    const nextDark = !isDark;
-    setIsDark(nextDark);
-    if (nextDark) {
-      document.documentElement.classList.add("dark");
-      document.documentElement.classList.remove("light");
-    } else {
-      document.documentElement.classList.remove("dark");
-      document.documentElement.classList.add("light");
-    }
-    try {
-      const { updateDarkMode } = await import("@/app/actions/settings");
-      await updateDarkMode(nextDark);
-    } catch (err) {
-      console.error("Failed to save dark mode setting:", err);
-    }
-  };
 
   // Fetch notifications from real database API
   const fetchNotifications = async () => {

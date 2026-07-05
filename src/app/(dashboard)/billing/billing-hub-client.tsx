@@ -130,13 +130,13 @@ export function BillingHubClient({ initialInvoices }: BillingHubClientProps) {
             // WA link
             const phone = inv.order.customer.phone.replace(/[^0-9]/g, "");
             const waShareUrl = `https://wa.me/${phone}?text=${encodeURIComponent(
-              `Hi ${inv.order.customer.firstName}, Neel Sonawane here from Mr Boot. Your bill is ready: ${trackingUrl}`
+              `Hi ${inv.order.customer.firstName}, your bill from Mr Boot is ready: ${trackingUrl}`
             )}`;
 
             return (
               <div
                 key={inv.id}
-                className="bg-white/60 dark:bg-primary/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
+                className="bg-white/60 backdrop-blur-xl border border-white/20 rounded-2xl p-5 md:p-6 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row items-start md:items-center justify-between gap-6"
               >
                 {/* Left: Customer Info */}
                 <div className="flex items-center gap-4 min-w-[200px]">

@@ -156,7 +156,7 @@ function BespokeBillingContent() {
         {/* Left Specification Form */}
         <div className="lg:col-span-8 space-y-6">
           {/* Customer Identity */}
-          <section className="bg-white/60 dark:bg-primary/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+          <section className="bg-white/60  backdrop-blur-xl border border-white/20  rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
             <div className="flex items-center gap-3 border-b border-black/5 pb-4">
               <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-lg">
                 assignment_ind
@@ -188,7 +188,7 @@ function BespokeBillingContent() {
           </section>
 
           {/* Bespoke Specifications */}
-          <section className="bg-white/60 dark:bg-primary/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+          <section className="bg-white/60  backdrop-blur-xl border border-white/20  rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
             <div className="flex items-center gap-3 border-b border-black/5 pb-4">
               <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-lg">
                 design_services
@@ -294,7 +294,7 @@ function BespokeBillingContent() {
           </section>
 
           {/* Workshop Logistics */}
-          <section className="bg-white/60 dark:bg-primary/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
+          <section className="bg-white/60  backdrop-blur-xl border border-white/20  rounded-2xl p-6 md:p-8 shadow-sm space-y-6">
             <div className="flex items-center gap-3 border-b border-black/5 pb-4">
               <span className="material-symbols-outlined text-primary p-2 bg-primary/10 rounded-lg">
                 precision_manufacturing
@@ -368,7 +368,7 @@ function BespokeBillingContent() {
 
         {/* Right Price Estimation Sidebar */}
         <div className="lg:col-span-4 sticky top-6 space-y-4">
-          <section className="bg-white/60 dark:bg-primary/20 backdrop-blur-xl border border-white/20 dark:border-white/10 rounded-2xl p-6 shadow-sm space-y-6">
+          <section className="bg-white/60  backdrop-blur-xl border border-white/20  rounded-2xl p-6 shadow-sm space-y-6">
             <div className="flex items-center gap-2 border-b border-black/5 pb-4">
               <span className="material-symbols-outlined text-primary">analytics</span>
               <h3 className="font-bold text-[#361f1a] text-lg">Price Estimation</h3>

@@ -17,7 +17,6 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ settings: initialSet
   const [billReadyTemplate, setBillReadyTemplate] = useState(settings.billReadyTemplate || "");
   const [reviewRequestTemplate, setReviewRequestTemplate] = useState(settings.reviewRequestTemplate || "");
   const [googleReviewLink, setGoogleReviewLink] = useState(settings.googleReviewLink || "");
-  const [darkMode, setDarkMode] = useState(settings.darkMode || false);
   const [saving, setSaving] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -31,20 +30,11 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ settings: initialSet
       billReadyTemplate,
       reviewRequestTemplate,
       googleReviewLink,
-      darkMode,
     });
     setSaving(false);
 
     if (res.success) {
       alert("Settings saved successfully!");
-      // Toggle class on documentElement for light/dark
-      if (darkMode) {
-        document.documentElement.classList.add("dark");
-        document.documentElement.classList.remove("light");
-      } else {
-        document.documentElement.classList.add("light");
-        document.documentElement.classList.remove("dark");
-      }
     } else {
       alert("Failed to save settings: " + res.error);
     }

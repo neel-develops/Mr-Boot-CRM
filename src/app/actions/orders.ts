@@ -77,8 +77,8 @@ export async function createOrder(formData: {
         customerId: customer.id,
         artisanId: formData.order.artisanId || null,
         notes: formData.order.notes 
-          ? `${formData.order.notes}\n\nCreated By: ${formData.createdBy || "Neel Sonawane"}`
-          : `Created By: ${formData.createdBy || "Neel Sonawane"}`,
+          ? `${formData.order.notes}\n\nCreated By: ${formData.createdBy || "Staff"}`
+          : `Created By: ${formData.createdBy || "Staff"}`,
         pickupByPorter: formData.order.pickupByPorter || false,
         dropByPorter: formData.order.dropByPorter || false,
         items: {
@@ -132,7 +132,7 @@ export async function createOrder(formData: {
       data: {
         orderId: order.id,
         event: "Order Intake Completed",
-        actor: formData.createdBy || "Neel Sonawane",
+        actor: formData.createdBy || "Staff",
       },
     });
 

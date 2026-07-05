@@ -71,7 +71,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
   const fallbackShoeImg = "https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=150&auto=format&fit=crop&q=60"; // Classic premium brown shoe
 
   // Extract Created By
-  let createdBy = "Neel Sonawane";
+  let createdBy = "Staff";
   if (order.notes) {
     const creatorMatch = order.notes.match(/Created By:\s*([^\n\r]+)/i);
     if (creatorMatch && creatorMatch[1]) {

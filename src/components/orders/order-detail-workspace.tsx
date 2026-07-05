@@ -179,17 +179,28 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
                   Category: <span className="font-semibold text-on-surface">{order.items[0]?.category || "Shoe Care"}</span>
                 </p>
               </div>
-              <span
-                className={`px-3 py-1 rounded-full font-label-sm text-label-sm border ${
-                  status === OrderStatus.DELIVERED
-                    ? "bg-[#e1dfdc] text-[#636360] border-black/5"
-                    : status === OrderStatus.READY
-                    ? "bg-[#E8F5E9] text-[#2E7D32] border-[#C8E6C9] status-pulse"
-                    : "bg-[#ffdea4]/20 text-[#cb9e3f] border-[#cb9e3f]/20"
-                }`}
-              >
-                {status.replace("_", " ")}
-              </span>
+              <div className="flex gap-2">
+                {!isEditing && (
+                  <button
+                    onClick={() => setIsEditing(true)}
+                    className="px-3 py-1 bg-primary text-on-primary font-semibold text-sm rounded-lg hover:opacity-90 flex items-center gap-1 shadow-sm transition-all"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">edit</span>
+                    Edit
+                  </button>
+                )}
+                <span
+                  className={`px-3 py-1 rounded-full font-label-sm text-label-sm border ${
+                    status === OrderStatus.DELIVERED
+                      ? "bg-[#e1dfdc] text-[#636360] border-black/5"
+                      : status === OrderStatus.READY
+                      ? "bg-[#E8F5E9] text-[#2E7D32] border-[#C8E6C9] status-pulse"
+                      : "bg-[#ffdea4]/20 text-[#cb9e3f] border-[#cb9e3f]/20"
+                  }`}
+                >
+                  {status.replace("_", " ")}
+                </span>
+              </div>
             </div>
 
             {/* Price, Due Date & Notes Section */}
@@ -211,13 +222,6 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
                     {order.notes || "No special instructions recorded."}
                   </span>
                 </div>
-                <button
-                  onClick={() => setIsEditing(true)}
-                  className="mt-1 flex items-center justify-center gap-1 py-1 px-3 border border-black/5 hover:bg-black/5 text-primary text-[11px] font-bold rounded-lg self-start transition-colors"
-                >
-                  <span className="material-symbols-outlined text-[14px]">edit</span>
-                  Edit Details
-                </button>
               </div>
             ) : (
               <div className="flex flex-col gap-3 bg-zinc-50 rounded-xl p-4 border border-zinc-100/50">
