@@ -1,0 +1,437 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Mr. Boot CRM - Orders</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;500;600;700&amp;family=Inter:wght@400&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary": "#ffffff",
+                      "inverse-primary": "#e5beb5",
+                      "surface-container": "#eeeeef",
+                      "on-primary-fixed-variant": "#5c403a",
+                      "surface-bright": "#f9f9fa",
+                      "on-surface-variant": "#504442",
+                      "on-error": "#ffffff",
+                      "primary-fixed-dim": "#e5beb5",
+                      "surface-container-low": "#f3f3f4",
+                      "outline": "#827471",
+                      "surface-tint": "#755750",
+                      "tertiary": "#322200",
+                      "on-secondary-fixed-variant": "#474745",
+                      "on-tertiary-fixed-variant": "#5d4200",
+                      "surface-container-lowest": "#ffffff",
+                      "error": "#ba1a1a",
+                      "outline-variant": "#d4c3bf",
+                      "on-background": "#1a1c1d",
+                      "surface-container-highest": "#e2e2e3",
+                      "primary": "#361f1a",
+                      "background": "#f9f9fa",
+                      "tertiary-fixed": "#ffdea4",
+                      "primary-container": "#4e342e",
+                      "on-secondary-fixed": "#1b1c1a",
+                      "on-primary-fixed": "#2b1611",
+                      "surface-variant": "#e2e2e3",
+                      "secondary": "#5e5e5c",
+                      "secondary-fixed-dim": "#c8c6c4",
+                      "tertiary-fixed-dim": "#f0bf5c",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-fixed": "#261900",
+                      "on-secondary-container": "#636360",
+                      "on-surface": "#1a1c1d",
+                      "surface-container-high": "#e8e8e9",
+                      "on-primary-container": "#c19c94",
+                      "tertiary-container": "#4e3700",
+                      "on-error-container": "#93000a",
+                      "on-tertiary-container": "#cb9e3f",
+                      "on-primary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "secondary-container": "#e1dfdc",
+                      "surface-dim": "#d9dadb",
+                      "surface": "#f9f9fa",
+                      "inverse-surface": "#2f3132",
+                      "primary-fixed": "#ffdad2",
+                      "inverse-on-surface": "#f0f1f2",
+                      "secondary-fixed": "#e4e2df"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "card-gap": "20px",
+                      "container-padding": "32px",
+                      "base": "8px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Geist"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Geist"
+                      ],
+                      "numeral-xl": [
+                              "Geist"
+                      ],
+                      "label-sm": [
+                              "Geist"
+                      ],
+                      "display-lg": [
+                              "Geist"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "34px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "numeral-xl": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.03em",
+                                      "fontWeight": "300"
+                              }
+                      ],
+                      "label-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        body {
+            background-color: #FAFAFB;
+        }
+        
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .glass-card:hover {
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.08);
+            transform: translateY(-2px);
+            background: linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.65) 100%);
+        }
+
+        .btn-primary {
+            background-color: #4E342E;
+            color: #ffffff;
+            transition: all 0.25s ease-out;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(78, 52, 46, 0.25);
+        }
+
+        .search-input:focus {
+            border-color: #C89B3C;
+            box-shadow: 0 0 0 1px #C89B3C;
+            outline: none;
+        }
+
+        .status-pulse {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(76, 175, 80, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); }
+        }
+        
+        /* Hide scrollbar for clean UI */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="text-on-surface font-body-md text-body-md antialiased overflow-x-hidden min-h-screen">
+<!-- Top Navigation Bar -->
+<nav class="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] z-40 bg-white/65 dark:bg-primary/65 backdrop-blur-xl border-b border-white/22 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] flex justify-between items-center h-16 px-8 max-w-full">
+<div class="flex items-center gap-6">
+<span class="text-headline-lg-mobile font-headline-lg-mobile font-bold text-primary dark:text-primary-fixed md:hidden">Mr. Boot CRM</span>
+<!-- Desktop Links -->
+<div class="hidden md:flex gap-6 items-center h-full">
+<a class="text-on-surface-variant dark:text-outline-variant hover:bg-white/10 h-full flex items-center px-4 font-label-sm text-label-sm transition-colors" href="#">Analytics</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:bg-white/10 h-full flex items-center px-4 font-label-sm text-label-sm transition-colors" href="#">Logistics</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button aria-label="mic" class="w-10 h-10 rounded-full hover:bg-black/5 flex items-center justify-center text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">mic</span>
+</button>
+<button aria-label="qr_code_scanner" class="w-10 h-10 rounded-full hover:bg-black/5 flex items-center justify-center text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">qr_code_scanner</span>
+</button>
+<button aria-label="notifications" class="w-10 h-10 rounded-full hover:bg-black/5 flex items-center justify-center text-on-surface-variant transition-colors relative">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full"></span>
+</button>
+<button class="btn-primary rounded-full px-6 py-2 font-label-sm text-label-sm hidden sm:block">
+                Quick Action
+            </button>
+<div class="w-10 h-10 rounded-full overflow-hidden border-2 border-white shadow-sm ml-2">
+<img alt="Manager Avatar" class="w-full h-full object-cover" data-alt="A close up portrait of a professional manager with a warm smile, wearing a neat navy blue blazer over a crisp white shirt, standing in a brightly lit modern office setting with blurred glass partitions in the background. High key lighting, clean corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDzz-E-fsSlWi-B86LMDJ6YaAFg-XMpvdxVZXXww6o1xDica3ncSJ1EtFwLoCqP1CdL1j-XHSWvE396kv11HXqbr-foBSFuk8MXBW7YYvEsUZFDr-FzRAoGymD1m5GRzt68wEZYF-nIRcWREvv1Zcb4D5NB3VNnXdmckIlX8r1W2mYPPuIOO88xn3io6Ya5W5wdTafALofQbjx5s1iDjTnsjJoh4GskTIs1lk28fRYmTWeHQ-EBJqzyt074BT8aaXFIMTcA3ApB9Yg">
+</div>
+</div>
+</nav>
+<!-- Side Navigation Bar -->
+<aside class="bg-white/65 dark:bg-primary/65 backdrop-blur-xl border-r border-white/22 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] h-screen w-64 fixed left-0 top-0 hidden md:flex flex-col flex-col h-full py-8 px-4 z-50">
+<!-- Brand Header -->
+<div class="flex items-center gap-3 px-4 mb-10">
+<div class="w-12 h-12 rounded-xl overflow-hidden shadow-sm">
+<img alt="Mr. Boot Logo" class="w-full h-full object-cover" data-alt="A minimalist logo for a premium shoe repair service, featuring a stylized silhouette of a classic leather boot enclosed in a fine golden circle. The background is a clean white, emphasizing luxury and craftsmanship. High resolution, elegant vector style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCn7lW1vtQ0lZyfs5lXTaByxV89HdnteWqn32a8d3s-HaptrgDl_YBkkfJQL2pQMkLaxg-_LYJJyqPTZEvFhqt8zFxvFcr-9ijYS2t-9_bptwCa9AEFh6CLCFtKo2RLDNDaSi1AOuHJ5wWVx3oofr8KPKOVKC4jMSCXFwr29Ow55QFlKEq0wMWUqkkq6plvRdfrzUAYvF90N2yqWSLY-YkGA-OlXECjxuB7cfNrQkWrqrMBki4ezsWl4bosEXFEMlWSyFdYT3MFUs8">
+</div>
+<div>
+<h1 class="text-headline-lg font-headline-lg font-bold text-primary dark:text-primary-fixed text-[24px] leading-tight">Mr. Boot</h1>
+<p class="text-on-surface-variant font-label-sm text-label-sm text-[12px]">Premium Care</p>
+</div>
+</div>
+<!-- CTA -->
+<button class="btn-primary w-full rounded-xl py-3 font-label-sm text-label-sm flex items-center justify-center gap-2 mb-8 shadow-sm">
+<span class="material-symbols-outlined" style="font-size: 18px;">add</span>
+            New Order
+        </button>
+<!-- Main Nav Links -->
+<nav class="flex-1 flex flex-col gap-2">
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out flex items-center gap-3 px-4 py-3 rounded-lg font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Dashboard
+            </a>
+<a class="text-primary dark:text-primary-fixed font-bold border-r-2 border-primary dark:border-primary-fixed bg-white/10 -translate-y-0.5 transition-transform duration-250 flex items-center gap-3 px-4 py-3 rounded-lg font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">receipt_long</span>
+                Orders
+            </a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out flex items-center gap-3 px-4 py-3 rounded-lg font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+                Inventory
+            </a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out flex items-center gap-3 px-4 py-3 rounded-lg font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined">group</span>
+                Customers
+            </a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out flex items-center gap-3 px-4 py-3 rounded-lg font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined">payments</span>
+                Financials
+            </a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out flex items-center gap-3 px-4 py-3 rounded-lg font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+</nav>
+<!-- Footer Nav Links -->
+<div class="mt-auto border-t border-white/20 pt-4 flex flex-col gap-2">
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out flex items-center gap-3 px-4 py-3 rounded-lg font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined">help</span>
+                Support
+            </a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out flex items-center gap-3 px-4 py-3 rounded-lg font-label-sm text-label-sm" href="#">
+<span class="material-symbols-outlined">account_circle</span>
+                Account
+            </a>
+</div>
+</aside>
+<!-- Bottom Navigation Bar (Mobile) -->
+<nav class="bg-white/65 dark:bg-primary/65 backdrop-blur-xl border-t border-white/22 dark:border-white/10 shadow-[0_-8px_32px_rgba(0,0,0,0.08)] fixed bottom-0 left-0 w-full z-50 md:hidden rounded-t-xl flex justify-around items-center h-20 px-4 pb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 hover:bg-primary-container/20 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="text-label-sm font-label-sm text-[10px]">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary text-on-primary rounded-xl px-4 py-1 scale-90 transition-transform shadow-md" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">reorder</span>
+<span class="text-label-sm font-label-sm text-[10px]">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 hover:bg-primary-container/20 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">smart_toy</span>
+<span class="text-label-sm font-label-sm text-[10px]">AI</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 hover:bg-primary-container/20 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">more_horiz</span>
+<span class="text-label-sm font-label-sm text-[10px]">More</span>
+</a>
+</nav>
+<!-- Main Content Area -->
+<main class="pt-24 pb-28 md:pb-12 md:pl-64 min-h-screen flex flex-col items-center">
+<div class="w-full max-w-[1200px] px-4 md:px-gutter mx-auto">
+<!-- Page Header & Search -->
+<div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-primary mb-2 hidden md:block">Orders</h2>
+<p class="text-on-surface-variant font-body-md text-body-md hidden md:block">Manage and track premium service requests.</p>
+</div>
+<!-- Floating Glass Search Bar -->
+<div class="w-full md:w-96 relative group">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">search</span>
+</div>
+<input class="search-input glass-panel w-full pl-12 pr-12 py-3 rounded-full text-on-surface font-body-md bg-white/70 border border-white/40 shadow-sm focus:bg-white/90 transition-all duration-300 placeholder-outline backdrop-blur-xl" placeholder="Search customer, phone, or order #..." type="text">
+<button class="absolute inset-y-0 right-0 pr-4 flex items-center text-outline hover:text-primary transition-colors">
+<span class="material-symbols-outlined">tune</span>
+</button>
+</div>
+</div>
+<!-- Modern Status Filters -->
+<div class="flex overflow-x-auto pb-4 mb-4 gap-3 snap-x scrollbar-hide hide-scrollbar">
+<button class="snap-start whitespace-nowrap px-5 py-2 rounded-full font-label-sm text-label-sm bg-primary text-on-primary shadow-md transition-all">
+                    All Orders <span class="ml-2 opacity-70">124</span>
+</button>
+<button class="snap-start whitespace-nowrap px-5 py-2 rounded-full font-label-sm text-label-sm glass-panel text-on-surface-variant hover:text-primary transition-all backdrop-blur-xl">
+                    Pending <span class="ml-2 bg-surface-variant text-on-surface px-2 py-0.5 rounded-full text-[11px]">42</span>
+</button>
+<button class="snap-start whitespace-nowrap px-5 py-2 rounded-full font-label-sm text-label-sm glass-panel text-on-surface-variant hover:text-primary transition-all flex items-center gap-2 backdrop-blur-xl">
+                    Ready <span class="w-2 h-2 rounded-full bg-[#4CAF50] status-pulse"></span>
+</button>
+<button class="snap-start whitespace-nowrap px-5 py-2 rounded-full font-label-sm text-label-sm glass-panel text-on-surface-variant hover:text-primary transition-all backdrop-blur-xl">
+                    Completed
+                </button>
+<button class="snap-start whitespace-nowrap px-5 py-2 rounded-full font-label-sm text-label-sm glass-panel text-on-surface-variant hover:text-primary transition-all backdrop-blur-xl">
+                    Delivered
+                </button>
+</div>
+<!-- Orders Grid/List -->
+<div class="flex flex-col gap-4">
+<!-- Order Card 1 (Ready) -->
+<div class="glass-card rounded-2xl p-4 md:p-6 flex flex-col md:flex-row gap-6 relative group overflow-hidden">
+<!-- Decor accent -->
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-[#4CAF50] opacity-80"></div>
+<div class="flex flex-row md:flex-col justify-between items-start md:w-48 gap-4 border-b md:border-b-0 border-surface-variant pb-4 md:pb-0 md:pr-6 md:border-r">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full overflow-hidden shadow-sm">
+<img alt="Customer Avatar" class="w-full h-full object-cover" data-alt="A portrait photograph of a mature gentleman with silver hair and a tailored tweed jacket, outdoors with natural lighting, soft focus background. Elegant, confident, premium lifestyle aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCdp7TlieNFK4X3ksWuGdh4UiYGd_gtRJAiPJVJOA7XwZcx1i4ZV0C0AlLE0PBSRayO5ly2j_uYiL8mOfWeH-lvurZfbGlzH6IONP-16aIhlReX7r0FZnYQqOsotg1DQlkZYKZv4w5HTuZ_O9JvsY9usfreAcjxmmYB86WLtCg6pg5bnhOWtX6bIxG79OKEGEOrYETWr1_IQHF4tUe41RrRsD9itNo102hhaMrD80zhNDOHV5BENYJp9g85mem_hmthf0ew_Mo7jr8">
+</div>
+<div>
+<h3 class="font-headline-lg-mobile text-[16px] font-semibold text-primary leading-tight">Arthur Pendelton</h3>
+<p class="text-on-surface-variant text-[13px]">+44 7700 900077</p>
+</div>
+</div>
+<div class="text-right md:text-left">
+<p class="font-numeral-xl text-[20px] font-medium text-primary">₹245.00</p>
+<span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-md bg-[#E8F5E9] text-[#2E7D32] font-label-sm text-[11px] mt-1 border border-[#C8E6C9]">
+<span class="w-1.5 h-1.5 rounded-full bg-[#4CAF50] status-pulse"></span> Ready
+                            </span>
+</div>
+</div>
+<div class="flex-1 flex flex-col sm:flex-row gap-6 items-center">
+<div class="w-full sm:w-24 h-24 rounded-xl overflow-hidden bg-surface-container flex-shrink-0 shadow-inner">
+<img alt="Item Thumbnail" class="w-full h-full object-cover" data-alt="A high quality product shot of a pair of vintage brown leather Oxford dress shoes, highly polished and resting on a clean white surface with soft studio lighting reflecting off the leather surface. Premium craftsmanship aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDajb_IqGdGRQelA3kdgg9FGXIPo0b5iu7DBNuRZ2wAvc6kqCbynTKn0sSDsTWrOGs0hAVr3VUZ3d6VSQNkOxt9oT0SV9vY4GeJUHbeS7vmZu3ZIlhv5BdVJGi6XJyo1dokgeyYQxVBETOmqZHNJZZP8-8yxwl3gHAZCXCWgaconlIkhdSgEfAQAIpzv6xGlvaYvqHG7MmkYr2Z1DAvv3081RqHAp912QlYS9Y8UUADMfhKHYo7BmiRtvMvwzIykIlEaZ-bUGjHuGU">
+</div>
+<div class="flex-1 w-full">
+<div class="flex justify-between items-start mb-2">
+<div>
+<p class="text-label-sm font-label-sm text-outline uppercase tracking-wider mb-1">Order #MB-8892</p>
+<h4 class="font-medium text-on-surface text-[15px]">Full Sole Restoration &amp; Polish</h4>
+</div>
+<p class="text-label-sm font-label-sm text-outline whitespace-nowrap">Due: Today</p>
+</div>
+<!-- Timeline representation -->
+<div class="mt-4 flex items-center w-full max-w-sm">
+<div class="h-1.5 flex-1 bg-[#4CAF50] rounded-l-full relative">
+<div class="absolute -top-1 -right-1 w-3 h-3 bg-[#4CAF50] rounded-full border-2 border-white shadow-sm"></div>
+</div>
+<div class="h-1.5 flex-1 bg-[#4CAF50] relative">
+<div class="absolute -top-1 -right-1 w-3 h-3 bg-[#4CAF50] rounded-full border-2 border-white shadow-sm"></div>
+</div>
+<div class="h-1.5 flex-1 bg-surface-variant rounded-r-full relative">
+<div class="absolute -top-1 -right-1 w-3 h-3 bg-surface-variant rounded-full border-2 border-white shadow-sm"></div>
+</div>
+</div>
+<div class="mt-2 flex justify-between text-[11px] text-outline w-full max-w-sm font-label-sm">
+<span class="">Intake</span>
+<span class="">Workshop</span>
+<span class="">Ready</span>
+</div>
+</div>
+</div>
+<!-- Quick Actions Context Menu -->
+<div class="flex sm:flex-col gap-2 justify-end w-full md:w-auto mt-4 md:mt-0 pt-4 md:pt-0 border-t md:border-t-0 border-surface-variant">
+<button class="flex-1 md:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-[#25D366] text-white hover:bg-[#128C7E] transition-colors font-label-sm text-[13px] shadow-sm">
+<span class="material-symbols-outlined text-[18px]">send</span>
+<span class="md:hidden lg:inline">WhatsApp Reminder</span>
+</button><button class="flex-1 md:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-[#25D366]/10 text-[#075E54] hover:bg-[#25D366]/20 transition-colors font-label-sm text-[13px]">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+<span class="md:hidden lg:inline">Notify</span>
+</button>
+<button class="flex-1 md:flex-none flex items-center justify-center gap-2 px-3 py-2 rounded-lg hover:bg-surface-variant transition-colors text-on-surface-variant font-label-sm text-[13px]">
+<span class="material-symbols-outlined text-[18px]">print</span>
+<span class="md:hidden lg:inline">Label</span>
+</button>
+<button class="w-10 h-10 rounded-lg hover:bg-surface-variant flex items-center justify-center text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+
+
+</body></html>

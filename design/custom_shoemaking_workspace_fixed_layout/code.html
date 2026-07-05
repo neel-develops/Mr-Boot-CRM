@@ -1,0 +1,415 @@
+<!DOCTYPE html><html lang="en" style=""><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0" name="viewport"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=block" rel="stylesheet"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=Inter:wght@300;400;500;600&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">try{
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "inverse-on-surface": "#f0f1f2",
+                        "surface-container-highest": "#e2e2e3",
+                        "on-tertiary-fixed-variant": "#5d4200",
+                        "on-primary-fixed-variant": "#5c403a",
+                        "on-primary-fixed": "#2b1611",
+                        "surface-variant": "#e2e2e3",
+                        "surface": "#f9f9fa",
+                        "on-surface-variant": "#504442",
+                        "on-secondary-fixed-variant": "#474745",
+                        "primary-container": "#4e342e",
+                        "on-tertiary-container": "#cb9e3f",
+                        "on-tertiary": "#ffffff",
+                        "inverse-primary": "#e5beb5",
+                        "surface-container-low": "#f3f3f4",
+                        "secondary-container": "#e1dfdc",
+                        "tertiary-fixed-dim": "#f0bf5c",
+                        "surface-container-high": "#e8e8e9",
+                        "primary": "#361f1a",
+                        "tertiary-container": "#4e3700",
+                        "surface-dim": "#d9dadb",
+                        "on-secondary-container": "#636360",
+                        "on-surface": "#1a1c1d",
+                        "secondary": "#5e5e5c",
+                        "on-tertiary-fixed": "#261900",
+                        "inverse-surface": "#2f3132",
+                        "tertiary": "#322200",
+                        "on-primary-container": "#c19c94",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#d4c3bf",
+                        "outline": "#827471",
+                        "error": "#ba1a1a",
+                        "on-secondary": "#ffffff",
+                        "background": "#f9f9fa",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "on-background": "#1a1c1d",
+                        "primary-fixed-dim": "#e5beb5",
+                        "on-error": "#ffffff",
+                        "surface-tint": "#755750",
+                        "tertiary-fixed": "#ffdea4",
+                        "surface-bright": "#f9f9fa",
+                        "secondary-fixed": "#e4e2df",
+                        "on-secondary-fixed": "#1b1c1a",
+                        "surface-container": "#eeeeef",
+                        "primary-fixed": "#ffdad2",
+                        "secondary-fixed-dim": "#c8c6c4",
+                        "error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "base": "8px",
+                        "gutter": "24px",
+                        "container-padding": "32px",
+                        "card-gap": "20px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "numeral-xl": ["Geist"],
+                        "body-md": ["Inter"],
+                        "label-sm": ["Geist"],
+                        "headline-lg-mobile": ["Geist"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "numeral-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "300" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "label-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "600" }]
+                    }
+                },
+            },
+        }
+    }catch(_e){}</script></head><body class="bg-background min-h-screen text-on-background font-body-md antialiased flex flex-col md:flex-row overflow-x-hidden">
+
+<!-- Mobile Header -->
+<header class="md:hidden flex justify-between items-center w-full px-container-padding h-20 z-50 sticky top-0 bg-white/80 backdrop-blur-xl border-b border-white/20">
+    <img alt="Mr. Boot Logo" class="h-10 w-10 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADqMAKtgsGAwGqWYh-My9UyNZBNxMzqmwl_NMzO_k-7yC7ux3OhNT_1QrCwSvnviQMlwhO0BkQm4WvOn23jV_pAaO41TN0tIQKk_tXvWzTgWI-IwkuX_4LMmX1uRcXMRlFZX6RsCkc-cBRIyYh6qUvBImM4MU-_Q8xxTCG-edZvPMzXPDWIeBvAp00thEco8544_UavTI7BFiIGphf9fLYGY_d7VrfvCgF0MGaDxBQbmhV49CfvQEt_IuuL4r5MrKOLq73LjEp-Dc">
+    <span class="font-display-lg text-[20px] tracking-tight text-primary">Mr. Boot</span>
+    <div class="flex items-center gap-2">
+        <button class="p-2 text-on-surface-variant"><span class="material-symbols-outlined" data-original-icon="notifications">notifications</span></button>
+        <img alt="Artisan Profile" class="w-8 h-8 rounded-full border border-outline-variant" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAccoY2fNwLZV9Wf-jBG1dkcbv2jDkP2a8oPuBiTtowwtWeCvsM3qbnImxyGiiq0DEVZVIcFDpDa6EtEZZjKCFvikMjkpjW_MpnNCTXOHPLm7kYXNh4tKvXLcNkW_aXgEcjpNRizJ0sqJY2nrv7pBiI09vknMzldDJmN6Gp_WfLz6zeG2ZQN1UnHHth8KDoqxp1AILl5QAqkci4VheD7o0U3M87MWE2oQvKR5I3KEQ3S1f7HTLT8V_9OiZzPJeZAwvNhYueavzHSG8">
+    </div>
+</header>
+
+<!-- SideNavBar (Desktop) -->
+<nav class="bg-white/65 dark:bg-primary/65 backdrop-blur-xl h-screen w-64 fixed left-0 top-0 hidden md:flex flex-col border-r border-white/22 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] z-50">
+<div class="flex flex-col h-full py-8 px-4">
+<!-- Brand -->
+<div class="mb-12 px-4 flex items-center gap-3">
+<img alt="Mr. Boot Logo" class="w-10 h-10 object-contain rounded-lg shadow-sm border border-black/5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuADqMAKtgsGAwGqWYh-My9UyNZBNxMzqmwl_NMzO_k-7yC7ux3OhNT_1QrCwSvnviQMlwhO0BkQm4WvOn23jV_pAaO41TN0tIQKk_tXvWzTgWI-IwkuX_4LMmX1uRcXMRlFZX6RsCkc-cBRIyYh6qUvBImM4MU-_Q8xxTCG-edZvPMzXPDWIeBvAp00thEco8544_UavTI7BFiIGphf9fLYGY_d7VrfvCgF0MGaDxBQbmhV49CfvQEt_IuuL4r5MrKOLq73LjEp-Dc">
+<div>
+<h1 class="text-headline-lg font-headline-lg font-bold text-primary dark:text-primary-fixed tracking-tight">Mr. Boot</h1>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Premium Care</p>
+</div>
+</div>
+<!-- Navigation Links -->
+<ul class="flex flex-col gap-2 flex-grow">
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
+<span class="text-body-md font-body-md">Dashboard</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-primary dark:text-primary-fixed font-bold border-r-2 border-primary dark:border-primary-fixed bg-white/50 shadow-sm relative group -translate-y-0.5 transition-transform duration-250" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">shopping_bag</span>
+<span class="text-body-md font-body-md">Orders</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">inventory_2</span>
+<span class="text-body-md font-body-md">Inventory</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">group</span>
+<span class="text-body-md font-body-md">Customers</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">payments</span>
+<span class="text-body-md font-body-md">Financials</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">settings</span>
+<span class="text-body-md font-body-md">Settings</span>
+</a>
+</li>
+</ul>
+<!-- CTA -->
+<div class="mt-auto pt-6 px-2 pb-6">
+<button class="w-full bg-primary-container text-on-primary-container hover:bg-primary-container/90 transition-all duration-250 ease-out py-3 rounded-xl font-label-sm text-label-sm flex items-center justify-center gap-2 shadow-sm hover:-translate-y-0.5 hover:shadow-md">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    New Order
+                </button>
+</div>
+<!-- Footer Links -->
+<ul class="flex flex-col gap-1 border-t border-black/5 pt-4">
+<li class="">
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span class="text-label-sm font-label-sm">Support</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center gap-3 px-4 py-2.5 rounded-lg text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out" href="#">
+<span class="material-symbols-outlined text-[20px]">account_circle</span>
+<span class="text-label-sm font-label-sm">Account</span>
+</a>
+</li>
+</ul>
+</div>
+</nav>
+
+<!-- Main Content Area -->
+<main class="flex-1 p-container-padding max-w-[1400px] mx-auto w-full pb-32 md:ml-64">
+    <!-- Breadcrumbs -->
+    <div class="mb-8 flex flex-col gap-1">
+        <div class="flex items-center gap-2 text-on-surface-variant font-label-sm text-label-sm">
+            <span class="hover:text-primary cursor-pointer transition-colors">Orders</span>
+            <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+            <span class="text-primary font-semibold">New Custom Order</span>
+        </div>
+        <h1 class="font-display-lg text-display-lg text-on-surface">Bespoke Commission</h1>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter items-start">
+        <!-- Left Column: Form Details -->
+        <div class="lg:col-span-8 flex flex-col gap-card-gap">
+            
+            <!-- Customer Section -->
+            <section class="glass-panel rounded-2xl p-8">
+                <h3 class="font-headline-lg text-[22px] text-on-surface mb-6 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-tertiary-fixed-dim">person_pin</span>
+                    Customer Identity
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="form-label-artisan" for="customer-name">Customer Name</label>
+                        <div class="relative">
+                            <input class="form-input-artisan pl-11" id="customer-name" placeholder="Search or add new..." type="text">
+                            <span class="material-symbols-outlined absolute left-3.5 top-3.5 text-outline text-[20px]">person</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label-artisan" for="phone-number">Contact Number</label>
+                        <div class="relative">
+                            <input class="form-input-artisan pl-11" id="phone-number" placeholder="+91 00000 00000" type="tel">
+                            <span class="material-symbols-outlined absolute left-3.5 top-3.5 text-outline text-[20px]">call</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Specifications Section -->
+            <section class="glass-panel rounded-2xl p-8 relative overflow-hidden">
+                <div class="absolute -right-8 -top-8 w-40 h-40 bg-primary-container/5 rounded-full pointer-events-none"></div>
+                <h3 class="font-headline-lg text-[22px] text-on-surface mb-6 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-tertiary-fixed-dim">architecture</span>
+                    Bespoke Specifications
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="md:col-span-2">
+                        <label class="form-label-artisan" for="shoe-name">Shoe Name / Model Code</label>
+                        <input class="form-input-artisan" id="shoe-name" placeholder="e.g. The Heritage Oxford - Batch #402" type="text">
+                    </div>
+                    <div class="">
+                        <label class="form-label-artisan" for="shoe-type">Shoe Type</label>
+                        <div class="relative">
+                            <select class="form-input-artisan appearance-none cursor-pointer" id="shoe-type">
+                                <option selected="" value="formal">Formal (Standard)</option>
+                                <option value="oxford">Oxford</option>
+                                <option value="derby">Derby</option>
+                                <option value="loafer">Loafer</option>
+                                <option value="boot">Artisan Boot</option>
+                            </select>
+                            <span class="material-symbols-outlined absolute right-3.5 top-3.5 text-outline pointer-events-none">expand_more</span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label-artisan" for="shoe-size">Shoe Size (UK)</label>
+                        <div class="flex gap-2">
+                            <select class="form-input-artisan appearance-none cursor-pointer" id="shoe-size">
+                                <option value="7">7</option>
+                                <option selected="" value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
+                                <option value="custom">Custom Last</option>
+                            </select>
+                            <button class="btn-secondary px-4 flex items-center" title="Manual Measurement">
+                                <span class="material-symbols-outlined">straighten</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="form-label-artisan">Primary Leather Selection</label>
+                        <div class="flex flex-wrap gap-4 mt-2">
+                            <!-- Leather Swatches -->
+                            <label class="relative cursor-pointer group">
+                                <input checked="" class="peer sr-only" name="material" type="radio">
+                                <div class="w-20 h-20 rounded-xl border-2 border-transparent peer-checked:border-tertiary-fixed-dim overflow-hidden transition-all shadow-sm">
+                                    <img alt="Calfskin" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB58-2iPEWYe2iKugY6X5in1AjtaAV0jt2RweG7gTDudnQf8D0G2uTpt5xivYGjRKNgEEi-ZwMNxrma5NaVePkUjhRH4L-1TguM5QJO33JseBwLriI3f4vwAcAfsGK2E4sRbHkczdthD3OpwmjZPby7z8uKGsQDW3t0SSF1dqAgJAIiRQyaJYFK7rfjs99Z7oNu2H9ql08kWxtQzfKQ8mSsTY6OJMq8SZk7RctXfkyTMYdLwKGAKmN4scjwMcpcV6rbs6kHcMWFYQU">
+                                    <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                                    <div class="absolute top-1 right-1 bg-tertiary-fixed-dim rounded-full w-4 h-4 flex items-center justify-center opacity-0 peer-checked:opacity-100">
+                                        <span class="material-symbols-outlined text-[12px] text-on-tertiary-fixed font-bold">check</span>
+                                    </div>
+                                </div>
+                                <span class="block text-center font-label-sm text-[10px] mt-1">Brown Calf</span>
+                            </label>
+                            <label class="relative cursor-pointer group">
+                                <input class="peer sr-only" name="material" type="radio">
+                                <div class="w-20 h-20 rounded-xl border-2 border-transparent peer-checked:border-tertiary-fixed-dim overflow-hidden transition-all shadow-sm">
+                                    <img alt="Cordovan" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQHfjS8ZKyG_aK3pQtdBmlbODlx3yiE89H0Ode88p8gCQam_m8t2amCWZoIsiq6YxWzNxJDhBq_Ysvd4t0jDFaen8jCIJw_ab_2y6a3l_5PTkz8BvwU-aIN3xxbuAj0nFohq-Ka-hk6QQ3gYu98qaLtsvEBqX0mlPFzhoycbtWgxgCQDEGw5Dxg_Rmu_ZQcO02zwdCx8OBoHRAJgc4t9DhOxcD8bsA4UqjF4pekNgoFThzpaU8ea44tWDG3LkF0vSsIm__PmajSfw">
+                                    <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                                    <div class="absolute top-1 right-1 bg-tertiary-fixed-dim rounded-full w-4 h-4 flex items-center justify-center opacity-0 peer-checked:opacity-100">
+                                        <span class="material-symbols-outlined text-[12px] text-on-tertiary-fixed font-bold">check</span>
+                                    </div>
+                                </div>
+                                <span class="block text-center font-label-sm text-[10px] mt-1">Black Cordovan</span>
+                            </label>
+                            <label class="relative cursor-pointer group">
+                                <input class="peer sr-only" name="material" type="radio">
+                                <div class="w-20 h-20 rounded-xl border-2 border-transparent peer-checked:border-tertiary-fixed-dim overflow-hidden transition-all shadow-sm">
+                                    <img alt="Suede" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDy0BmStXu2fuiLM1tazuMLXfgM9M02BOKBr-xrPAFUtzK4aqwpG5BycrJb7E3txSL_iQdRIe5908nvFQXNei5dleCiYg9B2nxcEa10VR9zpk6yTFgADb34WlsHotkdwvddMD2cswMdTbSvSmAPm-Y8y3Kw5Rr_2H24vTdI5GAAkLjGkUgvJNb_tMnoCpz2PT4Cdu1YJRGn_1fuCRlTUFfuLqnluMqF_kSoPTy08m81gYhnr-0QFYfUVowVAPTO1qj8zFFIo4_sjFw">
+                                    <div class="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition-colors"></div>
+                                    <div class="absolute top-1 right-1 bg-tertiary-fixed-dim rounded-full w-4 h-4 flex items-center justify-center opacity-0 peer-checked:opacity-100">
+                                        <span class="material-symbols-outlined text-[12px] text-on-tertiary-fixed font-bold">check</span>
+                                    </div>
+                                </div>
+                                <span class="block text-center font-label-sm text-[10px] mt-1">Tan Suede</span>
+                            </label>
+                            <button class="w-20 h-20 rounded-xl border-2 border-dashed border-outline-variant flex flex-col items-center justify-center text-on-surface-variant hover:border-primary hover:text-primary transition-all bg-surface/50" type="button">
+                                <span class="material-symbols-outlined text-[24px]">add</span>
+                                <span class="font-label-sm text-[10px]">Other</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Order Management Section -->
+            <section class="glass-panel rounded-2xl p-8">
+                <h3 class="font-headline-lg text-[22px] text-on-surface mb-6 flex items-center gap-3">
+                    <span class="material-symbols-outlined text-tertiary-fixed-dim">assignment_turned_in</span>
+                    Workshop Logistics
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label class="form-label-artisan" for="due-date">Target Delivery Date</label>
+                        <div class="relative">
+                            <input class="form-input-artisan cursor-pointer" id="due-date" type="date">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="form-label-artisan" for="base-price">Base Quotation</label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-3.5 text-on-surface font-body-md">₹</span>
+                            <input class="form-input-artisan pl-8" id="base-price" placeholder="0.00" type="number" value="25000">
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <label class="form-label-artisan" for="instructions">Artisan Notes / Special Instructions (Max 300 chars)</label>
+                    <textarea class="form-input-artisan h-32 resize-none" id="instructions" maxlength="300" placeholder="Specify welt type, heel height, monogramming details..."></textarea>
+                </div>
+                <div>
+                    <label class="form-label-artisan">Design Sketches &amp; Reference Assets</label>
+                    <div class="border-2 border-dashed border-outline-variant rounded-xl p-10 flex flex-col items-center justify-center text-center bg-surface-container-low hover:bg-white/50 transition-all cursor-pointer group">
+                        <div class="w-14 h-14 rounded-full bg-primary-container/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                            <span class="material-symbols-outlined text-primary text-[28px]">cloud_upload</span>
+                        </div>
+                        <p class="font-body-md text-on-surface font-semibold">Upload Workshop Reference</p>
+                        <p class="font-label-sm text-on-surface-variant text-[12px] mt-1">Drag assets here or browse local files. Max 5MB.</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Right Column: Sticky Summary -->
+        <div class="lg:col-span-4">
+            <div class="sticky top-28 flex flex-col gap-6">
+                <div class="glass-panel rounded-2xl p-8 border-primary/10 shadow-xl">
+                    <h3 class="font-headline-lg text-[20px] text-on-surface mb-6 border-b border-outline-variant/30 pb-4 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-tertiary-fixed-dim">receipt_long</span>
+                        Price Estimation
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center text-on-surface-variant text-[14px]">
+                            <span class="">Standard Formal Last</span>
+                            <span class="">₹ 25,000.00</span>
+                        </div>
+                        <div class="flex justify-between items-center text-on-surface-variant text-[14px]">
+                            <span class="">Premium Calfskin</span>
+                            <span class="">Included</span>
+                        </div>
+                        <div class="flex justify-between items-center text-on-surface-variant text-[14px]">
+                            <span class="">Artisan Workshop Fee</span>
+                            <span class="">₹ 3,500.00</span>
+                        </div>
+                        <div class="flex justify-between items-center text-on-surface-variant text-[14px]">
+                            <span class="">GST (18%)</span>
+                            <span class="">₹ 5,130.00</span>
+                        </div>
+                        <div class="border-t border-dashed border-outline-variant/50 pt-4 mt-2">
+                            <div class="flex justify-between items-end">
+                                <span class="font-headline-lg text-[18px] text-on-surface font-bold">Total Payable</span>
+                                <span class="font-numeral-xl text-[32px] text-primary font-bold">₹ 33,630</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-10 space-y-3">
+                        <button class="btn-primary w-full py-4 text-[15px] flex items-center justify-center gap-3 font-semibold">
+                            <span class="material-symbols-outlined text-[20px]">check_circle</span>
+                            Confirm Bespoke Order
+                        </button><button class="btn-secondary w-full py-4 text-[15px] flex items-center justify-center gap-3 font-semibold border-primary/20 hover:border-primary transition-all duration-250">
+    <span class="material-symbols-outlined text-[20px] text-[#25D366]">chat</span>
+    Send Bill on WhatsApp
+</button>
+                        <button class="btn-secondary w-full py-3 text-[14px] font-medium">
+                            Save as Draft
+                        </button>
+                    </div>
+
+                    <div class="mt-6 bg-surface-container-highest/50 p-4 rounded-xl border border-outline-variant/30 flex items-start gap-3">
+                        <span class="material-symbols-outlined text-tertiary-fixed-dim text-[18px] mt-0.5">info</span>
+                        <p class="font-label-sm text-[11px] text-on-surface-variant leading-relaxed">
+                            Confirming will notify the workshop queue and send a summary to the customer via SMS.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Profile Card (Sidebar Context) -->
+                <div class="glass-panel rounded-2xl p-6 flex items-center gap-4">
+                    <img alt="Lead Artisan" class="w-14 h-14 rounded-full object-cover border-2 border-primary-container/20" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIOeLrOQNLj2MwHDxfgfIzIeMDm21b7CRVRvmzWOPF8MzoM-GjrN1dlfqxho_K97u1xyV8oVpgmaAJb1qdu7KLRlNKj2OcRAOHhONo6MITmB0HmIFBJb8fRhRuIY-QvCJnmzzYuNpRmATlmzFG4pBM2zjNhYjMjB9ePFsYT5kJD0nhCclJVCaR951EbnpXb3f-POgfTJgfftcIiB8jeOPwBI8eDa7c0ri_SN9nChsJHh3924K4xImrVUy0JxwhsG8nzoLOcpyhMFk">
+                    <div>
+                        <h4 class="font-bold text-on-surface text-[15px]">Artisan Victor</h4>
+                        <p class="text-on-surface-variant text-[12px]">Master Shoemaker</p>
+                    </div>
+                    <div class="ml-auto">
+                        <span class="flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-bold">
+                            <span class="w-1.5 h-1.5 rounded-full bg-on-tertiary-fixed"></span> Active
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<!-- Bottom Nav (Mobile) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-white/90 backdrop-blur-xl border-t border-outline-variant/20 z-50 px-6 py-3 flex justify-between items-center shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+    <a class="flex flex-col items-center gap-1 text-secondary" href="#">
+        <span class="material-symbols-outlined">handyman</span>
+        <span class="text-[10px] font-bold">Workshop</span>
+    </a>
+    </nav></body></html>

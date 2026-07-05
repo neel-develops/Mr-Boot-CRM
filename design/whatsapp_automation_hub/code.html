@@ -1,0 +1,522 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Mr. Boot - AI Assistant &amp; Insights</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary": "#ffffff",
+                      "inverse-primary": "#e5beb5",
+                      "surface-container": "#eeeeef",
+                      "on-primary-fixed-variant": "#5c403a",
+                      "surface-bright": "#f9f9fa",
+                      "on-surface-variant": "#504442",
+                      "on-error": "#ffffff",
+                      "primary-fixed-dim": "#e5beb5",
+                      "surface-container-low": "#f3f3f4",
+                      "outline": "#827471",
+                      "surface-tint": "#755750",
+                      "tertiary": "#322200",
+                      "on-secondary-fixed-variant": "#474745",
+                      "on-tertiary-fixed-variant": "#5d4200",
+                      "surface-container-lowest": "#ffffff",
+                      "error": "#ba1a1a",
+                      "outline-variant": "#d4c3bf",
+                      "on-background": "#1a1c1d",
+                      "surface-container-highest": "#e2e2e3",
+                      "primary": "#361f1a",
+                      "background": "#f9f9fa",
+                      "tertiary-fixed": "#ffdea4",
+                      "primary-container": "#4e342e",
+                      "on-secondary-fixed": "#1b1c1a",
+                      "on-primary-fixed": "#2b1611",
+                      "surface-variant": "#e2e2e3",
+                      "secondary": "#5e5e5c",
+                      "secondary-fixed-dim": "#c8c6c4",
+                      "tertiary-fixed-dim": "#f0bf5c",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary-fixed": "#261900",
+                      "on-secondary-container": "#636360",
+                      "on-surface": "#1a1c1d",
+                      "surface-container-high": "#e8e8e9",
+                      "on-primary-container": "#c19c94",
+                      "tertiary-container": "#4e3700",
+                      "on-error-container": "#93000a",
+                      "on-tertiary-container": "#cb9e3f",
+                      "on-primary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "secondary-container": "#e1dfdc",
+                      "surface-dim": "#d9dadb",
+                      "surface": "#f9f9fa",
+                      "inverse-surface": "#2f3132",
+                      "primary-fixed": "#ffdad2",
+                      "inverse-on-surface": "#f0f1f2",
+                      "secondary-fixed": "#e4e2df"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "card-gap": "20px",
+                      "container-padding": "32px",
+                      "base": "8px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Geist"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Geist"
+                      ],
+                      "numeral-xl": [
+                              "Geist"
+                      ],
+                      "label-sm": [
+                              "Geist"
+                      ],
+                      "display-lg": [
+                              "Geist"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "34px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "numeral-xl": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.03em",
+                                      "fontWeight": "300"
+                              }
+                      ],
+                      "label-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+            },
+          }
+        }
+    </script>
+<style>
+        @import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Inter:wght@400;500&display=swap');
+        body { background-color: #FAFAFB; }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.04);
+        }
+        .glass-panel:hover {
+            box-shadow: 0 12px 48px rgba(0,0,0,0.08);
+            background-image: linear-gradient(to bottom, rgba(255,255,255,0.1), transparent);
+        }
+        .ai-glow {
+            position: absolute;
+            width: 150px;
+            height: 150px;
+            background: radial-gradient(circle, rgba(200, 155, 60, 0.15) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+            transition: all 0.3s ease;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="text-on-surface font-body-md bg-background antialiased min-h-screen overflow-x-hidden flex">
+<!-- Top Navigation (Mobile) & App Bar -->
+<nav class="fixed top-0 right-0 w-full md:w-[calc(100%-16rem)] z-40 bg-white/65 dark:bg-primary/65 backdrop-blur-xl border-b border-white/22 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] hidden md:flex justify-between items-center h-16 px-8 max-w-full">
+<div class="flex items-center gap-6">
+<span class="text-headline-lg-mobile font-headline-lg-mobile font-bold text-primary dark:text-primary-fixed">Mr. Boot CRM</span>
+<div class="hidden lg:flex gap-4">
+<a class="text-on-surface-variant dark:text-outline-variant hover:bg-white/10 px-3 py-1.5 rounded-lg transition-colors" href="#">Analytics</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:bg-white/10 px-3 py-1.5 rounded-lg transition-colors" href="#">Logistics</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex gap-2 text-on-surface-variant">
+<button class="p-2 hover:bg-white/10 rounded-full transition-colors"><span class="material-symbols-outlined">mic</span></button>
+<button class="p-2 hover:bg-white/10 rounded-full transition-colors"><span class="material-symbols-outlined">qr_code_scanner</span></button>
+<button class="p-2 hover:bg-white/10 rounded-full transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+</div>
+<button class="bg-primary-container text-on-primary hover:bg-primary px-4 py-2 rounded-lg text-label-sm font-label-sm shadow-sm transition-all hover:-translate-y-0.5">Quick Action</button>
+<img alt="Manager Avatar" class="w-8 h-8 rounded-full border border-outline-variant object-cover ml-2" data-alt="A small circular avatar of a professional manager with warm lighting, soft background focus, highly detailed, realistic, corporate style, high resolution." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKlFaZsl9JrlUhKIUf4oW5ZgnNIyukekfNQCdlW11dwZS1GLerhJ_fZOXtaqu2rsPCOFQReIEYS525T5MEIx5xLiITv2QJNYxf1EWUTw9PQUSepG6rL0LE9R94BEdmVvmMPIIt1-gcOQ2KGCNJeKTO3B1-xbYl18I7EK6hoXpBprluHlnK6VJEh4EVrlcXavfqaVOcERoghNY8GQVZ9CIwwQEBRPAYGVuvQ3neK6vmZ0QSP53ZhWAJTbJUGjJ3Ci1uwjCWfdLe4nw">
+</div>
+</nav>
+<!-- Side Navigation (Desktop) -->
+<aside class="h-screen w-64 fixed left-0 top-0 hidden md:flex flex-col bg-white/65 dark:bg-primary/65 backdrop-blur-xl border-r border-white/22 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] z-50">
+<div class="flex flex-col h-full py-8 px-4">
+<div class="flex items-center gap-3 mb-8 px-4">
+<div class="w-10 h-10 rounded-xl overflow-hidden shadow-inner"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCn7lW1vtQ0lZyfs5lXTaByxV89HdnteWqn32a8d3s-HaptrgDl_YBkkfJQL2pQMkLaxg-_LYJJyqPTZEvFhqt8zFxvFcr-9ijYS2t-9_bptwCa9AEFh6CLCFtKo2RLDNDaSi1AOuHJ5wWVx3oofr8KPKOVKC4jMSCXFwr29Ow55QFlKEq0wMWUqkkq6plvRdfrzUAYvF90N2yqWSLY-YkGA-OlXECjxuB7cfNrQkWrqrMBki4ezsWl4bosEXFEMlWSyFdYT3MFUs8" alt="Mr. Boot Logo" class="w-full h-full object-cover"></div>
+<div>
+<h1 class="text-headline-lg-mobile font-headline-lg-mobile font-bold text-primary dark:text-primary-fixed leading-tight">Mr. Boot</h1>
+<p class="text-label-sm font-label-sm text-on-surface-variant">Premium Care</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">dashboard</span>
+<span class="text-body-md font-body-md font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">receipt_long</span>
+<span class="text-body-md font-body-md font-medium">Orders</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">inventory_2</span>
+<span class="text-body-md font-body-md font-medium">Inventory</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">group</span>
+<span class="text-body-md font-body-md font-medium">Customers</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out group" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">payments</span>
+<span class="text-body-md font-body-md font-medium">Financials</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-primary dark:text-primary-fixed font-bold border-r-2 border-primary dark:border-primary-fixed bg-white/10" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+<span class="text-body-md font-body-md font-medium">AI Insights</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out group mt-2" href="#">
+<span class="material-symbols-outlined group-hover:scale-110 transition-transform">settings</span>
+<span class="text-body-md font-body-md font-medium">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 space-y-4">
+<button class="w-full bg-primary-container text-on-primary hover:bg-primary py-3 rounded-xl text-label-sm font-label-sm shadow-md transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    New Order
+                </button>
+<div class="flex justify-around border-t border-white/20 pt-4">
+<a class="text-on-surface-variant hover:text-primary flex flex-col items-center gap-1 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+<span class="text-[10px] uppercase font-bold tracking-wider">Support</span>
+</a>
+<a class="text-on-surface-variant hover:text-primary flex flex-col items-center gap-1 transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">account_circle</span>
+<span class="text-[10px] uppercase font-bold tracking-wider">Account</span>
+</a>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 md:ml-64 pt-4 md:pt-24 px-4 md:px-8 pb-24 md:pb-8 min-h-screen flex flex-col">
+<div class="flex items-center justify-between mb-8">
+<div>
+<h2 class="text-headline-lg font-headline-lg text-primary">Intelligence Hub</h2>
+<p class="text-body-md text-on-surface-variant mt-1">Ask questions, get insights, and predict trends.</p>
+</div>
+<div class="hidden md:flex gap-2">
+<span class="px-3 py-1 bg-tertiary-fixed-dim/20 text-tertiary-container rounded-full text-label-sm font-label-sm flex items-center gap-1 border border-tertiary-fixed-dim/30">
+<span class="material-symbols-outlined text-[16px]">bolt</span> Real-time Sync Active
+                </span>
+</div>
+</div>
+<!-- Split Layout: AI Chat (Left) & Insights (Right) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 h-[calc(100vh-180px)]">
+<!-- Left Column: Conversational AI -->
+<div class="lg:col-span-7 flex flex-col glass-panel rounded-2xl overflow-hidden relative shadow-sm border border-white/40">
+<!-- Header -->
+<div class="px-6 py-4 border-b border-white/20 bg-white/40 backdrop-blur-md flex items-center justify-between z-10">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+</div>
+<h3 class="font-headline-lg-mobile text-[18px] font-semibold text-primary">Mr. Boot Assistant</h3>
+</div>
+<button class="text-on-surface-variant hover:text-primary transition-colors p-1 rounded-md hover:bg-white/50">
+<span class="material-symbols-outlined">more_horiz</span>
+</button>
+</div>
+<!-- Chat History -->
+<div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar relative z-10" id="chat-container">
+<!-- Date Separator -->
+<div class="flex justify-center">
+<span class="text-[11px] font-medium text-on-surface-variant/60 uppercase tracking-widest px-3 py-1 bg-white/30 rounded-full border border-white/20">Today</span>
+</div>
+<!-- User Message -->
+<div class="flex justify-end">
+<div class="max-w-[80%] bg-surface-variant/50 border border-white/40 rounded-2xl rounded-tr-sm px-5 py-3 shadow-sm backdrop-blur-sm">
+<p class="text-body-md text-on-surface">Show me pending Nike sneaker repairs that are overdue.</p>
+</div>
+</div>
+<!-- AI Response -->
+<div class="flex justify-start relative">
+<!-- Subtle Glow Effect -->
+<div class="ai-glow top-0 left-0" style="transform: scale(1.02);"></div>
+<div class="max-w-[85%] bg-white/80 border border-white/60 rounded-2xl rounded-tl-sm px-5 py-4 shadow-sm backdrop-blur-md relative z-10">
+<p class="text-body-md text-on-surface mb-4">I found 3 Nike orders that are currently past their estimated completion date. Here is a quick summary:</p>
+<!-- Embedded Insight Card inside Chat -->
+<div class="space-y-2 mb-3">
+<div class="flex items-center justify-between p-3 bg-surface-bright/50 border border-outline-variant/30 rounded-xl hover:bg-white transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden bg-surface-container flex-shrink-0">
+<img alt="Shoe" class="w-full h-full object-cover" data-alt="A close up of a worn white Nike Air Force 1 sneaker needing cleaning, sitting on a wooden workbench, soft bright lighting, realistic style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDaFLJdIXDZYbNofexA6enf5Y906puJzgNvdk6XBtjGPagyqPFYNFuYKJVKQdznKK5wraXsmkaEr2bIvtmsr2MdUzUQOYkEDYAxnv5RurWWfvXuK54bffMn8APuO5NCpinhfdPw0CxQlbSsWD4sJhTu-QLSyMF9g-V1q6GS7lOUhbvOQMS5MlcnhGXuCyHE3niwHWHncPFGiRARBbTyG74GvJ4DaCKwWY_QKfho6OqtSP96dRRH2tgdO1kr-8foENAdgmwkL6Mf0a0">
+</div>
+<div>
+<h4 class="font-medium text-[14px] text-primary group-hover:text-primary-container transition-colors">Air Force 1 - Deep Clean</h4>
+<p class="text-[12px] text-on-surface-variant">Order #4092 • John D.</p>
+</div>
+</div>
+<div class="text-right">
+<span class="text-[12px] font-medium text-error flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">warning</span> 2 days late</span>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 bg-surface-bright/50 border border-outline-variant/30 rounded-xl hover:bg-white transition-colors cursor-pointer group">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg overflow-hidden bg-surface-container flex-shrink-0">
+<img alt="Shoe" class="w-full h-full object-cover" data-alt="A close up of a black Nike Jordan sneaker with a damaged sole, resting on a leather cutting mat, warm workshop lighting, highly detailed." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDPZ1B2TbTkVM9C2i6iyXLW1GogoR7h94JNWCsXrKr0KXSmGUKUUD0UWb29AMSHYOcPoAe8-HoeWmnIj_nxePlBBtOze4D2wjJpvJqJs9W78f_D3UmthkIGOfMrKLkMf8FZ4Xrf4hCsjOjiQAmNqEqdyi0dtrTaBMjWPA_oWaUcRrhS25Ab1dS_ZjYPq4eK3R_r1uJEcC8eSMl5x6SXhliHcTBMj2Bm_UU6HDqO35OuP8Br49VmWg4p5NU7stvEoRq3KvaDexzGRXo">
+</div>
+<div>
+<h4 class="font-medium text-[14px] text-primary group-hover:text-primary-container transition-colors">Jordan 1 - Sole Repair</h4>
+<p class="text-[12px] text-on-surface-variant">Order #4105 • Sarah M.</p>
+</div>
+</div>
+<div class="text-right">
+<span class="text-[12px] font-medium text-error flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">warning</span> 1 day late</span>
+</div>
+</div>
+</div>
+<div class="flex gap-2 mt-4">
+<button class="px-3 py-1.5 bg-primary-container/10 hover:bg-primary-container/20 text-primary-container border border-primary-container/20 rounded-lg text-[12px] font-medium transition-colors flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">sms</span> Draft Updates
+                                </button>
+<button class="px-3 py-1.5 bg-surface-variant/50 hover:bg-surface-variant text-on-surface border border-outline-variant/50 rounded-lg text-[12px] font-medium transition-colors">
+                                    View Full List
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Input Area (Command Palette Style) -->
+<div class="p-4 bg-white/40 border-t border-white/20 backdrop-blur-md z-10 relative">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-4 text-primary-container/50 text-[20px]">spark</span>
+<input class="w-full bg-white/80 border border-white/80 focus:border-tertiary-fixed-dim/50 focus:ring-2 focus:ring-tertiary-fixed-dim/20 rounded-full py-3.5 pl-12 pr-16 text-body-md text-primary shadow-inner transition-all placeholder:text-on-surface-variant/50" placeholder="Ask anything... e.g., 'Forecast revenue for next week'" type="text">
+<button class="absolute right-2 p-2 bg-primary-container text-on-primary rounded-full hover:bg-primary transition-all hover:scale-105 shadow-sm flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">send</span>
+</button>
+</div>
+<!-- Quick Suggestions -->
+<div class="flex gap-2 mt-3 px-2 overflow-x-auto custom-scrollbar pb-1">
+<button class="whitespace-nowrap px-3 py-1 bg-white/50 border border-white/60 hover:bg-white/80 rounded-full text-[12px] text-on-surface-variant transition-colors shadow-sm">Revenue this month</button>
+<button class="whitespace-nowrap px-3 py-1 bg-white/50 border border-white/60 hover:bg-white/80 rounded-full text-[12px] text-on-surface-variant transition-colors shadow-sm">Low stock supplies</button>
+<button class="whitespace-nowrap px-3 py-1 bg-white/50 border border-white/60 hover:bg-white/80 rounded-full text-[12px] text-on-surface-variant transition-colors shadow-sm">Top customers</button>
+</div>
+</div>
+</div>
+<!-- Right Column: Insights & Visualizations -->
+<div class="lg:col-span-5 flex flex-col gap-6 overflow-y-auto custom-scrollbar pb-4 pr-2">
+<!-- Business Forecast Chart -->
+<div class="glass-panel rounded-2xl p-6 relative overflow-hidden group">
+<div class="absolute top-0 right-0 w-32 h-32 bg-tertiary-fixed-dim/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
+<div class="flex justify-between items-start mb-6 relative z-10">
+<div>
+<h3 class="text-[16px] font-semibold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-tertiary-container text-[20px]">trending_up</span> Growth Forecast
+                            </h3>
+<p class="text-[13px] text-on-surface-variant mt-1">Projected revenue based on current intake</p>
+</div>
+<span class="px-2.5 py-1 bg-surface-container rounded-lg text-[11px] font-medium text-on-surface-variant border border-outline-variant/30">Next 7 Days</span>
+</div>
+<!-- Placeholder for Chart Graphic -->
+<div class="h-40 w-full relative mb-4 border-b border-dashed border-outline-variant/40 flex items-end">
+<!-- Abstract Chart Representation -->
+<div class="w-full flex justify-between items-end h-full px-2 pb-1 gap-2">
+<div class="w-1/7 bg-primary-container/20 hover:bg-primary-container/40 rounded-t-sm h-[30%] w-full transition-all cursor-pointer relative group/bar">
+<div class="absolute -top-8 left-1/2 -translate-x-1/2 opacity-0 group-hover/bar:opacity-100 bg-surface text-on-surface text-[10px] px-2 py-1 rounded shadow-sm transition-opacity">₹1.2k</div>
+</div>
+<div class="w-1/7 bg-primary-container/30 hover:bg-primary-container/50 rounded-t-sm h-[45%] w-full transition-all cursor-pointer relative group/bar"></div>
+<div class="w-1/7 bg-primary-container/40 hover:bg-primary-container/60 rounded-t-sm h-[35%] w-full transition-all cursor-pointer relative group/bar"></div>
+<div class="w-1/7 bg-primary-container/50 hover:bg-primary-container/70 rounded-t-sm h-[60%] w-full transition-all cursor-pointer relative group/bar"></div>
+<div class="w-1/7 bg-tertiary-fixed-dim/60 hover:bg-tertiary-fixed-dim/80 rounded-t-sm h-[75%] w-full transition-all cursor-pointer relative group/bar shadow-[0_0_10px_rgba(240,191,92,0.3)]"></div>
+<div class="w-1/7 bg-tertiary-fixed-dim/40 hover:bg-tertiary-fixed-dim/60 rounded-t-sm h-[85%] w-full transition-all cursor-pointer relative group/bar border-t-2 border-tertiary-fixed-dim border-dashed"></div>
+<div class="w-1/7 bg-tertiary-fixed-dim/30 hover:bg-tertiary-fixed-dim/50 rounded-t-sm h-[65%] w-full transition-all cursor-pointer relative group/bar border-t-2 border-tertiary-fixed-dim border-dashed"></div>
+</div>
+<!-- Connecting Line Overlay (Stylized) -->
+<svg class="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none" viewBox="0 0 100 100">
+<path class="drop-shadow-sm opacity-60" d="M 5,70 Q 20,50 35,65 T 65,30 T 95,20" fill="none" stroke="#C89B3C" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</div>
+<div class="flex justify-between text-[11px] text-on-surface-variant font-medium">
+<span class="">Mon</span><span class="">Tue</span><span class="">Wed</span><span class="">Thu</span><span class="text-tertiary-container font-bold">Today</span><span class="opacity-50">Sat</span><span class="opacity-50">Sun</span>
+</div>
+</div>
+<!-- Actionable Insights Grid -->
+<div class="grid grid-cols-2 gap-4">
+<!-- Inventory Alert -->
+<div class="glass-panel rounded-2xl p-5 border-l-4 border-l-error/70 flex flex-col justify-between">
+<div>
+<div class="w-8 h-8 rounded-full bg-error-container/50 flex items-center justify-center text-on-error-container mb-3">
+<span class="material-symbols-outlined text-[16px]">inventory_2</span>
+</div>
+<h4 class="text-[14px] font-semibold text-on-surface">Low Stock Alert</h4>
+<p class="text-[12px] text-on-surface-variant mt-1 leading-relaxed">Premium White Leather Dye is below 15% capacity.</p>
+</div>
+<button class="mt-4 w-full py-2 bg-surface-bright border border-outline-variant/40 hover:bg-white rounded-lg text-[12px] font-medium text-primary transition-colors flex items-center justify-center gap-1 shadow-sm">
+                            Order Now <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</button>
+</div>
+<!-- Follow-up Suggestion -->
+<div class="glass-panel rounded-2xl p-5 border-l-4 border-l-tertiary-fixed-dim/80 flex flex-col justify-between">
+<div>
+<div class="w-8 h-8 rounded-full bg-tertiary-fixed-dim/20 flex items-center justify-center text-tertiary-container mb-3">
+<span class="material-symbols-outlined text-[16px]">mark_email_unread</span>
+</div>
+<h4 class="text-[14px] font-semibold text-on-surface">Follow-ups</h4>
+<p class="text-[12px] text-on-surface-variant mt-1 leading-relaxed">5 customers haven't picked up orders ready for &gt;3 days.</p>
+</div>
+<button class="mt-4 w-full py-2 bg-[#25D366]/10 border border-[#25D366]/30 hover:bg-[#25D366]/20 rounded-lg text-[12px] font-medium text-[#1DA851] transition-colors flex items-center justify-center gap-1 shadow-sm">
+<svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"></path></svg>
+                            Send Reminders
+                        </button>
+</div>
+</div>
+<div class="glass-panel rounded-2xl p-6 border-l-4 border-l-[#25D366]/70 flex flex-col gap-4 shadow-sm">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<div class="w-8 h-8 rounded-full bg-[#25D366]/10 flex items-center justify-center text-[#1DA851]">
+<span class="material-symbols-outlined text-[20px]">chat</span>
+</div>
+<h3 class="text-[16px] font-semibold text-primary">WhatsApp Automation</h3>
+</div>
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox" value="">
+<div class="w-9 h-5 bg-surface-container peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-[#25D366]"></div>
+</label>
+</div>
+<div class="space-y-1">
+<p class="text-label-sm font-medium text-on-surface-variant">Message Template</p>
+<div class="bg-white/50 border border-outline-variant/30 rounded-xl p-3 text-[13px] text-on-surface leading-relaxed italic">
+            "Hi <span class="text-primary font-semibold">[Customer]</span>, your <span class="text-primary font-semibold">[Shoe Brand]</span> are ready for pickup at Mr. Boot!"
+        </div>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center">
+<p class="text-label-sm font-medium text-on-surface-variant">Pending Reminders (2)</p>
+<span class="text-[11px] text-[#1DA851] font-bold uppercase tracking-wider">Auto-Sync On</span>
+</div>
+<div class="space-y-2">
+<div class="flex items-center justify-between p-2.5 bg-surface-bright/50 border border-outline-variant/20 rounded-lg">
+<div class="flex flex-col">
+<span class="text-[13px] font-medium text-primary">Mike R. • Yeezy 350</span>
+<span class="text-[11px] text-on-surface-variant">Ready 4h ago</span>
+</div>
+<button class="px-3 py-1 bg-[#25D366] text-white rounded-md text-[11px] font-bold hover:bg-[#1DA851] transition-colors shadow-sm">SEND NOW</button>
+</div>
+<div class="flex items-center justify-between p-2.5 bg-surface-bright/50 border border-outline-variant/20 rounded-lg">
+<div class="flex flex-col">
+<span class="text-[13px] font-medium text-primary">Elena W. • Gucci Loafers</span>
+<span class="text-[11px] text-on-surface-variant">Ready 6h ago</span>
+</div>
+<button class="px-3 py-1 bg-[#25D366] text-white rounded-md text-[11px] font-bold hover:bg-[#1DA851] transition-colors shadow-sm">SEND NOW</button>
+</div>
+</div>
+</div>
+</div></div>
+</div>
+</main>
+<!-- Bottom Navigation (Mobile) -->
+<nav class="fixed bottom-0 left-0 w-full z-50 md:hidden rounded-t-xl bg-white/65 dark:bg-primary/65 backdrop-blur-xl border-t border-white/22 dark:border-white/10 shadow-[0_-8px_32px_rgba(0,0,0,0.08)] flex justify-around items-center h-20 px-4 pb-safe">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 hover:bg-primary-container/20 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">home</span>
+<span class="text-label-sm font-label-sm">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 hover:bg-primary-container/20 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">reorder</span>
+<span class="text-label-sm font-label-sm">Orders</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-primary text-on-primary rounded-xl px-4 py-1 scale-90 transition-transform" href="#">
+<span class="material-symbols-outlined mb-1" style="font-variation-settings: 'FILL' 1;">smart_toy</span>
+<span class="text-label-sm font-label-sm">AI</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-outline-variant px-4 py-1 hover:bg-primary-container/20 rounded-xl transition-colors" href="#">
+<span class="material-symbols-outlined mb-1">more_horiz</span>
+<span class="text-label-sm font-label-sm">More</span>
+</a>
+</nav>
+<script>
+        // Simple subtle animation for the AI chat glow to follow recent messages
+        document.addEventListener('DOMContentLoaded', () => {
+            const glow = document.querySelector('.ai-glow');
+            const chatContainer = document.getElementById('chat-container');
+            
+            if(glow && chatContainer) {
+                // Simulate subtle breathing effect
+                let scale = 1;
+                let growing = true;
+                
+                setInterval(() => {
+                    if(growing) {
+                        scale += 0.02;
+                        if(scale >= 1.1) growing = false;
+                    } else {
+                        scale -= 0.02;
+                        if(scale <= 0.9) growing = true;
+                    }
+                    glow.style.transform = `scale(${scale})`;
+                }, 100);
+            }
+        });
+    </script>
+
+
+</body></html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Mr. Boot - Invoice</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;500;600;700&amp;family=Inter:wght@400&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-surface-variant": "#504442",
+                      "primary-fixed-dim": "#e5beb5",
+                      "secondary-fixed-dim": "#c8c6c4",
+                      "on-secondary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "surface-container-high": "#e8e8e9",
+                      "surface": "#f9f9fa",
+                      "on-tertiary-fixed": "#261900",
+                      "tertiary": "#322200",
+                      "tertiary-fixed-dim": "#f0bf5c",
+                      "surface-container-lowest": "#ffffff",
+                      "background": "#f9f9fa",
+                      "surface-bright": "#f9f9fa",
+                      "on-surface": "#1a1c1d",
+                      "tertiary-container": "#4e3700",
+                      "on-tertiary-container": "#cb9e3f",
+                      "primary": "#361f1a",
+                      "surface-tint": "#755750",
+                      "on-tertiary-fixed-variant": "#5d4200",
+                      "on-tertiary": "#ffffff",
+                      "secondary": "#5e5e5c",
+                      "tertiary-fixed": "#ffdea4",
+                      "on-primary-fixed-variant": "#5c403a",
+                      "surface-container-highest": "#e2e2e3",
+                      "surface-container": "#eeeeef",
+                      "outline-variant": "#d4c3bf",
+                      "inverse-on-surface": "#f0f1f2",
+                      "outline": "#827471",
+                      "on-error-container": "#93000a",
+                      "primary-container": "#4e342e",
+                      "primary-fixed": "#ffdad2",
+                      "on-secondary-container": "#636360",
+                      "on-primary-container": "#c19c94",
+                      "on-error": "#ffffff",
+                      "surface-container-low": "#f3f3f4",
+                      "inverse-primary": "#e5beb5",
+                      "surface-dim": "#d9dadb",
+                      "secondary-fixed": "#e4e2df",
+                      "on-background": "#1a1c1d",
+                      "error": "#ba1a1a",
+                      "secondary-container": "#e1dfdc",
+                      "on-secondary-fixed": "#1b1c1a",
+                      "inverse-surface": "#2f3132",
+                      "surface-variant": "#e2e2e3",
+                      "on-secondary-fixed-variant": "#474745",
+                      "on-primary-fixed": "#2b1611",
+                      "on-primary": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-padding": "32px",
+                      "base": "8px",
+                      "card-gap": "20px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "headline-lg-mobile": [
+                              "Geist"
+                      ],
+                      "headline-lg": [
+                              "Geist"
+                      ],
+                      "display-lg": [
+                              "Geist"
+                      ],
+                      "numeral-xl": [
+                              "Geist"
+                      ],
+                      "label-sm": [
+                              "Geist"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "34px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "numeral-xl": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.03em",
+                                      "fontWeight": "300"
+                              }
+                      ],
+                      "label-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>
+        body {
+            background-color: #FAFAFB;
+            background-image: radial-gradient(circle at 100% 100%, rgba(200,155,60,0.05) 0, rgba(250,250,251,1) 50%);
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.04);
+        }
+        .premium-border {
+            border-bottom: 1px dashed rgba(78, 52, 46, 0.2);
+        }
+        .stamp-paid {
+            color: #2e7d32;
+            border: 2px solid #2e7d32;
+            transform: rotate(-15deg);
+            opacity: 0.8;
+            font-family: 'Geist', sans-serif;
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface antialiased flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+<!-- Invoice Container -->
+<div class="glass-card w-full max-w-2xl rounded-[1.5rem] overflow-hidden relative">
+<!-- Top Accent Line -->
+<div class="h-2 w-full bg-primary-container"></div>
+<div class="p-8 md:p-12">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row justify-between items-start gap-8 mb-8">
+<!-- Logo & Brand -->
+<div class="flex items-center gap-4">
+<div class="w-20 h-20 rounded-full overflow-hidden border border-outline-variant shadow-sm flex-shrink-0 bg-white">
+<img alt="Mr. Boot Shoe Laundry Logo" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBbDBS7ExArBFjU5BopD8JdFTfVg2yatLhaQMycBTU1jNunVFOm0-0cH9zJMWbAB876qPo6BAgjuV0q087041K1WXN3h_WUtQc7GAXArGagPH2PMVabLG6powAH_9-Hu1tSlIvMWRDOtmASQE1EMzLKBqNGdjp529Xbl-vFsmBmwH8Cqqz8wdwClDiKFsYvb39KTDyhCdoFGvyjVTgCTGrvVbxXqnEoMNd3xQbE3uq1YxSx2UFhf0wGG4aNleBUpUBVbDlFiiOlylY">
+</div>
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary-container">Mr. Boot</h1>
+<p class="font-label-sm text-label-sm text-on-tertiary-container tracking-widest uppercase mt-1">Premium Care</p>
+</div>
+</div>
+<!-- Invoice Details -->
+<div class="text-left md:text-right">
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mb-2">RECEIPT</h2>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Order: <span class="font-bold text-primary">#MB-8892</span></p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Date: Oct 26, 2023</p>
+</div>
+</div><div class="mb-10 rounded-xl overflow-hidden bg-surface-container-low border border-white/50 shadow-inner flex justify-center items-center p-4"><img alt="Serviced Shoes Hero" class="max-h-64 object-contain rounded-lg" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBFWxRSQVnF08NxvHnETDivUIEW4TVakTFrjn-hI_OPE89UpH3WirOTpa4HZKOgteSUj_v7rdZv0CDNazmbXMI_9Iy0Al-r03YQ6ajYoiyRC-Y4N911m_p5fhhekMxfpqA0aIIwGdz85BB7eaT6f_cdluO0m9PoHFPsP36l5TPE0M_eB9wLfNJhaJjkjQ5CtoNY6n-XwzUFubTilRSGScuNsL9nXmxbtF0dLXTo2_8bJaMzpmI9i8LkLd7SMNXHMfcA0qCVmtu3jWA"></div>
+<!-- Customer Info -->
+<div class="mb-10 bg-surface-container-low rounded-xl p-6 border border-white/50">
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-2">Billed To</p>
+<p class="font-headline-lg-mobile text-[20px] leading-[28px] font-semibold text-primary">Arthur Pendelton</p>
+<p class="text-on-surface-variant mt-1 text-sm">+1 (555) 012-3456</p>
+</div>
+<!-- Services List -->
+<div class="mb-10">
+<div class="flex justify-between items-center premium-border pb-4 mb-4">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Service Description</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Amount</p>
+</div>
+<!-- Item Row -->
+<div class="flex justify-between items-start premium-border pb-6 mb-6 group"><div class="w-24 h-24 rounded-xl overflow-hidden bg-surface-container flex-shrink-0 shadow-inner mr-6 border border-outline-variant/30"><img alt="Serviced Item" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDajb_IqGdGRQelA3kdgg9FGXIPo0b5iu7DBNuRZ2wAvc6kqCbynTKn0sSDsTWrOGs0hAVr3VUZ3d6VSQNkOxt9oT0SV9vY4GeJUHbeS7vmZu3ZIlhv5BdVJGi6XJyo1dokgeyYQxVBETOmqZHNJZZP8-8yxwl3gHAZCXCWgaconlIkhdSgEfAQAIpzv6xGlvaYvqHG7MmkYr2Z1DAvv3081RqHAp912QlYS9Y8UUADMfhKHYo7BmiRtvMvwzIykIlEaZ-bUGjHuGU"></div>
+<div class="pr-4">
+<p class="font-headline-lg-mobile text-[18px] leading-[26px] font-medium text-primary mb-1">Full Sole Restoration &amp; Polish</p>
+<p class="text-sm text-on-surface-variant">Deep cleaning, leather conditioning, complete sole replacement (Vibram), and high-gloss wax finish.</p>
+</div>
+<p class="font-numeral-xl text-[24px] leading-[32px] text-primary whitespace-nowrap">₹245.00</p>
+</div>
+</div>
+<!-- Totals Section -->
+<div class="flex flex-col md:flex-row justify-between items-end gap-8 mb-12">
+<!-- QR Code & Status -->
+<div class="flex items-center gap-6 w-full md:w-auto relative">
+<div class="w-24 h-24 bg-white p-2 rounded-lg border border-outline-variant shadow-sm flex-shrink-0">
+<img class="w-full h-full object-cover rounded" data-alt="A clean, minimalist QR code graphic centered on a pure white background, generating a sense of modern digital tracking and utility. Sharp geometric black squares against high contrast white. Soft natural lighting suggests a physical print on premium paper." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcMIUvKvt-hvaMF0UZ9bnZJnJ0wV8NBY2LwFz29iUjVgceYCDDUs7NCZWzkPk6NGI2U9wNhAUh4Y8Qb1vd2GNkOudyr8tH-pQrLhYb0MeVyPy7LNmJDri478d0KhNftrKF_DzwFcO3mHK7C8MAnrwv6mpY5ELNoshopC4ux9pPixX-OzHeTU_3UkU4odR5j2Td5N4Xl5ijAFpdD79-EGbPLXeDLw5zEnTashBd6E0if4vy-4X48ghctOoPBNgKuok9yIrtbfr2Xxc">
+</div>
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant mb-1">Track Order Status</p>
+<p class="text-xs text-outline">Scan to view restoration progress</p>
+</div>
+<!-- PAID Stamp -->
+<div class="absolute -top-4 right-0 md:-right-8 stamp-paid font-bold text-2xl px-4 py-1 rounded-sm tracking-widest hidden sm:block pointer-events-none">
+                         PAID
+                     </div>
+</div>
+<!-- Breakdown -->
+<div class="w-full md:w-64 space-y-3">
+<div class="flex justify-between text-on-surface-variant">
+<span class="">Subtotal</span>
+<span class="">₹204.17</span>
+</div>
+
+<div class="h-px w-full bg-outline-variant my-2"></div>
+<div class="flex justify-between items-center">
+<span class="font-headline-lg-mobile text-[20px] font-semibold text-primary">Total</span>
+<span class="font-numeral-xl text-[32px] text-primary">₹245.00</span>
+</div>
+</div>
+</div><div class="mb-12 flex justify-center md:justify-start">
+    <button class="glass-card flex items-center gap-3 px-6 py-3 rounded-full border border-[#25D366]/30 hover:bg-[#25D366]/10 transition-all duration-300 group shadow-sm">
+        <div class="w-8 h-8 bg-[#25D366] rounded-full flex items-center justify-center text-white">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.414 0 .004 5.412.001 12.048c0 2.123.554 4.197 1.607 6.037L0 24l6.105-1.602a11.834 11.834 0 005.943 1.603h.005c6.634 0 12.043-5.412 12.046-12.049a11.804 11.804 0 00-3.489-8.496"></path>
+            </svg>
+        </div>
+        <span class="font-semibold text-primary tracking-wide">Share via WhatsApp</span>
+    </button>
+</div>
+<!-- Footer Message -->
+<div class="text-center mt-16 pt-8 border-t border-outline-variant/30">
+<span class="material-symbols-outlined text-on-tertiary-container mb-3 text-3xl" style="font-variation-settings: 'FILL' 1;">handyman</span>
+<p class="font-body-md text-on-surface-variant italic max-w-md mx-auto">
+                    "True craftsmanship takes time. Thank you for trusting Mr. Boot with your prized footwear. Wear them in good health."
+                </p>
+</div>
+</div>
+</div>
+
+
+
+
+</body></html>

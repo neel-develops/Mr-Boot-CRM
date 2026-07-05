@@ -1,0 +1,320 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Mr. Boot - Settings &amp; Configuration</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary-fixed": "#e4e2df",
+                        "primary": "#361f1a",
+                        "on-surface": "#1a1c1d",
+                        "tertiary-fixed": "#ffdea4",
+                        "surface-container": "#eeeeef",
+                        "surface-dim": "#d9dadb",
+                        "tertiary-container": "#4e3700",
+                        "surface-container-low": "#f3f3f4",
+                        "primary-fixed-dim": "#e5beb5",
+                        "on-primary-fixed-variant": "#5c403a",
+                        "error": "#ba1a1a",
+                        "primary-fixed": "#ffdad2",
+                        "surface-container-high": "#e8e8e9",
+                        "surface-bright": "#f9f9fa",
+                        "on-error-container": "#93000a",
+                        "primary-container": "#4e342e",
+                        "on-secondary-container": "#636360",
+                        "surface": "#f9f9fa",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#f0bf5c",
+                        "surface-variant": "#e2e2e3",
+                        "on-tertiary-fixed-variant": "#5d4200",
+                        "on-primary-fixed": "#2b1611",
+                        "on-background": "#1a1c1d",
+                        "secondary-fixed-dim": "#c8c6c4",
+                        "inverse-on-surface": "#f0f1f2",
+                        "on-secondary-fixed-variant": "#474745",
+                        "on-tertiary-fixed": "#261900",
+                        "on-tertiary-container": "#cb9e3f",
+                        "secondary-container": "#e1dfdc",
+                        "on-primary": "#ffffff",
+                        "outline": "#827471",
+                        "on-surface-variant": "#504442",
+                        "inverse-primary": "#e5beb5",
+                        "secondary": "#5e5e5c",
+                        "surface-tint": "#755750",
+                        "on-primary-container": "#c19c94",
+                        "error-container": "#ffdad6",
+                        "background": "#f9f9fa",
+                        "outline-variant": "#d4c3bf",
+                        "on-secondary-fixed": "#1b1c1a",
+                        "tertiary": "#322200",
+                        "on-error": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "surface-container-highest": "#e2e2e3",
+                        "on-tertiary": "#ffffff",
+                        "inverse-surface": "#2f3132"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "card-gap": "20px",
+                        "container-padding": "32px",
+                        "base": "8px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Geist"],
+                        "label-sm": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "body-md": ["Inter"],
+                        "numeral-xl": ["Geist"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "label-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "numeral-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "300" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #FAFAFB;
+            color: #1a1c1d;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+        }
+        .btn-primary {
+            background-color: #4E342E;
+            color: white;
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+        .material-symbols-outlined {
+          font-variation-settings:
+          'FILL' 0,
+          'wght' 400,
+          'GRAD' 0,
+          'opsz' 24
+        }
+        [data-weight="fill"] .material-symbols-outlined {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="font-body-md antialiased min-h-screen flex">
+<!-- SideNavBar -->
+<aside class="hidden md:flex h-screen w-64 fixed left-0 top-0 flex-col py-8 px-6 bg-surface/65 backdrop-blur-xl border-r border-outline-variant/30 shadow-[0_8px_32px_rgba(0,0,0,0.04)] z-50">
+<div class="mb-12">
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary">Mr. Boot</h1>
+<p class="text-on-surface-variant mt-1">Luxury Shoe Care CRM</p>
+</div>
+<nav class="flex-1 space-y-2">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="font-label-sm text-label-sm">Orders</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span>
+<span class="font-label-sm text-label-sm">Inventory</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-sm text-label-sm">Customers</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-sm text-label-sm">Financials</span>
+</a>
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-primary font-bold border-r-2 border-primary bg-primary/5 translate-x-1 transition-transform duration-250" href="#">
+<span class="material-symbols-outlined" data-icon="settings" data-weight="fill">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-outline-variant/30">
+<button class="w-full btn-primary font-label-sm text-label-sm py-3 rounded-lg flex items-center justify-center space-x-2">
+<span class="material-symbols-outlined" data-icon="add">add</span>
+<span class="">New Service Order</span>
+</button>
+<div class="mt-4 flex items-center space-x-3 px-2">
+<div class="w-10 h-10 rounded-full bg-surface-container overflow-hidden">
+<img alt="Master Artisan Avatar" class="w-full h-full object-cover" data-alt="A portrait of a skilled artisan craftsman in a workshop setting, warm lighting, cinematic, high quality, luxury feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCaTVilRd9D0h8H23DRIWb24JrH4CfYAzICr7i5VFcR9Dant9MancmUCZ4pLWtbL9lDaPfoosGN1CCQIhaCvrvtOJbQYepIi2hosxjXSAL76dy5oXjr5Zyh3meg9Ex_Vyt3K_nGmS44cPh0IMkhHNa0et5LYMWst1zbZWN4woHNRopR78clxikEReC0BxqWm7R_ERlXNLHTJk4u3Ur3UYjHZ9IhLkdLhgaxN2htt7J5ZMeCqXgpqYLo1-92nxkXai7f0uDQJbh9HO4">
+</div>
+<div>
+<p class="font-label-sm text-label-sm font-bold text-on-surface">Master Artisan</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<div class="flex-1 ml-0 md:ml-64 flex flex-col min-h-screen relative">
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-0 md:left-64 h-16 bg-surface/65 backdrop-blur-xl flex justify-between items-center px-gutter w-full z-40 border-b border-outline-variant/30 shadow-[0_4px_12px_rgba(0,0,0,0.02)]">
+<div class="flex-1 max-w-md"><div class="relative w-full"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span><input type="text" placeholder="Search settings..." class="w-full bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-1 focus:ring-primary/20 transition-all"></div></div>
+<div class="flex items-center space-x-4 text-on-surface-variant">
+<button class="hover:opacity-80 transition-opacity hover:-translate-y-0.5 duration-250">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="hover:opacity-80 transition-opacity hover:-translate-y-0.5 duration-250">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-container overflow-hidden md:hidden">
+<img alt="User Profile" class="w-full h-full object-cover" data-alt="A portrait of a skilled artisan craftsman in a workshop setting, warm lighting, cinematic, high quality, luxury feel." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjwfDUYwxcjB8vyYpY5Xvbmkbmp5oV-yzS5vvMBfpNBgHEJD3Are2UscNlsoRz_QPYC4_IPVt4Ve77bzrPV0u81l7TXyMpfpiSfuWAGJmlZqV2jQZEvtnvCZAjuN3L9o8yPbFa-qm9mAVeRe8kwpUkwehAHnc7lwF3K0k1OLo1RxIButZWPKU7GdT71YVtlqcSAVLoG-NPZ5O4Lykn-cmivGuSt-gygL7iMpRgy92qfc3l1mEwrItsrky33t9IVtebr898WK_kJNw">
+</div>
+</div>
+</header>
+<!-- Page Content -->
+<main class="flex-1 pt-24 px-4 md:px-8 pb-12 overflow-y-auto">
+<div class="max-w-6xl mx-auto space-y-8">
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Settings &amp; Configuration</h2>
+<p class="text-on-surface-variant mt-1">Manage your workshop preferences, services, and integrations.</p>
+</div>
+<button class="btn-primary px-6 py-2 rounded-lg font-label-sm text-label-sm self-start md:self-auto">Save Changes</button>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-card-gap">
+<!-- Brand Settings -->
+<section class="glass-card rounded-xl p-container-padding col-span-1 md:col-span-8 flex flex-col">
+<div class="flex items-center space-x-3 mb-6">
+<span class="material-symbols-outlined text-primary" data-icon="storefront">storefront</span>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Brand Identity</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="space-y-4">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-2">Workshop Name</label>
+<input class="w-full bg-surface/50 border border-outline-variant rounded-lg px-4 py-2 focus:outline-none focus:border-tertiary-container focus:ring-1 focus:ring-tertiary-container transition-colors hover:bg-surface-variant/30" type="text" value="Mr. Boot">
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-2">Support Email</label>
+<input class="w-full bg-surface/50 border border-outline-variant rounded-lg px-4 py-2 focus:outline-none focus:border-tertiary-container focus:ring-1 focus:ring-tertiary-container transition-colors hover:bg-surface-variant/30" type="email" value="concierge@mrboot.com">
+</div>
+</div>
+<div class="flex flex-col items-center justify-center border-2 border-dashed border-outline-variant rounded-lg p-6 bg-surface/30">
+<div class="w-24 h-24 rounded-full bg-surface-container flex items-center justify-center mb-4 overflow-hidden border border-outline-variant">
+<span class="material-symbols-outlined text-4xl text-on-surface-variant" data-icon="image">image</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant text-center mb-2">Upload new logo</p>
+<p class="text-xs text-outline text-center">PNG or SVG, max 2MB</p>
+</div>
+</div>
+</section>
+<!-- WhatsApp API -->
+<section class="glass-card rounded-xl p-container-padding col-span-1 md:col-span-4 flex flex-col">
+<div class="flex items-center space-x-3 mb-6">
+<span class="material-symbols-outlined text-[#25D366]" data-icon="chat">chat</span>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">WhatsApp API</h3>
+</div>
+<div class="space-y-4 flex-1">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-2">API Key</label>
+<input class="w-full bg-surface/50 border border-outline-variant rounded-lg px-4 py-2 focus:outline-none focus:border-tertiary-container focus:ring-1 focus:ring-tertiary-container transition-colors" type="password" value="••••••••••••••••">
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface-variant mb-2">Phone Number ID</label>
+<input class="w-full bg-surface/50 border border-outline-variant rounded-lg px-4 py-2 focus:outline-none focus:border-tertiary-container focus:ring-1 focus:ring-tertiary-container transition-colors" type="text" value="1029384756">
+</div>
+<div class="flex items-center justify-between pt-4 mt-auto border-t border-outline-variant/30">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Status</span>
+<span class="px-3 py-1 rounded-full bg-green-100 text-green-800 text-xs font-medium flex items-center space-x-1">
+<span class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+<span class="">Connected</span>
+</span>
+</div>
+</div>
+</section>
+<!-- Service Management -->
+<section class="glass-card rounded-xl p-container-padding col-span-1 md:col-span-12">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+<div class="flex items-center space-x-3">
+<span class="material-symbols-outlined text-primary" data-icon="design_services">design_services</span>
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">Service Catalog</h3>
+</div>
+<button class="bg-surface border border-outline-variant px-4 py-2 rounded-lg font-label-sm text-label-sm flex items-center space-x-2 hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="add">add</span>
+<span class="">Add Service</span>
+</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-outline-variant/50 text-on-surface-variant font-label-sm text-label-sm">
+<th class="py-3 px-4 font-medium">Service Name</th>
+<th class="py-3 px-4 font-medium">Category</th>
+<th class="py-3 px-4 font-medium">Base Price</th>
+<th class="py-3 px-4 font-medium">Est. Time</th>
+<th class="py-3 px-4 font-medium text-right">Actions</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-outline-variant/20 hover:bg-surface-variant/30 transition-colors">
+<td class="py-4 px-4 text-on-surface">Full Resole (Leather)</td>
+<td class="py-4 px-4"><span class="px-2 py-1 rounded-md bg-primary-container/10 text-primary-container text-xs">Repair</span></td>
+<td class="py-4 px-4 font-medium">$125.00</td>
+<td class="py-4 px-4 text-on-surface-variant">7-10 Days</td>
+<td class="py-4 px-4 text-right">
+<button class="text-outline hover:text-primary transition-colors p-1"><span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span></button>
+</td>
+</tr>
+<tr class="border-b border-outline-variant/20 hover:bg-surface-variant/30 transition-colors">
+<td class="py-4 px-4 text-on-surface">Premium Shine &amp; Polish</td>
+<td class="py-4 px-4"><span class="px-2 py-1 rounded-md bg-tertiary-container/10 text-tertiary-container text-xs">Care</span></td>
+<td class="py-4 px-4 font-medium">$45.00</td>
+<td class="py-4 px-4 text-on-surface-variant">2-3 Days</td>
+<td class="py-4 px-4 text-right">
+<button class="text-outline hover:text-primary transition-colors p-1"><span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span></button>
+</td>
+</tr>
+<tr class="hover:bg-surface-variant/30 transition-colors">
+<td class="py-4 px-4 text-on-surface">Heel Block Replacement</td>
+<td class="py-4 px-4"><span class="px-2 py-1 rounded-md bg-primary-container/10 text-primary-container text-xs">Repair</span></td>
+<td class="py-4 px-4 font-medium">$65.00</td>
+<td class="py-4 px-4 text-on-surface-variant">5 Days</td>
+<td class="py-4 px-4 text-right">
+<button class="text-outline hover:text-primary transition-colors p-1"><span class="material-symbols-outlined text-[20px]" data-icon="edit">edit</span></button>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="mt-4 text-center">
+<a class="text-primary text-sm font-medium hover:underline" href="#">View all 36 services</a>
+</div>
+</div>
+</section>
+</div>
+</div>
+</main>
+</div>
+
+
+</body></html>

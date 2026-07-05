@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Mr. Boot - Bespoke Commission Invoice</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "error-container": "#ffdad6",
+                        "on-primary": "#ffffff",
+                        "on-tertiary-container": "#cb9e3f",
+                        "surface": "#f9f9fa",
+                        "surface-dim": "#d9dadb",
+                        "secondary-container": "#e1dfdc",
+                        "secondary-fixed": "#e4e2df",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary-fixed": "#ffdad2",
+                        "inverse-surface": "#2f3132",
+                        "secondary-fixed-dim": "#c8c6c4",
+                        "secondary": "#5e5e5c",
+                        "on-surface": "#1a1c1d",
+                        "on-secondary-container": "#636360",
+                        "on-tertiary-fixed": "#261900",
+                        "on-secondary": "#ffffff",
+                        "tertiary-fixed-dim": "#f0bf5c",
+                        "on-error-container": "#93000a",
+                        "tertiary-container": "#4e3700",
+                        "on-primary-container": "#c19c94",
+                        "surface-container-high": "#e8e8e9",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#5d4200",
+                        "on-secondary-fixed-variant": "#474745",
+                        "tertiary": "#322200",
+                        "surface-tint": "#755750",
+                        "background": "#f9f9fa",
+                        "surface-container-highest": "#e2e2e3",
+                        "primary": "#361f1a",
+                        "on-background": "#1a1c1d",
+                        "outline-variant": "#d4c3bf",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#ffdea4",
+                        "surface-variant": "#e2e2e3",
+                        "on-primary-fixed": "#2b1611",
+                        "on-secondary-fixed": "#1b1c1a",
+                        "primary-container": "#4e342e",
+                        "on-tertiary": "#ffffff",
+                        "surface-container": "#eeeeef",
+                        "on-primary-fixed-variant": "#5c403a",
+                        "inverse-primary": "#e5beb5",
+                        "primary-fixed-dim": "#e5beb5",
+                        "on-error": "#ffffff",
+                        "on-surface-variant": "#504442",
+                        "surface-bright": "#f9f9fa",
+                        "outline": "#827471",
+                        "surface-container-low": "#f3f3f4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "32px",
+                        "card-gap": "20px",
+                        "base": "8px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "numeral-xl": ["Geist"],
+                        "label-sm": ["Geist"],
+                        "headline-lg-mobile": ["Geist"],
+                        "display-lg": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "numeral-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "300" }],
+                        "label-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md antialiased selection:bg-primary-container selection:text-on-primary">
+<div class="max-w-[1000px] mx-auto py-12 px-4 sm:px-container-padding">
+<!-- Invoice Container -->
+<main class="glass-card rounded-2xl overflow-hidden shadow-[0_12px_48px_rgba(0,0,0,0.08)] relative z-10">
+<!-- Header Section -->
+<header class="p-8 md:p-12 border-b border-white/20 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 bg-white/40">
+<div class="flex items-center gap-4">
+<img alt="Mr. Boot Logo" class="w-16 h-16 object-contain" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBicn_zZjX02ySHAhDzH8jMpBe8QoOAP5-F5qdp3tI0r501broGwlcmaPQb35qflt2T8H-vfEPOcdyCwnJ4mfxlkdJ75IWBHUKfkgUno-qHJ2XyXqbNAoLDqs8s0nIjfIxugKECgwqWjJ6zP30fBwE0CVMQDjVBwRrClEb2wHFrQ9LPvEIgOU7XgH8yObE9CSL6lLzn50MVofQnXrRoOv4XyLz7s_ZfA_nNhIar8BCWCB9OXRBkMdcSfl07ydEyc8mrTfbpyW4AKsc"/>
+<div>
+<h1 class="font-headline-lg-mobile md:font-headline-lg text-primary tracking-tight">Bespoke Commission</h1>
+<p class="text-secondary mt-1">Official Invoice &amp; Authenticity Certificate</p>
+</div>
+</div>
+<div class="text-left md:text-right">
+<p class="font-label-sm text-secondary uppercase tracking-wider mb-1">Invoice Number</p>
+<p class="font-headline-lg-mobile md:font-headline-lg text-on-surface">#MB-2024-089</p>
+<p class="text-sm text-secondary mt-1">Date: October 24, 2024</p>
+</div>
+</header>
+<!-- Hero Image Section -->
+<section class="relative w-full h-[400px] bg-surface-container overflow-hidden">
+<div class="absolute inset-0 bg-cover bg-center w-full h-full" data-alt="A high-fidelity, beautifully lit studio photograph of a pair of bespoke, handmade men's oxford shoes in deep calfskin leather. The shoes are placed elegantly on a polished marble surface, surrounded by subtle artisan tools like a leather awl and thread. Soft, premium natural lighting highlights the rich texture of the leather. The overall aesthetic is luxurious, high-end, and perfectly aligned with a light-mode, minimalist design system." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAcJQg_kZTgKgQPzn9WPtB5RN89q_GKy7_Rkec1WRoppgzdGakPKFjm3hZjOXyhNWDKHLrD9KEPNAqctdQ7XiR3UF4bQPGfOaFH7HuJLF_qd9ymB32VlChheGGjnT2O0rBuOsjpltmdcecyQY4gArfSFipkGgZK44Ir9jrDtfOpHusUxhYu1i31KjRX9xaLsdLLNjIWV2kecrTRFtHSV-si5ySIHWEncjNbVFlE0afkVf8Wp8c4Gl8gUeqYPGh2Ln5WGU_iYWUAD8w')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+<div class="absolute bottom-8 left-8 right-8 flex justify-between items-end text-white">
+<div>
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 text-sm font-medium mb-3">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+                            Authentic Creation
+                        </span>
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-white drop-shadow-md">The Heritage Oxford</h2>
+</div>
+</div>
+</section>
+<div class="p-8 md:p-12">
+<!-- Info Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
+<!-- Client Details -->
+<div>
+<h3 class="font-label-sm text-secondary uppercase tracking-wider mb-4 border-b border-surface-dim pb-2">Commissioned For</h3>
+<p class="font-medium text-on-surface text-lg mb-1">Mr. Julian Vance</p>
+<p class="text-secondary text-sm">Client ID: C-8842</p>
+</div>
+<!-- Artisan Details -->
+<div>
+<h3 class="font-label-sm text-secondary uppercase tracking-wider mb-4 border-b border-surface-dim pb-2">Master Artisan</h3>
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center border border-surface-dim overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A sophisticated black and white portrait of a master shoemaker in a clean, brightly lit workshop. The artisan is wearing a premium leather apron over a crisp white shirt, looking directly at the camera with a calm, professional demeanor. The background features neatly arranged tools and lasts, slightly out of focus. The mood is expert, reliable, and premium." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCM2T_gXdRb0FjsVKiO2ravVcMyMwYRM67F2dcRZyITCtQZCYLAsfhODwNftFoBORj9kSAQD6FdQNzJXli0j6B-6ZSgLG5xwuzUbHRmUdzkzx9gh48KgUXTsTgOR53pmfOTgr0BR5Dea_yrZ08JV1aRgYEWeFaq1JwMJLMrj2-Z2JoSnKrIDwgaklvNk34gHtoM2gFitsurgYumxlHaRRdfteKEO-Mvf8jcAWjQV7CMrsAe-ndJoHLKmnyVL2m1Bt9H-_3IGgw5DZo"/>
+</div>
+<div>
+<p class="font-medium text-on-surface">Arthur Pendelton</p>
+<p class="text-secondary text-sm">Lead Cordwainer</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Specifications Bento -->
+<div class="bg-white/50 rounded-xl border border-white/30 p-6 mb-12 shadow-sm">
+<h3 class="font-label-sm text-secondary uppercase tracking-wider mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+                        Commission Specifications
+                    </h3>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+<div>
+<p class="text-sm text-secondary mb-1">Shoe Type</p>
+<p class="font-medium text-on-surface">Formal Oxford</p>
+</div>
+<div>
+<p class="text-sm text-secondary mb-1">Size &amp; Fit</p>
+<p class="font-medium text-on-surface">UK 10 / Bespoke Last</p>
+</div>
+<div>
+<p class="text-sm text-secondary mb-1">Primary Material</p>
+<p class="font-medium text-on-surface">Premium Calfskin</p>
+</div>
+<div>
+<p class="text-sm text-secondary mb-1">Finish</p>
+<p class="font-medium text-on-surface">Hand-Burnished Patina</p>
+</div>
+</div>
+</div>
+<!-- Billing Table -->
+<div class="mb-12">
+<h3 class="font-label-sm text-secondary uppercase tracking-wider mb-4 border-b border-surface-dim pb-2">Financial Breakdown</h3>
+<div class="space-y-4 mt-6">
+<div class="flex justify-between items-center py-3 border-b border-white/20 border-dashed">
+<div>
+<p class="font-medium text-on-surface">Bespoke Construction Base</p>
+<p class="text-sm text-secondary mt-1">Material sourcing, last carving, and structural build.</p>
+</div>
+<p class="font-medium text-on-surface">₹ 45,000</p>
+</div>
+<div class="flex justify-between items-center py-3 border-b border-white/20 border-dashed">
+<div>
+<p class="font-medium text-on-surface">Artisan Workshop Fee</p>
+<p class="text-sm text-secondary mt-1">Hand-stitching, finishing, and polishing.</p>
+</div>
+<p class="font-medium text-on-surface">₹ 15,000</p>
+</div>
+</div>
+<!-- Totals -->
+<div class="mt-8 flex flex-col items-end gap-3 w-full max-w-sm ml-auto">
+<div class="flex justify-between w-full text-secondary">
+<span>Subtotal</span>
+<span>₹ 60,000</span>
+</div>
+<div class="flex justify-between w-full text-secondary">
+<span>GST (18%)</span>
+<span>₹ 10,800</span>
+</div>
+<div class="h-px w-full bg-surface-dim my-2"></div>
+<div class="flex justify-between w-full items-end mt-2">
+<span class="font-medium text-on-surface pb-2">Total Payable</span>
+<span class="font-numeral-xl text-primary font-medium tracking-tight">₹ 70,800</span>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="mt-16 pt-8 border-t border-surface-dim flex flex-col md:flex-row justify-between items-center gap-4 text-center md:text-left">
+<p class="text-secondary italic text-sm">Thank you for choosing Mr. Boot for your bespoke commission.</p>
+<div class="flex items-center gap-2 text-sm font-medium text-on-surface bg-surface-container-low px-4 py-2 rounded-full border border-surface-dim">
+<span class="material-symbols-outlined text-[18px]">call</span>
+                        +91 98765 43210
+                    </div>
+</div>
+</div>
+</main>
+<!-- Subtle background decoration -->
+<div class="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+<div class="absolute top-[-10%] right-[-5%] w-[500px] h-[500px] bg-primary-fixed/30 rounded-full blur-[100px] mix-blend-multiply opacity-50"></div>
+<div class="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-tertiary-fixed-dim/20 rounded-full blur-[120px] mix-blend-multiply opacity-50"></div>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>New Service Order - Mr. Boot</title>
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#5e5e5c",
+                        "on-primary-container": "#c19c94",
+                        "on-primary": "#ffffff",
+                        "primary-fixed-dim": "#e5beb5",
+                        "primary-fixed": "#ffdad2",
+                        "surface-container-low": "#f3f3f4",
+                        "outline-variant": "#d4c3bf",
+                        "on-tertiary-container": "#cb9e3f",
+                        "tertiary-fixed": "#ffdea4",
+                        "surface": "#f9f9fa",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "outline": "#827471",
+                        "on-primary-fixed": "#2b1611",
+                        "inverse-surface": "#2f3132",
+                        "tertiary": "#322200",
+                        "on-surface-variant": "#504442",
+                        "on-surface": "#1a1c1d",
+                        "on-secondary-container": "#636360",
+                        "secondary-container": "#e1dfdc",
+                        "surface-dim": "#d9dadb",
+                        "surface-container-lowest": "#ffffff",
+                        "on-background": "#1a1c1d",
+                        "primary-container": "#4e342e",
+                        "on-tertiary-fixed": "#261900",
+                        "tertiary-container": "#4e3700",
+                        "surface-variant": "#e2e2e3",
+                        "surface-container-highest": "#e2e2e3",
+                        "surface-bright": "#f9f9fa",
+                        "surface-tint": "#755750",
+                        "on-secondary-fixed-variant": "#474745",
+                        "tertiary-fixed-dim": "#f0bf5c",
+                        "on-secondary-fixed": "#1b1c1a",
+                        "on-primary-fixed-variant": "#5c403a",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f0f1f2",
+                        "primary": "#361f1a",
+                        "on-error": "#ffffff",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed-variant": "#5d4200",
+                        "on-secondary": "#ffffff",
+                        "secondary-fixed-dim": "#c8c6c4",
+                        "surface-container": "#eeeeef",
+                        "secondary-fixed": "#e4e2df",
+                        "surface-container-high": "#e8e8e9",
+                        "background": "#f9f9fa",
+                        "inverse-primary": "#e5beb5"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "container-padding": "32px",
+                        "base": "8px",
+                        "gutter": "24px",
+                        "card-gap": "20px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Geist"],
+                        "body-md": ["Inter"],
+                        "headline-lg-mobile": ["Geist"],
+                        "headline-lg": ["Geist"],
+                        "numeral-xl": ["Geist"],
+                        "display-lg": ["Geist"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["13px", { "lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "500" }],
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-lg-mobile": ["28px", { "lineHeight": "34px", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "numeral-xl": ["36px", { "lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "300" }],
+                        "display-lg": ["48px", { "lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body { background-color: #FAFAFB; }
+        .glass-card {
+            background-color: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.04);
+        }
+        .glass-card-hover:hover {
+            box-shadow: 0 12px 48px rgba(0,0,0,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.65) 100%);
+        }
+        .btn-primary {
+            background-color: #4E342E;
+            color: #ffffff;
+            transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+        }
+        .input-glass {
+            background-color: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(130, 116, 113, 0.2);
+            transition: all 0.2s ease;
+        }
+        .input-glass:focus {
+            border-color: #C89B3C;
+            outline: none;
+            box-shadow: 0 0 0 1px #C89B3C;
+            background-color: rgba(255, 255, 255, 0.8);
+        }
+        /* Custom scrollbar for a cleaner look */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d9dadb; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #c8c6c4; }
+    </style>
+</head>
+<body class="font-body-md text-on-surface antialiased overflow-hidden flex"><aside class="w-64 h-screen bg-surface-container-lowest border-r border-outline-variant/30 flex flex-col sticky top-0">
+    <div class="p-6 mb-4">
+        <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCn7lW1vtQ0lZyfs5lXTaByxV89HdnteWqn32a8d3s-HaptrgDl_YBkkfJQL2pQMkLaxg-_LYJJyqPTZEvFhqt8zFxvFcr-9ijYS2t-9_bptwCa9AEFh6CLCFtKo2RLDNDaSi1AOuHJ5wWVx3oofr8KPKOVKC4jMSCXFwr29Ow55QFlKEq0wMWUqkkq6plvRdfrzUAYvF90N2yqWSLY-YkGA-OlXECjxuB7cfNrQkWrqrMBki4ezsWl4bosEXFEMlWSyFdYT3MFUs8" alt="Mr. Boot Logo" class="h-12 w-auto object-contain">
+    </div>
+    <nav class="flex-1 px-4 space-y-2">
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-primary-fixed/10 transition-colors">
+            <span class="material-symbols-outlined">dashboard</span>
+            <span class="font-medium">Dashboard</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-primary-fixed/20 text-primary font-semibold">
+            <span class="material-symbols-outlined">receipt_long</span>
+            <span class="font-medium">Orders</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-primary-fixed/10 transition-colors">
+            <span class="material-symbols-outlined">group</span>
+            <span class="font-medium">Customers</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-primary-fixed/10 transition-colors">
+            <span class="material-symbols-outlined">inventory_2</span>
+            <span class="font-medium">Inventory</span>
+        </a>
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-primary-fixed/10 transition-colors">
+            <span class="material-symbols-outlined">analytics</span>
+            <span class="font-medium">Reports</span>
+        </a>
+    </nav>
+    <div class="p-4 border-t border-outline-variant/30">
+        <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-on-surface-variant hover:bg-primary-fixed/10 transition-colors">
+            <span class="material-symbols-outlined">settings</span>
+            <span class="font-medium">Settings</span>
+        </a>
+    </div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 h-screen overflow-y-auto bg-background flex flex-col items-center py-12 px-4 sm:px-gutter relative">
+<!-- Header -->
+<header class="w-full max-w-6xl flex justify-between items-center mb-8">
+<div class="flex items-center gap-4">
+<button aria-label="Go back" class="w-10 h-10 rounded-full glass-card flex items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<div>
+<h1 class="font-headline-lg text-headline-lg text-primary">New Service Order</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Drafting intake for a new client item.</p>
+</div>
+</div>
+
+</header>
+<!-- Multi-section Form Grid -->
+<div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-12 gap-8 pb-20">
+<!-- Left Column: Form Sections -->
+<div class="lg:col-span-8 flex flex-col gap-card-gap">
+<!-- 1. Customer Selection -->
+<section class="glass-card rounded-xl p-8 glass-card-hover transition-all duration-300">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary-container p-2 bg-primary-fixed/20 rounded-lg">person_search</span>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Customer Profile</h2>
+</div>
+<div class="relative mb-4">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full input-glass rounded-full py-3 pl-12 pr-4 font-body-md text-body-md placeholder:text-on-surface-variant/60" placeholder="Search existing customers (e.g., Aisha Patel) or phone number..." type="text">
+</div>
+<div class="flex items-center justify-between pt-4 border-t border-outline-variant/30">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Customer not found?</span>
+<button class="font-label-sm text-label-sm text-tertiary-container hover:text-primary-container font-medium flex items-center gap-1">
+<span class="material-symbols-outlined" style="font-size: 18px;">add</span> Add New Customer
+                        </button>
+</div>
+</section>
+<!-- 2. Item Details -->
+<section class="glass-card rounded-xl p-8 glass-card-hover transition-all duration-300">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary-container p-2 bg-primary-fixed/20 rounded-lg">steps</span>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Item #1</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-2">Item Category</label>
+<select class="w-full input-glass rounded-lg py-2.5 px-4 font-body-md text-body-md text-on-surface-variant appearance-none">
+<option disabled="" selected="" value="">Select Category</option>
+<option>Sneaker</option>
+<option>Sport Shoe</option>
+<option>Formal Shoe</option>
+<option>Boots</option>
+<option>Heels</option>
+<option>Sandals</option>
+<option>Loafers</option>
+<option>Slippers</option>
+<option>Bags</option>
+<option>Handbag</option>
+<option>Backpack</option>
+<option>Jacket</option>
+<option>Leather Jacket</option>
+<option>Suede Shoes</option>
+<option>Canvas Shoes</option>
+<option>Running Shoes</option>
+<option>Treking Shoes</option>
+<option>School Shoes</option>
+<option>Safety Shoes</option>
+<option>Other</option>
+</select>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-2">Brand</label>
+<input class="w-full input-glass rounded-lg py-2.5 px-4 font-body-md text-body-md" placeholder="e.g., Nike, John Lobb" type="text">
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-2">Model / Style</label>
+<input class="w-full input-glass rounded-lg py-2.5 px-4 font-body-md text-body-md" placeholder="e.g., Air Force 1, Oxford Brogue" type="text">
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-2">Description</label>
+<textarea class="w-full input-glass rounded-lg py-2.5 px-4 font-body-md text-body-md h-40" placeholder="e.g., Scuff on left heel, needs deep cleaning... (max 300 characters)" maxlength="300"></textarea>
+<div class="flex justify-end mt-1">
+<span class="text-label-sm text-on-surface-variant/60">0/300</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 2.5 Services Checklist -->
+<section class="glass-card rounded-xl p-8 glass-card-hover transition-all duration-300"><div class="flex items-center gap-3 mb-6"><span class="material-symbols-outlined text-primary-container p-2 bg-primary-fixed/20 rounded-lg">build</span><h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Select Services</h2></div><div class="space-y-4"><div class="relative group"><button class="w-full input-glass rounded-lg py-3 px-4 flex justify-between items-center text-on-surface-variant font-body-md"><span class="flex items-center gap-2"><span class="material-symbols-outlined text-sm">checklist</span> Choose services for this item...</span><span class="material-symbols-outlined">expand_more</span></button><div class="mt-2 grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 p-4 bg-surface-container-low rounded-xl border border-outline-variant/30"><div class="flex items-center gap-2"><input class="rounded text-primary-container border-outline-variant" id="srv_laundry" type="checkbox"><label class="text-sm" for="srv_laundry">Standard Laundry</label></div><div class="flex items-center gap-2"><input class="rounded text-primary-container border-outline-variant" id="srv_deepclean" type="checkbox"><label class="text-sm" for="srv_deepclean">Premium Deep Clean</label></div><div class="flex items-center gap-2"><input class="rounded text-primary-container border-outline-variant" id="srv_polish" type="checkbox"><label class="text-sm" for="srv_polish">Shoe Polish</label></div><div class="flex items-center gap-2"><input class="rounded text-primary-container border-outline-variant" id="srv_waterproof" type="checkbox"><label class="text-sm" for="srv_waterproof">Waterproofing</label></div><div class="flex items-center gap-2"><input class="rounded text-primary-container border-outline-variant" id="srv_stain" type="checkbox"><label class="text-sm" for="srv_stain">Stain Removal</label></div><div class="flex items-center gap-2"><input class="rounded text-primary-container border-outline-variant" id="srv_odor" type="checkbox"><label class="text-sm" for="srv_odor">Odor Treatment</label></div><div class="flex items-center gap-2"><input class="rounded text-primary-container border-outline-variant" id="srv_sole_p" type="checkbox"><label class="text-sm" for="srv_sole_p">Sole Pasting</label></div><div class="flex items-center gap-2"><input class="rounded text-primary-container border-outline-variant" id="srv_sole_c" type="checkbox"><label class="text-sm" for="srv_sole_c">Sole Change</label></div><div class="flex items-center gap-2"><input class="rounded text-primary-container border-outline-variant" id="srv_heel_c" type="checkbox"><label class="text-sm" for="srv_heel_c">Heel Change</label></div><div class="flex items-center gap-2"><input class="rounded text-primary-container border-outline-variant" id="srv_heel_r" type="checkbox"><label class="text-sm" for="srv_heel_r">Heel Repair</label></div><div class="flex items-center gap-2"><input class="rounded text-primary-container border-outline-variant" id="srv_other" type="checkbox"><label class="text-sm" for="srv_other">Other</label></div><input class="col-span-full mt-2 input-glass rounded-md py-1 px-3 text-sm" placeholder="Specify other..." type="text"></div></div></div></section>
+<!-- 3. Photo Upload -->
+<section class="glass-card rounded-xl p-8 glass-card-hover transition-all duration-300">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary-container p-2 bg-primary-fixed/20 rounded-lg">photo_camera</span>
+<h2 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Intake Photos</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div>
+<h3 class="font-label-sm text-label-sm text-on-surface mb-3">Main Photo (For Bill)</h3>
+<div class="border-2 border-dashed border-outline-variant/50 rounded-xl p-6 flex flex-col items-center justify-center text-center bg-surface-container-lowest/30 hover:bg-surface-container-lowest/60 transition-colors cursor-pointer group h-40">
+<span class="material-symbols-outlined text-primary-container mb-2" style="font-size: 28px;">add_a_photo</span>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Click to upload main photo</p>
+</div>
+</div>
+<div>
+<h3 class="font-label-sm text-label-sm text-on-surface mb-3">Additional Photos</h3>
+<div class="border-2 border-dashed border-outline-variant/50 rounded-xl p-6 flex flex-col items-center justify-center text-center bg-surface-container-lowest/30 hover:bg-surface-container-lowest/60 transition-colors cursor-pointer group h-40">
+<span class="material-symbols-outlined text-primary-container mb-2" style="font-size: 28px;">collections</span>
+<p class="font-body-md text-body-md text-on-surface-variant text-sm">Upload more 'Before' photos</p>
+</div>
+</div>
+</div>
+</section><button class="w-full py-4 border-2 border-dashed border-primary-container/30 rounded-xl text-primary-container font-semibold flex items-center justify-center gap-2 hover:bg-primary-fixed/10 transition-colors"><span class="material-symbols-outlined">add_circle</span> + Add New Shoe / Item</button>
+</div>
+<!-- Right Column: Summary & Checkout (Sticky) -->
+<div class="lg:col-span-4 relative">
+<div class="sticky top-8 flex flex-col gap-card-gap">
+<!-- Service Selection Summary Card -->
+<section class="glass-card rounded-xl p-6">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-primary mb-6 border-b border-outline-variant/30 pb-4">Order Summary</h3>
+<!-- Dates -->
+<div class="space-y-4 mb-6 pb-6 border-b border-outline-variant/30">
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-2">Order Date</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-size: 18px;">calendar_today</span>
+<input class="w-full input-glass rounded-lg py-2.5 pl-10 pr-4 font-body-md text-body-md text-on-surface" type="date">
+</div>
+</div>
+<div>
+<label class="block font-label-sm text-label-sm text-on-surface mb-2">Expected Due Date</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant" style="font-size: 18px;">event</span>
+<input class="w-full input-glass rounded-lg py-2.5 pl-10 pr-4 font-body-md text-body-md text-on-surface" type="date">
+</div>
+</div>
+</div>
+<!-- Priority Selection -->
+<!-- Billing Section -->
+<div class="pt-4 border-t border-outline-variant/30">
+<h4 class="font-label-sm text-label-sm text-on-surface mb-3">Payment Mode</h4>
+<div class="grid grid-cols-3 gap-2 mb-4">
+<label class="border border-primary-container bg-primary-fixed/10 rounded-lg py-2 text-center cursor-pointer">
+<input checked="" class="sr-only" name="payment_mode" type="radio">
+<span class="font-label-sm text-label-sm text-primary-container font-semibold">Cash</span>
+</label>
+<label class="border border-outline-variant/50 bg-surface/50 rounded-lg py-2 text-center cursor-pointer hover:bg-surface transition-colors">
+<input class="sr-only" name="payment_mode" type="radio">
+<span class="font-label-sm text-label-sm text-on-surface-variant">UPI</span>
+</label>
+<label class="border border-outline-variant/50 bg-surface/50 rounded-lg py-2 text-center cursor-pointer hover:bg-surface transition-colors">
+<input class="sr-only" name="payment_mode" type="radio">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Card</span>
+</label>
+</div>
+<div class="flex justify-between items-center mb-2"><span class="font-label-sm text-label-sm text-on-surface">Subtotal (Manual)</span><div class="relative w-24"><span class="absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">₹</span><input class="w-full input-glass rounded-md py-1 pl-6 pr-2 font-body-md text-sm text-right" placeholder="0" type="number" value="0"></div></div>
+<div class="flex justify-between items-center mb-4">
+<span class="font-label-sm text-label-sm text-on-surface">Advance Paid</span>
+<div class="relative w-24">
+<span class="absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">₹</span>
+<input class="w-full input-glass rounded-md py-1 pl-6 pr-2 font-body-md text-sm text-right" placeholder="0" type="number">
+</div>
+</div>
+<div class="flex justify-between items-end mb-6 pt-4 border-t border-outline-variant/30">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Balance Due</span>
+<span class="font-numeral-xl text-numeral-xl text-primary font-medium">₹ 0</span>
+</div>
+<button class="w-full btn-primary rounded-xl py-4 font-label-sm text-label-sm font-semibold flex justify-center items-center gap-2 shadow-lg shadow-primary-container/20">
+<span class="material-symbols-outlined">save</span>
+                                Save Order
+                            </button>
+</div>
+</section>
+</div>
+</div>
+</div>
+</main>
+
+
+
+
+</body></html>

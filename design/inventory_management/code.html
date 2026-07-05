@@ -1,0 +1,450 @@
+<!DOCTYPE html><html class="dark" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Mr. Boot - Inventory</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;500;600;700&amp;family=Inter:wght@400&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed": "#e4e2df",
+                      "primary": "#361f1a",
+                      "on-surface": "#1a1c1d",
+                      "tertiary-fixed": "#ffdea4",
+                      "surface-container": "#eeeeef",
+                      "surface-dim": "#d9dadb",
+                      "tertiary-container": "#4e3700",
+                      "surface-container-low": "#f3f3f4",
+                      "primary-fixed-dim": "#e5beb5",
+                      "on-primary-fixed-variant": "#5c403a",
+                      "error": "#ba1a1a",
+                      "primary-fixed": "#ffdad2",
+                      "surface-container-high": "#e8e8e9",
+                      "surface-bright": "#f9f9fa",
+                      "on-error-container": "#93000a",
+                      "primary-container": "#4e342e",
+                      "on-secondary-container": "#636360",
+                      "surface": "#f9f9fa",
+                      "on-secondary": "#ffffff",
+                      "tertiary-fixed-dim": "#f0bf5c",
+                      "surface-variant": "#e2e2e3",
+                      "on-tertiary-fixed-variant": "#5d4200",
+                      "on-primary-fixed": "#2b1611",
+                      "on-background": "#1a1c1d",
+                      "secondary-fixed-dim": "#c8c6c4",
+                      "inverse-on-surface": "#f0f1f2",
+                      "on-secondary-fixed-variant": "#474745",
+                      "on-tertiary-fixed": "#261900",
+                      "on-tertiary-container": "#cb9e3f",
+                      "secondary-container": "#e1dfdc",
+                      "on-primary": "#ffffff",
+                      "outline": "#827471",
+                      "on-surface-variant": "#504442",
+                      "inverse-primary": "#e5beb5",
+                      "secondary": "#5e5e5c",
+                      "surface-tint": "#755750",
+                      "on-primary-container": "#c19c94",
+                      "error-container": "#ffdad6",
+                      "background": "#f9f9fa",
+                      "outline-variant": "#d4c3bf",
+                      "on-secondary-fixed": "#1b1c1a",
+                      "tertiary": "#322200",
+                      "on-error": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-highest": "#e2e2e3",
+                      "on-tertiary": "#ffffff",
+                      "inverse-surface": "#2f3132"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "card-gap": "20px",
+                      "container-padding": "32px",
+                      "base": "8px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Geist"
+                      ],
+                      "label-sm": [
+                              "Geist"
+                      ],
+                      "display-lg": [
+                              "Geist"
+                      ],
+                      "headline-lg-mobile": [
+                              "Geist"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "numeral-xl": [
+                              "Geist"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "34px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "numeral-xl": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.03em",
+                                      "fontWeight": "300"
+                              }
+                      ]
+              }
+            }
+          }
+        }
+      </script>
+<style>
+        body {
+            background-color: #FAFAFB;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.04);
+        }
+        .glass-card:hover {
+            box-shadow: 0 12px 48px rgba(0,0,0,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.65) 100%);
+        }
+        .glass-input {
+            background: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        .glass-input:focus {
+            border-color: #C89B3C;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(200, 155, 60, 0.2);
+        }
+        .text-truncate {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Hide scrollbar for Chrome, Safari and Opera */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        /* Hide scrollbar for IE, Edge and Firefox */
+        .no-scrollbar {
+            -ms-overflow-style: none;  /* IE and Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</head>
+<body class="font-body-md text-on-surface bg-background antialiased flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-64 fixed left-0 top-0 bg-surface/65 backdrop-blur-xl dark:bg-surface-dim/65 border-r border-white/22 shadow-[0_8px_32px_rgba(0,0,0,0.04)] py-8 px-6 z-50">
+<div class="mb-8"><div class="flex items-center space-x-3 mb-2"><img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCn7lW1vtQ0lZyfs5lXTaByxV89HdnteWqn32a8d3s-HaptrgDl_YBkkfJQL2pQMkLaxg-_LYJJyqPTZEvFhqt8zFxvFcr-9ijYS2t-9_bptwCa9AEFh6CLCFtKo2RLDNDaSi1AOuHJ5wWVx3oofr8KPKOVKC4jMSCXFwr29Ow55QFlKEq0wMWUqkkq6plvRdfrzUAYvF90N2yqWSLY-YkGA-OlXECjxuB7cfNrQkWrqrMBki4ezsWl4bosEXFEMlWSyFdYT3MFUs8" alt="Mr. Boot Logo" class="w-10 h-10 object-contain"><h1 class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed-dim">Mr. Boot</h1></div><p class="font-label-sm text-label-sm text-on-surface-variant">Luxury Shoe Care CRM</p></div>
+<ul class="flex flex-col space-y-2 flex-grow">
+<li class="">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-secondary-container hover:bg-primary/5 dark:hover:bg-primary-fixed/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-sm text-label-sm">Dashboard</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-secondary-container hover:bg-primary/5 dark:hover:bg-primary-fixed/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span>
+<span class="font-label-sm text-label-sm">Orders</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-primary dark:text-primary-fixed-dim font-bold border-r-2 border-primary hover:bg-primary/5 dark:hover:bg-primary-fixed/10 transition-all duration-200 translate-x-1" href="#">
+<span class="material-symbols-outlined" data-icon="inventory_2" data-weight="fill" style="font-variation-settings: 'FILL' 1;">inventory_2</span>
+<span class="font-label-sm text-label-sm">Inventory</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-secondary-container hover:bg-primary/5 dark:hover:bg-primary-fixed/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-sm text-label-sm">Customers</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-secondary-container hover:bg-primary/5 dark:hover:bg-primary-fixed/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span class="font-label-sm text-label-sm">Financials</span>
+</a>
+</li>
+<li class="">
+<a class="flex items-center space-x-3 px-4 py-3 rounded-lg text-on-surface-variant dark:text-on-secondary-container hover:bg-primary/5 dark:hover:bg-primary-fixed/10 transition-all duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-sm text-label-sm">Settings</span>
+</a>
+</li>
+</ul>
+<button class="mt-auto bg-primary-container text-on-primary rounded-lg py-3 px-4 font-label-sm text-label-sm hover:-translate-y-0.5 transition-transform duration-250 flex items-center justify-center space-x-2">
+<span class="material-symbols-outlined">add</span>
+<span class="">New Service Order</span>
+</button>
+<div class="mt-6 flex items-center space-x-3 px-4">
+<img alt="Master Artisan Avatar" class="w-10 h-10 rounded-full object-cover shadow-sm" data-alt="A small, circular avatar portrait of a distinguished artisan shoemaker. They are older, with a neat gray beard, wearing a heavy canvas apron over a collared shirt. The lighting is warm and workshop-like, conveying premium craftsmanship and experience." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAgmC1Wdk6oeRnWhVzBUFo9hI4cLp3kuWFKszNxR5HgLFSHVhBNc5vJOqp3fV8yZBJQ00gkEUuvOmauORiWP-z2dyspk0SL0cxBib0XCWJIhg5J_YwyOwLMO9dNfpdR73-00Fm_NA7fQdu-YLYBBEBmybnRZSgzBKovv2sb3DRv-YeFDXYvgWVOF2tT5fgTXmL4_ISXCWAxbGJVivYaJKgFCzfl6stH5JE-mmWkrnlNH0D2BzBtOx0wse1EzeJkzITVJqtK85J6JjE">
+<div>
+<p class="font-label-sm text-label-sm text-primary font-bold">Mr. Boot</p>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 md:ml-64 relative min-h-screen pb-24 md:pb-0">
+<!-- TopNavBar -->
+<header class="hidden md:flex justify-between items-center px-gutter w-full fixed top-0 right-0 left-64 h-16 bg-surface/65 backdrop-blur-xl dark:bg-surface-dim/65 border-b border-white/22 shadow-[0_4px_12px_rgba(0,0,0,0.02)] z-40">
+<div class="flex items-center">
+<!-- Breadcrumb/Title placeholder if needed, empty per spec to keep clean -->
+<h2 class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed-dim ml-4">Inventory</h2>
+</div>
+<div class="flex items-center space-x-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 transform -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="glass-input pl-10 pr-4 py-2 rounded-full font-label-sm text-label-sm w-64" placeholder="Search supplies..." type="text">
+</div>
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity hover:-translate-y-0.5 transition-transform duration-250">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity hover:-translate-y-0.5 transition-transform duration-250">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+</button>
+<button class="text-on-surface-variant hover:opacity-80 transition-opacity hover:-translate-y-0.5 transition-transform duration-250"><span class="material-symbols-outlined">settings</span></button><button class="text-on-surface-variant hover:opacity-80 transition-opacity hover:-translate-y-0.5 transition-transform duration-250"><span class="material-symbols-outlined">account_circle</span></button></div>
+</header>
+<!-- Mobile Header (Simplified) -->
+<header class="md:hidden flex justify-between items-center px-4 h-16 bg-surface/65 backdrop-blur-xl border-b border-white/22 sticky top-0 z-40">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary">Inventory</h1>
+<div class="flex space-x-2">
+<button class="text-on-surface-variant"><span class="material-symbols-outlined">search</span></button>
+</div>
+</header>
+<main class="pt-20 md:pt-24 px-4 md:px-container-padding max-w-[1200px] mx-auto space-y-card-gap">
+<!-- Top Actions & Overview Header -->
+<div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8">
+<div>
+<h2 class="font-headline-lg text-headline-lg font-bold text-primary">Stock Overview</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Manage premium leather dyes, soles, and workshop supplies.</p>
+</div>
+<button class="bg-primary-container text-on-primary rounded-lg py-3 px-6 font-label-sm text-label-sm hover:-translate-y-0.5 transition-transform duration-250 shadow-md flex items-center space-x-2 whitespace-nowrap">
+<span class="material-symbols-outlined">add_shopping_cart</span>
+<span class="">New Supply Order</span>
+</button>
+</div>
+<!-- Bento Grid Overview -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-card-gap">
+<!-- Low Stock Alert Card -->
+<div class="glass-card rounded-xl p-6 flex flex-col justify-between border-l-4 border-l-error">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-error-container rounded-lg">
+<span class="material-symbols-outlined text-error">warning</span>
+</div>
+<span class="font-label-sm text-label-sm text-error font-bold">Action Needed</span>
+</div>
+<div>
+<h3 class="font-numeral-xl text-numeral-xl text-on-surface">3</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Items Low on Stock</p>
+</div>
+</div>
+<!-- Total Value Card -->
+<div class="glass-card rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-tertiary-fixed rounded-lg">
+<span class="material-symbols-outlined text-tertiary">account_balance_wallet</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Est. Value</span>
+</div>
+<div>
+<h3 class="font-numeral-xl text-numeral-xl text-on-surface">₹1,45,200</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Current Inventory</p>
+</div>
+</div>
+<!-- Recent Orders Card -->
+<div class="glass-card rounded-xl p-6 flex flex-col justify-between">
+<div class="flex justify-between items-start mb-4">
+<div class="p-2 bg-surface-variant rounded-lg">
+<span class="material-symbols-outlined text-on-surface-variant">local_shipping</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">This Month</span>
+</div>
+<div>
+<h3 class="font-numeral-xl text-numeral-xl text-on-surface">12</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Supply Orders Placed</p>
+</div>
+</div>
+</div>
+<!-- Detailed Inventory Table -->
+<div class="glass-card rounded-xl overflow-hidden mt-8">
+<div class="p-6 border-b border-white/22 flex justify-between items-center bg-surface-bright/30">
+<h3 class="font-headline-lg text-headline-lg font-bold text-primary text-[20px]">Stock Levels</h3>
+<div class="flex space-x-2">
+<button class="p-2 rounded-lg hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined text-on-surface-variant">filter_list</span></button>
+<button class="p-2 rounded-lg hover:bg-surface-variant transition-colors"><span class="material-symbols-outlined text-on-surface-variant">download</span></button>
+</div>
+</div>
+<div class="overflow-x-auto no-scrollbar">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-white/22 text-on-surface-variant font-label-sm text-label-sm">
+<th class="p-4 font-medium pl-6">Item Name</th>
+<th class="p-4 font-medium">Category</th>
+<th class="p-4 font-medium">Stock Level</th>
+<th class="p-4 font-medium text-right pr-6">Cost (Unit)</th>
+</tr>
+</thead>
+<tbody class="font-body-md text-body-md divide-y divide-white/10">
+<!-- Row 1: Low Stock -->
+<tr class="hover:bg-surface-bright/40 transition-colors">
+<td class="p-4 pl-6 flex items-center space-x-3">
+<div class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A small, macro shot of a rich, dark brown leather dye bottle, softly lit to highlight the deep amber liquid inside. The background is a blurred artisan workshop setting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC1fQ9qojvlVKuGIsIeJ2ukfgyYqw2WZikoOfTvws2YAd7lQPLKXezmMT9SQ-QAoqQb15VFPYtPF355P7WnNyTpPajIc7NgfBRfJr0YhMZRe-aIAZ5KJc5lp_80NJoAR6glba_CYSKPCBBwjvEgjX-N7p4HMPAdi16st0Oyjlm0FHNlX_AsjGQL0IEhp904_foIZCkULPZ8VWtp-cJhtlGmmVpJ0P-gDdVa6A3eEU7Fh7lmMFzZ8BEoLALduLKY9aGafgPY0ygIkXE">
+</div>
+<span class="font-medium text-on-surface">Saphir Medaille d'Or - Dark Brown</span>
+</td>
+<td class="p-4 text-on-surface-variant">Dyes &amp; Creams</td>
+<td class="p-4">
+<div class="flex items-center space-x-2">
+<div class="w-full bg-surface-variant rounded-full h-1.5 max-w-[120px]">
+<div class="bg-error h-1.5 rounded-full" style="width: 15%"></div>
+</div>
+<span class="text-error font-label-sm text-label-sm font-bold">Low (3/20)</span>
+</div>
+</td>
+<td class="p-4 text-right pr-6">₹1,850</td>
+</tr>
+<!-- Row 2 -->
+<tr class="hover:bg-surface-bright/40 transition-colors">
+<td class="p-4 pl-6 flex items-center space-x-3">
+<div class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A small, macro shot of a heavy-duty stitched leather boot sole. The leather is thick and natural-colored. The lighting emphasizes the rugged texture of the leather." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC04J6CJfvfMS3yqPtDTJV0kZ1pylQGFzTBC3DmVUIsBKD5rkNb7wO8C_ZdHQM6r2NiSkVtjNtdzKsqCg5okz4_QkiXoWRkLUm_TNPoJbwpi9ejFl7ST5pF8A4EhVRrW0SwAnGdXpSUQBb5LBwHnnjkzt-8krHAGMk5LGfJqObDRIcRR7fI4kRB8_o6wyiLnnYE6YQ6UmBe7pMxXW3DZFe-MgGrHKrdHPXS_iKYPK_BdNFThYKts4XRWhTx_20BsvcjwAAUiOGkTa0">
+</div>
+<span class="font-medium text-on-surface">Vibram Logger Soles - Size 10</span>
+</td>
+<td class="p-4 text-on-surface-variant">Hardware</td>
+<td class="p-4">
+<div class="flex items-center space-x-2">
+<div class="w-full bg-surface-variant rounded-full h-1.5 max-w-[120px]">
+<div class="bg-primary-container h-1.5 rounded-full" style="width: 65%"></div>
+</div>
+<span class="text-on-surface-variant font-label-sm text-label-sm">Good (32/50)</span>
+</div>
+</td>
+<td class="p-4 text-right pr-6">₹3,200</td>
+</tr>
+<!-- Row 3 -->
+<tr class="hover:bg-surface-bright/40 transition-colors">
+<td class="p-4 pl-6 flex items-center space-x-3">
+<div class="w-8 h-8 rounded bg-surface-variant flex items-center justify-center overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A close up of a bundle of premium waxed cotton shoelaces in black. They are neatly coiled on a wooden workbench in soft light." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAAAR_fOqmFt80dvJaGtWcw8PSPKoIpR9tXhMAcGgsY6RKACXJxFlXvVdmBmVRzrJfHedrNhXup5PChN417R0Wm2pcdU__-sNJo-hMmtV8vKmZ8ieYBG7WfXknUPischsYUCIdjOfqnttSZ0krYCMJb6IBf3CHIXBD8esgMau3orzaD6u3yQvz1kpLgSna_rV4JjKCAs3iT7ufr8NxnR_B45t7xFJjfhZBWPp8aE-48YTIIMNRTw-2Ol3AWAOUOo6B3luxlloidI0k">
+</div>
+<span class="font-medium text-on-surface">Waxed Cotton Laces - Black 120cm</span>
+</td>
+<td class="p-4 text-on-surface-variant">Accessories</td>
+<td class="p-4">
+<div class="flex items-center space-x-2">
+<div class="w-full bg-surface-variant rounded-full h-1.5 max-w-[120px]">
+<div class="bg-primary-container h-1.5 rounded-full" style="width: 90%"></div>
+</div>
+<span class="text-on-surface-variant font-label-sm text-label-sm">Full (180/200)</span>
+</div>
+</td>
+<td class="p-4 text-right pr-6">₹450</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Supply Orders History -->
+<div class="glass-card rounded-xl p-6 mt-8">
+<div class="flex justify-between items-center mb-6">
+<h3 class="font-headline-lg text-headline-lg font-bold text-primary text-[20px]">Recent Supply Orders</h3>
+<a class="font-label-sm text-label-sm text-tertiary-container hover:underline flex items-center" href="#">View All <span class="material-symbols-outlined text-[16px] ml-1">arrow_forward</span></a>
+</div>
+<div class="space-y-4">
+<!-- Order 1 -->
+<div class="flex items-center justify-between p-4 rounded-lg bg-surface-bright/50 border border-white/10 hover:bg-surface-bright transition-colors">
+<div class="flex items-center space-x-4">
+<div class="p-2 bg-surface-variant rounded-full">
+<span class="material-symbols-outlined text-on-surface-variant">inventory_2</span>
+</div>
+<div>
+<p class="font-medium text-on-surface">Order #ORD-8921</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Saphir Official Distributor • Oct 12, 2023</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-medium text-on-surface">₹45,000</p>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-secondary-container text-on-secondary-container mt-1">Delivered</span>
+</div>
+</div>
+<!-- Order 2 -->
+<div class="flex items-center justify-between p-4 rounded-lg bg-surface-bright/50 border border-white/10 hover:bg-surface-bright transition-colors">
+<div class="flex items-center space-x-4">
+<div class="p-2 bg-surface-variant rounded-full">
+<span class="material-symbols-outlined text-on-surface-variant">pending</span>
+</div>
+<div>
+<p class="font-medium text-on-surface">Order #ORD-8922</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Vibram Global Supply • Oct 14, 2023</p>
+</div>
+</div>
+<div class="text-right">
+<p class="font-medium text-on-surface">₹12,400</p>
+<span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-tertiary-fixed text-on-tertiary-fixed mt-1">In Transit</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+
+</body></html>

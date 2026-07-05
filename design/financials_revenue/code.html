@@ -1,0 +1,263 @@
+<!DOCTYPE html><html lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Mr. Boot - Financials</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com" rel="preconnect">
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect">
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;500;600;700&amp;family=Inter:wght@400&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed": "#e4e2df",
+                      "primary": "#361f1a",
+                      "on-surface": "#1a1c1d",
+                      "tertiary-fixed": "#ffdea4",
+                      "surface-container": "#eeeeef",
+                      "surface-dim": "#d9dadb",
+                      "tertiary-container": "#4e3700",
+                      "surface-container-low": "#f3f3f4",
+                      "primary-fixed-dim": "#e5beb5",
+                      "on-primary-fixed-variant": "#5c403a",
+                      "error": "#ba1a1a",
+                      "primary-fixed": "#ffdad2",
+                      "surface-container-high": "#e8e8e9",
+                      "surface-bright": "#f9f9fa",
+                      "on-error-container": "#93000a",
+                      "primary-container": "#4e342e",
+                      "on-secondary-container": "#636360",
+                      "surface": "#f9f9fa",
+                      "on-secondary": "#ffffff",
+                      "tertiary-fixed-dim": "#f0bf5c",
+                      "surface-variant": "#e2e2e3",
+                      "on-tertiary-fixed-variant": "#5d4200",
+                      "on-primary-fixed": "#2b1611",
+                      "on-background": "#1a1c1d",
+                      "secondary-fixed-dim": "#c8c6c4",
+                      "inverse-on-surface": "#f0f1f2",
+                      "on-secondary-fixed-variant": "#474745",
+                      "on-tertiary-fixed": "#261900",
+                      "on-tertiary-container": "#cb9e3f",
+                      "secondary-container": "#e1dfdc",
+                      "on-primary": "#ffffff",
+                      "outline": "#827471",
+                      "on-surface-variant": "#504442",
+                      "inverse-primary": "#e5beb5",
+                      "secondary": "#5e5e5c",
+                      "surface-tint": "#755750",
+                      "on-primary-container": "#c19c94",
+                      "error-container": "#ffdad6",
+                      "background": "#f9f9fa",
+                      "outline-variant": "#d4c3bf",
+                      "on-secondary-fixed": "#1b1c1a",
+                      "tertiary": "#322200",
+                      "on-error": "#ffffff",
+                      "surface-container-lowest": "#ffffff",
+                      "surface-container-highest": "#e2e2e3",
+                      "on-tertiary": "#ffffff",
+                      "inverse-surface": "#2f3132"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "gutter": "24px",
+                      "card-gap": "20px",
+                      "container-padding": "32px",
+                      "base": "8px"
+              },
+              "fontFamily": {
+                      "headline-lg": [
+                              "Geist"
+                      ],
+                      "label-sm": [
+                              "Geist"
+                      ],
+                      "display-lg": [
+                              "Geist"
+                      ],
+                      "headline-lg-mobile": [
+                              "Geist"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "numeral-xl": [
+                              "Geist"
+                      ]
+              },
+              "fontSize": {
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "label-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "18px",
+                                      "letterSpacing": "0.02em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "28px",
+                              {
+                                      "lineHeight": "34px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "numeral-xl": [
+                              "36px",
+                              {
+                                      "lineHeight": "44px",
+                                      "letterSpacing": "-0.03em",
+                                      "fontWeight": "300"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        body {
+            background-color: #FAFAFB;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.04);
+        }
+        .glass-card-hover:hover {
+            box-shadow: 0 12px 48px rgba(0,0,0,0.08);
+            background: linear-gradient(180deg, rgba(255,255,255,0.75) 0%, rgba(255,255,255,0.65) 100%);
+        }
+    </style>
+</head>
+<body class="text-on-surface font-body-md bg-background antialiased flex">
+<!-- SideNavBar -->
+<nav class="h-screen w-64 fixed left-0 top-0 bg-surface/65 backdrop-blur-xl dark:bg-surface-dim/65 border-r border-white/22 shadow-sm shadow-[0_8px_32px_rgba(0,0,0,0.04)] flex flex-col h-full py-8 px-6 hidden md:flex z-50">
+<div class="mb-12 px-2">
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed-dim tracking-tight">Mr. Boot</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-1">Luxury Shoe Care CRM</p>
+</div>
+<ul class="flex flex-col gap-2 flex-1"><li class=""><a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 transition-all duration-200" href="#"><span class="material-symbols-outlined" data-icon="dashboard">dashboard</span><span class="font-label-sm text-label-sm">Dashboard</span></a></li><li class=""><a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 transition-all duration-200" href="#"><span class="material-symbols-outlined" data-icon="shopping_bag">shopping_bag</span><span class="font-label-sm text-label-sm">Orders</span></a></li><li class=""><a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 transition-all duration-200" href="#"><span class="material-symbols-outlined" data-icon="inventory_2">inventory_2</span><span class="font-label-sm text-label-sm">Inventory</span></a></li><li class=""><a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 transition-all duration-200" href="#"><span class="material-symbols-outlined" data-icon="group">group</span><span class="font-label-sm text-label-sm">Customers</span></a></li><li class=""><a class="flex items-center gap-4 px-4 py-3 rounded-lg text-primary font-bold border-r-2 border-primary bg-primary/5 translate-x-1 transition-transform duration-250" href="#"><span class="material-symbols-outlined" data-icon="payments">payments</span><span class="font-label-sm text-label-sm">Financials</span></a></li><li class=""><a class="flex items-center gap-4 px-4 py-3 rounded-lg text-on-surface-variant hover:bg-primary/5 transition-all duration-200" href="#"><span class="material-symbols-outlined" data-icon="settings">settings</span><span class="font-label-sm text-label-sm">Settings</span></a></li></ul>
+<div class="mt-auto">
+<button class="w-full bg-primary text-on-primary rounded-xl py-3 px-4 font-label-sm text-label-sm flex items-center justify-center gap-2 hover:opacity-90 transition-all shadow-sm">
+<span class="material-symbols-outlined text-lg">add</span>
+                New Service Order
+            </button>
+<div class="mt-6 flex items-center gap-3 px-2">
+<img class="w-10 h-10 rounded-full object-cover border border-outline-variant" data-alt="A close up professional headshot of an artisanal shoemaker in a modern luxury workshop, warm lighting, sharp focus, premium aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA35Ucfy3S2SQO8agGOU0i9AFyJyOpETDPf1y5OEnxRlLXwkM6_tUVnMi3Qwc8-RaC3RTuMTSuNQcWo_s3YltNZifUaEUsZ_3u5LdwqK8AWXflltX_kS7864OcAJtM1Ha8qQbNrb0YCIwDK1h2DIZPJ0XedeKg20oNlxJYixmkWpLsaR8s-P-It-jU8NNMz75yCzxfk12_jPmJ2ezcvuyu0-9v7UPhGK7s6qa5_Tmh7mVU-UbC6fuy4zRTQS1uFby3i9lOKmThKex4">
+<div>
+<p class="font-label-sm text-label-sm font-bold text-on-surface">Master Artisan</p>
+</div>
+</div>
+</div>
+</nav>
+<!-- TopNavBar -->
+<header class="fixed top-0 right-0 left-0 md:left-64 h-16 bg-surface/65 backdrop-blur-xl dark:bg-surface-dim/65 border-b border-white/22 shadow-[0_4px_12px_rgba(0,0,0,0.02)] flex justify-between items-center px-gutter w-full md:w-[calc(100%-16rem)] z-40"><div class="md:hidden"><h1 class="font-headline-lg-mobile text-headline-lg-mobile font-bold text-primary tracking-tight">Mr. Boot</h1></div><div class="hidden md:flex flex-1 max-w-md"><div class="relative w-full"><span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span><input class="w-full bg-surface-container-low border border-outline-variant/30 rounded-full py-2 pl-10 pr-4 font-label-sm text-label-sm focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Search financials..." type="text"></div></div><div class="flex items-center gap-2 ml-auto"><button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-primary/5 transition-all"><span class="material-symbols-outlined">notifications</span></button><button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:bg-primary/5 transition-all"><span class="material-symbols-outlined">help_outline</span></button></div></header>
+<!-- Main Content -->
+<main class="flex-1 ml-0 md:ml-64 mt-16 p-4 md:p-container-padding max-w-[1200px] mx-auto w-full">
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg md:font-display-lg md:text-display-lg text-primary tracking-tight">Financial Overview</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Track revenue, expenses, and transaction history.</p>
+</div>
+<button class="bg-primary-container text-on-primary rounded-full px-6 py-2.5 font-label-sm text-label-sm flex items-center gap-2 hover:-translate-y-0.5 transition-transform duration-250 shadow-md self-start md:self-auto">
+<span class="material-symbols-outlined text-[18px]">download</span>
+                Download Financial Report
+            </button>
+</div>
+<!-- KPI Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-card-gap mb-8">
+<div class="glass-card glass-card-hover rounded-2xl p-6 transition-all duration-300">
+<div class="flex justify-between items-start mb-4">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Total Revenue</p>
+<div class="w-8 h-8 rounded-full bg-primary/5 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary text-[20px]">account_balance_wallet</span>
+</div>
+</div>
+<h3 class="font-numeral-xl text-numeral-xl text-primary mb-2">₹ 4,52,000</h3>
+<div class="flex items-center gap-1 text-[13px]">
+<span class="material-symbols-outlined text-[#147a4f] text-[16px]">trending_up</span>
+<span class="text-[#147a4f] font-medium">+12.5%</span>
+<span class="text-on-surface-variant ml-1">vs last month</span>
+</div>
+</div>
+<div class="glass-card glass-card-hover rounded-2xl p-6 transition-all duration-300">
+<div class="flex justify-between items-start mb-4">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Outstanding</p>
+<div class="w-8 h-8 rounded-full bg-error-container/30 flex items-center justify-center">
+<span class="material-symbols-outlined text-error text-[20px]">pending_actions</span>
+</div>
+</div>
+<h3 class="font-numeral-xl text-numeral-xl text-primary mb-2">₹ 35,400</h3>
+<div class="flex items-center gap-1 text-[13px]">
+<span class="material-symbols-outlined text-error text-[16px]">trending_up</span>
+<span class="text-error font-medium">+4.2%</span>
+<span class="text-on-surface-variant ml-1">vs last month</span>
+</div>
+</div>
+<div class="glass-card glass-card-hover rounded-2xl p-6 transition-all duration-300">
+<div class="flex justify-between items-start mb-4">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Avg Order Value</p>
+<div class="w-8 h-8 rounded-full bg-tertiary-container/10 flex items-center justify-center">
+<span class="material-symbols-outlined text-tertiary-container text-[20px]">receipt_long</span>
+</div>
+</div>
+<h3 class="font-numeral-xl text-numeral-xl text-primary mb-2">₹ 4,250</h3>
+<div class="flex items-center gap-1 text-[13px]">
+<span class="material-symbols-outlined text-[#147a4f] text-[16px]">trending_up</span>
+<span class="text-[#147a4f] font-medium">+2.1%</span>
+<span class="text-on-surface-variant ml-1">vs last month</span>
+</div>
+</div>
+<div class="glass-card glass-card-hover rounded-2xl p-6 transition-all duration-300">
+<div class="flex justify-between items-start mb-4">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Total Expenses</p>
+<div class="w-8 h-8 rounded-full bg-secondary-container/50 flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[20px]">credit_card</span>
+</div>
+</div>
+<h3 class="font-numeral-xl text-numeral-xl text-primary mb-2">₹ 1,12,000</h3>
+<div class="flex items-center gap-1 text-[13px]">
+<span class="material-symbols-outlined text-[#147a4f] text-[16px]">trending_down</span>
+<span class="text-[#147a4f] font-medium">-5.4%</span>
+<span class="text-on-surface-variant ml-1">vs last month</span>
+</div>
+</div>
+</div>
+</main>
+
+
+</body></html>

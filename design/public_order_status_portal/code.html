@@ -1,0 +1,225 @@
+<!DOCTYPE html><html class="light" lang="en"><head>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1.0" name="viewport">
+<title>Mr. Boot - Customer Order Status</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-container-high": "#e8e8e9",
+                      "on-tertiary-container": "#cb9e3f",
+                      "on-primary": "#ffffff",
+                      "surface-container": "#eeeeef",
+                      "primary": "#361f1a",
+                      "on-surface-variant": "#504442",
+                      "on-surface": "#1a1c1d",
+                      "outline-variant": "#d4c3bf",
+                      "on-error-container": "#93000a",
+                      "on-secondary-fixed": "#1b1c1a",
+                      "on-tertiary-fixed": "#261900",
+                      "on-secondary-fixed-variant": "#474745",
+                      "inverse-primary": "#e5beb5",
+                      "on-primary-fixed-variant": "#5c403a",
+                      "on-background": "#1a1c1d",
+                      "error": "#ba1a1a",
+                      "surface-bright": "#f9f9fa",
+                      "on-primary-container": "#c19c94",
+                      "primary-fixed": "#ffdad2",
+                      "on-primary-fixed": "#2b1611",
+                      "inverse-surface": "#2f3132",
+                      "tertiary": "#322200",
+                      "surface-tint": "#755750",
+                      "on-secondary": "#ffffff",
+                      "on-tertiary": "#ffffff",
+                      "secondary": "#5e5e5c",
+                      "error-container": "#ffdad6",
+                      "primary-container": "#4e342e",
+                      "tertiary-fixed-dim": "#f0bf5c",
+                      "on-error": "#ffffff",
+                      "surface-variant": "#e2e2e3",
+                      "surface-container-low": "#f3f3f4",
+                      "on-tertiary-fixed-variant": "#5d4200",
+                      "surface-dim": "#d9dadb",
+                      "tertiary-fixed": "#ffdea4",
+                      "surface": "#f9f9fa",
+                      "secondary-fixed-dim": "#c8c6c4",
+                      "outline": "#827471",
+                      "surface-container-highest": "#e2e2e3",
+                      "inverse-on-surface": "#f0f1f2",
+                      "on-secondary-container": "#636360",
+                      "background": "#f9f9fa",
+                      "tertiary-container": "#4e3700",
+                      "secondary-container": "#e1dfdc",
+                      "secondary-fixed": "#e4e2df",
+                      "surface-container-lowest": "#ffffff",
+                      "primary-fixed-dim": "#e5beb5"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "container-padding": "32px",
+                      "card-gap": "20px",
+                      "base": "8px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Geist"],
+                      "body-md": ["Inter"],
+                      "numeral-xl": ["Geist"],
+                      "headline-lg": ["Geist"],
+                      "label-sm": ["Geist"],
+                      "headline-lg-mobile": ["Geist"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "numeral-xl": ["36px", {"lineHeight": "44px", "letterSpacing": "-0.03em", "fontWeight": "300"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "label-sm": ["13px", {"lineHeight": "18px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                      "headline-lg-mobile": ["28px", {"lineHeight": "34px", "fontWeight": "600"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        body {
+            background-color: #FAFAFB;
+            background-image: radial-gradient(#d4c3bf 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .glass-card {
+            background-color: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
+        }
+        .pulse-dot {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { box-shadow: 0 0 0 0 rgba(78, 52, 46, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(78, 52, 46, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(78, 52, 46, 0); }
+        }
+    </style>
+</head>
+<body class="text-on-background font-body-md min-h-screen flex flex-col">
+<!-- Top Navigation Anchor -->
+<header class="w-full sticky top-0 z-40 bg-white/65 backdrop-blur-xl border-b border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.04)]">
+<div class="flex justify-between items-center px-container-padding py-4 w-full max-w-full mx-auto max-w-[1200px]">
+<div class="flex items-center gap-2">
+<img src="https://lh3.googleusercontent.com/aida-public/AB6AXuCn7lW1vtQ0lZyfs5lXTaByxV89HdnteWqn32a8d3s-HaptrgDl_YBkkfJQL2pQMkLaxg-_LYJJyqPTZEvFhqt8zFxvFcr-9ijYS2t-9_bptwCa9AEFh6CLCFtKo2RLDNDaSi1AOuHJ5wWVx3oofr8KPKOVKC4jMSCXFwr29Ow55QFlKEq0wMWUqkkq6plvRdfrzUAYvF90N2yqWSLY-YkGA-OlXECjxuB7cfNrQkWrqrMBki4ezsWl4bosEXFEMlWSyFdYT3MFUs8" alt="Mr. Boot Logo" class="w-10 h-10 object-cover rounded-md">
+<span class="font-headline-lg text-headline-lg font-bold text-primary">Mr. Boot</span>
+</div>
+<button class="px-4 py-2 rounded-lg border border-outline-variant/30 text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-variant/50 transition-all duration-250 flex items-center gap-2">
+    <span class="material-symbols-outlined text-[18px]">dashboard_customize</span>
+    Concierge Status
+</button>
+</div>
+</header>
+<main class="flex-grow flex items-center justify-center p-gutter md:p-container-padding">
+<div class="w-full max-w-3xl glass-card rounded-xl p-6 md:p-8 flex flex-col gap-8 relative overflow-hidden">
+<!-- Header Section -->
+<div class="text-center space-y-2">
+<h1 class="font-display-lg text-display-lg text-primary">Welcome back, Aisha</h1>
+<p class="text-on-surface-variant text-lg">Order ID: <span class="font-numeral-xl text-numeral-xl text-primary ml-2">#MB-7842</span></p>
+</div>
+<!-- Progress Tracker -->
+<div class="relative w-full pt-8 pb-4">
+<div class="absolute top-1/2 left-0 w-full h-[2px] bg-surface-variant -z-10 translate-y-[-50%]"></div>
+<div class="absolute top-1/2 left-0 w-1/2 h-[2px] bg-primary-container -z-10 translate-y-[-50%] transition-all duration-1000"></div>
+<div class="flex justify-between items-center w-full">
+<!-- Step 1: Intake -->
+<div class="flex flex-col items-center gap-2 w-1/3">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-md">
+<span class="material-symbols-outlined">inventory_2</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold">Intake</span>
+</div>
+<!-- Step 2: In Progress -->
+<div class="flex flex-col items-center gap-2 w-1/3">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary flex items-center justify-center shadow-md pulse-dot relative">
+<span class="material-symbols-outlined">construction</span>
+</div>
+<span class="font-label-sm text-label-sm text-primary font-bold">In Progress</span>
+</div>
+<!-- Step 3: Ready -->
+<div class="flex flex-col items-center gap-2 w-1/3 opacity-50">
+<div class="w-10 h-10 rounded-full bg-surface-container-high text-on-surface-variant flex items-center justify-center border-2 border-outline-variant">
+<span class="material-symbols-outlined">check_circle</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Ready for Pickup</span>
+</div>
+</div>
+</div>
+<hr class="border-outline-variant/30 w-full">
+<!-- Order Details -->
+<div>
+<h2 class="font-headline-lg text-headline-lg text-primary mb-6">Service Details</h2>
+<div class="flex flex-col gap-4">
+<!-- Item 1 -->
+<div class="flex flex-col md:flex-row gap-4 p-4 rounded-lg bg-surface/50 border border-white/20 hover:-translate-y-0.5 transition-transform duration-250">
+<div class="w-24 h-24 rounded-md overflow-hidden bg-surface-container-high shrink-0 shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A pair of premium white leather Puma sneakers resting on a pristine wooden craftsman workbench. Soft natural light illuminates the textured leather and subtle scuffs indicating wear. The scene is styled in a modern, high-end white-mode aesthetic with warm earthy undertones and sharp focus on the shoe detailing." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBcs6cif2POIo7yhz6RsqdJVZ8k9d_nmjh2RKmOKfQSo2F12wYitMBsoofodpukUPUbfJcR6jsBW1U8PUDa6eNViv1qjrY1wNoU_f58GJnTcdOmNdjlOa5z7HVFx6oCWiwBT7I9xOI64a8PsuqN_WFh96hBnZNAtjTUjFntwLOEABcZhgkNWY8PIXdHfvc3YpvaK0GcZuZjzfeOvhLaJr89fihAB3Z5VAByLJ8_kuhqloKh9vmwArBsySetMOExepfF3r7s5xyCjT0">
+</div>
+<div class="flex flex-col flex-grow justify-center gap-1">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Puma Sneaker</h3>
+<div class="flex items-center gap-2 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-[18px]">healing</span>
+                                Sole Pasting &amp; Whitening
+                            </div>
+</div>
+<div class="flex items-center md:items-end justify-center md:justify-end">
+<span class="px-3 py-1 rounded-full bg-primary-container/10 text-primary-container font-label-sm text-label-sm flex items-center gap-1">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+                                Curing
+                            </span>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="flex flex-col md:flex-row gap-4 p-4 rounded-lg bg-surface/50 border border-white/20 hover:-translate-y-0.5 transition-transform duration-250">
+<div class="w-24 h-24 rounded-md overflow-hidden bg-surface-container-high shrink-0 shadow-sm">
+<img class="w-full h-full object-cover" data-alt="A pair of classic brown leather Chelsea boots sitting on a white marble countertop. The leather shows signs of rich patina and requires polishing. The lighting is soft and studio-quality, emphasizing the luxurious texture of the leather against the clean, minimal background. Shot with a shallow depth of field." src="https://lh3.googleusercontent.com/aida-public/AB6AXuARuMgGSViNRGBGG16Hfrb1jjE_kaoQFQxWTj4RV0cbxe7uQkJC2YKYPg2TYSWxrTLAj9xqvC58JAlzFE_fx2K-1JtLqkYJVuXEg9LVExYYwWZACvT6oL67vu7vIa_2yOLJkeAFDuhpwpRoSPOMQ8-DlW6dUU-va3debaYECkh6NILutJlUD1PjP14ihPfR52q7AiGB8dOpkoSUMo2eeun06uwFTiLfkY8w9GOK2AkXe_pHBOQGPgBlT9XAdhAsV03I9MNJ9babtCU">
+</div>
+<div class="flex flex-col flex-grow justify-center gap-1">
+<h3 class="font-headline-lg-mobile text-headline-lg-mobile text-primary">Chelsea Boots</h3>
+<div class="flex items-center gap-2 text-on-surface-variant text-sm">
+<span class="material-symbols-outlined text-[18px]">brush</span>
+                                Deep Condition &amp; Polish
+                            </div>
+</div>
+<div class="flex items-center md:items-end justify-center md:justify-end">
+<span class="px-3 py-1 rounded-full bg-primary-container text-on-primary font-label-sm text-label-sm flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-[14px]">done</span>
+                                Completed
+                            </span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Action -->
+<div class="mt-4 flex justify-center">
+<button class="bg-primary-container text-on-primary px-8 py-3 rounded-lg font-label-sm text-label-sm hover:-translate-y-0.5 transition-transform duration-250 ease-out shadow-[0_4px_12px_rgba(78,52,46,0.2)] active:scale-95 flex items-center gap-2">
+<span class="material-symbols-outlined">support_agent</span>
+                    Contact Concierge
+                </button>
+</div>
+</div>
+</main>
+
+
+
+
+</body></html>

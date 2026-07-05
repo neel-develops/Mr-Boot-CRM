@@ -1,0 +1,162 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  MANAGER
+  ARTISAN
+}
+
+enum OrderStatus {
+  RECEIVED
+  IN_PROGRESS
+  READY
+  DELIVERED
+}
+
+model Staff {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  role      Role     @default(ARTISAN)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+
+  @@map("staff")
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  email     String?
+  phone     String
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  orders    Order[]
+
+  @@map("customers")
+}
+
+model Order {
+  id               String            @id @default(uuid())
+  status           OrderStatus       @default(RECEIVED)
+  serviceType      String            // e.g. "Deep Clean", "Sole Replacement", "Leather Restoration", "Bespoke"
+  itemType         String            // e.g. "Chelsea Boots", "Sneakers", "Bags"
+  material         String?
+  price            Decimal           @db.Decimal(10, 2)
+  dueDate          DateTime
+  customerId       String
+  customer         Customer          @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  artisanId        String?
+  artisan          Staff?            @relation(fields: [artisanId], references: [id])
+  notes            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  items            OrderItem[]
+  activityLogs     ActivityLog[]
+  invoices         Invoice[]
+  publicOrderLinks PublicOrderLink[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id               String   @id @default(uuid())
+  orderId          String
+  order            Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  category         String   // e.g. "Boots", "Sneakers", "Formal Shoe"
+  brand            String?
+  model            String?
+  description      String?
+  services         String[] // e.g. ["Shoe Polish", "Waterproofing"]
+  photoUrl         String?  // Main photo in Supabase storage
+  additionalPhotos String[] // Additional before photos
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("order_items")
+}
+
+model Inventory {
+  id               String   @id @default(uuid())
+  itemName         String   @unique
+  stockQty         Int
+  reorderThreshold Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@map("inventory")
+}
+
+model ActivityLog {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  event     String   // e.g. "Order Created", "Status Changed to Ready"
+  actor     String   // Email or name of staff member
+  timestamp DateTime @default(now())
+
+  @@map("activity_log")
+}
+
+model Invoice {
+  id            String   @id @default(uuid())
+  orderId       String
+  order         Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  invoiceNumber String   @unique
+  amount        Decimal  @db.Decimal(10, 2)
+  advancePaid   Decimal  @db.Decimal(10, 2) @default(0)
+  balanceDue    Decimal  @db.Decimal(10, 2)
+  paymentMode   String   // CASH, UPI, CARD
+  pdfUrl        String?  // Storage url to invoice PDF
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("invoices")
+}
+
+model PublicOrderLink {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  token     String   @unique // Unguessable tracking token
+  createdAt DateTime @default(now())
+
+  @@map("public_order_links")
+}
+
+model Settings {
+  id                    String   @id @default("singleton")
+  billReadyTemplate     String   @default("Hi {{customer_first_name}}, Neel Sonawane here from Mr Boot. Your bill is ready: {{invoice_pdf_or_track_link}}")
+  reviewRequestTemplate String   @default("Hi {{customer_first_name}}, hope you're loving your {{item_type}}! Would mean a lot if you could leave us a quick review: {{google_review_link}}")
+  googleReviewLink      String   @default("https://g.page/r/your-google-review-link")
+  orgName               String   @default("Mr. Boot")
+  orgPhone              String   @default("")
+  orgEmail              String   @default("")
+  orgAddress            String   @default("")
+  darkMode              Boolean  @default(false)
+  updatedAt             DateTime @updatedAt
+
+  @@map("settings")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  orderId   String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@map("notifications")
+}
