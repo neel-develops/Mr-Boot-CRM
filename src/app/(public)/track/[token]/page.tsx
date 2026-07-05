@@ -1,4 +1,4 @@
-﻿import React from "react";
+import React from "react";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { OrderStatus } from "@prisma/client";
@@ -20,6 +20,7 @@ export default async function PublicTrackingPage({ params }: PublicTrackingPageP
         include: {
           customer: true,
           items: true,
+          invoices: true,
           activityLogs: {
             orderBy: { timestamp: "desc" },
           },
@@ -53,9 +54,11 @@ export default async function PublicTrackingPage({ params }: PublicTrackingPageP
       {/* Top Header with Mr Boot Logo */}
       <header className="w-full bg-white/80 backdrop-blur-xl border-b border-black/5 py-4 shadow-sm">
         <div className="max-w-3xl mx-auto px-6 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-[#4e342e] flex items-center justify-center shadow-md overflow-hidden">
-            <span className="text-white font-bold text-sm tracking-tight">MB</span>
-          </div>
+          <img
+            src="/logo.png"
+            alt="Mr. Boot Logo"
+            className="w-10 h-10 rounded-full object-cover border border-black/5"
+          />
           <div>
             <span className="font-bold text-[#4e342e] text-lg block leading-none">Mr. Boot</span>
             <span className="text-xs text-zinc-400 font-medium tracking-widest uppercase">Luxury Shoe Care</span>
@@ -78,7 +81,7 @@ export default async function PublicTrackingPage({ params }: PublicTrackingPageP
             <p className="text-zinc-500 text-base">
               Order{" "}
               <span className="font-bold text-[#4e342e]">
-                #MB-{order.id.slice(-6).toUpperCase()}
+                #{order.invoices[0]?.invoiceNumber || `MB-${order.id.slice(-6).toUpperCase()}`}
               </span>{" "}
               is being tracked in real time.
             </p>

@@ -77,7 +77,7 @@ export default function LoginPage() {
               <img
                 alt="Mr. Boot Logo"
                 className="h-32 w-32 object-contain drop-shadow-lg"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuARVPGpnwXsUXPWcSgpCNivppVQApesxRmU4ZTEwmGaV6k31ekIjI_YftW6NgbKLGMCrutx91jePzxWKTPSm3xyTmxqPe1WwvzT3VJuAqHeU3or97MKnpnQYfaESI_BhFY-TVy8Fv97GweMcUNDUBWE_UTaU9q0pYDgiVadTvMv4QJOkMo4S9nhbzzlUez8KIYAqZIKpSV1VF-qJl3dFrluZTKJWeX1Cq2IjuiwMGMSVvq4ur_b_K48GH2BDdxk6A0a_KU3lJ5krCQ"
+                src="/logo.png"
               />
               <div>
                 <h2 className="font-headline-lg text-headline-lg text-primary tracking-tight font-bold">

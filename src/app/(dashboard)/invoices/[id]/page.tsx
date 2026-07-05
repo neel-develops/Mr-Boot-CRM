@@ -97,7 +97,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
             <div className="flex justify-between items-start gap-6 mb-8">
               <div className="flex items-center gap-4">
                 <img
-                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCn7lW1vtQ0lZyfs5lXTaByxV89HdnteWqn32a8d3s-HaptrgDl_YBkkfJQL2pQMkLaxg-_LYJJyqPTZEvFhqt8zFxvFcr-9ijYS2t-9_bptwCa9AEFh6CLCFtKo2RLDNDaSi1AOuHJ5wWVx3oofr8KPKOVKC4jMSCXFwr29Ow55QFlKEq0wMWUqkkq6plvRdfrzUAYvF90N2yqWSLY-YkGA-OlXECjxuB7cfNrQkWrqrMBki4ezsWl4bosEXFEMlWSyFdYT3MFUs8"
+                  src="/logo.png"
                   alt="Mr. Boot Logo"
                   crossOrigin="anonymous"
                   className="w-16 h-16 rounded-full object-cover border border-black/5"
