@@ -114,7 +114,7 @@ export default async function ExecutiveDashboardPage() {
       </div>
 
       {/* Floating Glass Widgets (KPIs) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-card-gap">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-card-gap">
         {/* Widget 1: Revenue */}
         <GlassCard hoverable>
           <div className="flex justify-between items-start mb-4">
@@ -164,30 +164,6 @@ export default async function ExecutiveDashboardPage() {
             <span className="text-label-sm font-label-sm text-on-surface-variant">shoes ready</span>
           </div>
         </GlassCard>
-
-        {/* Widget 4: AI Insights Brief */}
-        <div className="bg-primary/5 backdrop-blur-[20px] border border-primary/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] rounded-xl p-6 relative overflow-hidden group hover:shadow-[0_12px_48px_rgba(0,0,0,0.08)] transition-all duration-300">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-tertiary-fixed-dim/20 rounded-full blur-[30px] -mr-10 -mt-10 pointer-events-none"></div>
-          <div className="flex justify-between items-start mb-2 relative z-10">
-            <h3 className="text-label-sm font-label-sm text-primary uppercase tracking-wider font-semibold flex items-center gap-1.5">
-              <span className="material-symbols-outlined text-[16px] text-tertiary-fixed-dim" style={{ fontVariationSettings: "'FILL' 1" }}>
-                auto_awesome
-              </span>
-              AI Business Assistant
-            </h3>
-          </div>
-          <p className="text-body-md font-body-md text-on-surface-variant relative z-10 mt-1 line-clamp-2">
-            Grounded in Neon DB. Ask about revenue, customer history, low-stock updates, and more.
-          </p>
-          <div className="mt-3 relative z-10">
-            <Link
-              href="/whatsapp-automation" // Or AI route
-              className="text-label-sm font-label-sm text-primary hover:text-primary-container font-semibold flex items-center gap-1 transition-colors"
-            >
-              Ask Assistant <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </Link>
-          </div>
-        </div>
       </div>
 
       {/* Bento Grid: Charts & Activities */}

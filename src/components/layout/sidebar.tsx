@@ -167,10 +167,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
             <span className="material-symbols-outlined text-[20px] text-primary">notifications_active</span>
             <span className="text-label-sm font-label-sm text-primary">{isSubscribing ? 'Enabling...' : 'Enable Notifications'}</span>
           </button>
-          <div className="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-outline-variant">
-            <span className="material-symbols-outlined text-[20px]">verified_user</span>
-            <span className="text-[12px] font-label-sm opacity-80">RBAC Active</span>
-          </div>
         </div>
       </div>
     </aside>
