@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { GlassCard } from "@/components/ui/glass-card";
-import { deleteCustomer } from "@/app/actions/customers";
+import { DeleteCustomerButton } from "@/components/customers/delete-customer-button";
 
 interface CustomerDetailPageProps {
   params: {
@@ -103,16 +103,7 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
         </div>
 
         <div className="z-10 w-full md:w-auto flex flex-col sm:flex-row gap-3">
-          <form action={deleteCustomer} onSubmit={(e) => { if (!confirm("Are you sure you want to delete this customer? This will also delete all their orders and bills!")) e.preventDefault(); }} className="flex-1 md:flex-none">
-            <input type="hidden" name="customerId" value={customer.id} />
-            <button
-              type="submit"
-              className="w-full border border-error text-error hover:bg-error/5 px-6 py-2.5 rounded-lg font-label-sm text-label-sm font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all duration-250 flex items-center justify-center gap-2 text-center"
-            >
-              <span className="material-symbols-outlined text-[18px]">delete</span>
-              Delete Customer
-            </button>
-          </form>
+          <DeleteCustomerButton customerId={customer.id} />
           <Link
             href="/orders/new"
             className="flex-1 md:flex-none bg-primary text-on-primary px-6 py-2.5 rounded-lg font-label-sm text-label-sm font-semibold hover:-translate-y-0.5 hover:shadow-lg transition-all duration-250 flex items-center justify-center gap-2 text-center"
