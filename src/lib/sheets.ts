@@ -51,8 +51,8 @@ async function syncProcess({ table, data }: SyncPayload): Promise<void> {
     }
   }
 
-  // 1. Fetch current Sheet values to read headers and locate existing row ID
   let rangeValues: any[][] = [];
+  let tabExists = true;
   try {
     const response = await sheets.spreadsheets.values.get({
       spreadsheetId,
@@ -60,9 +60,26 @@ async function syncProcess({ table, data }: SyncPayload): Promise<void> {
     });
     rangeValues = response.data.values || [];
   } catch (err: any) {
-    // If the tab doesn't exist, we might get an error. Attempt to create headers.
-    console.error(`[Google Sheets Sync] Error reading sheet range for ${table}:`, err.message);
-    return;
+    if (err.message?.includes('Unable to parse range') || err.code === 400) {
+      // Tab doesn't exist — create it
+      tabExists = false;
+      try {
+        await sheets.spreadsheets.batchUpdate({
+          spreadsheetId,
+          requestBody: {
+            requests: [{ addSheet: { properties: { title: table } } }],
+          },
+        });
+        console.log(`[Google Sheets Sync] Created new tab: ${table}`);
+        rangeValues = [];
+      } catch (createErr: any) {
+        console.error(`[Google Sheets Sync] Failed to create tab ${table}:`, createErr.message);
+        return;
+      }
+    } else {
+      console.error(`[Google Sheets Sync] Error reading sheet range for ${table}:`, err.message);
+      return;
+    }
   }
 
   // Ensure headers exist in the sheet. If sheet is empty, write header row.

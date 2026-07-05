@@ -202,12 +202,8 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
                 </div>
               </div>
 
-              {/* PAID stamp badge */}
-              {Number(invoice.balanceDue) === 0 && (
-                <div className="absolute right-[45%] bottom-[120px] transform -rotate-12 border-4 border-emerald-600 text-emerald-600 font-black text-2xl px-6 py-1.5 rounded uppercase tracking-widest opacity-80 pointer-events-none select-none">
-                  PAID
-                </div>
-              )}
+
+
             </div>
 
             {/* Signature Footer */}

@@ -10,16 +10,16 @@ const categories = [
 ];
 
 const availableServices = [
-  { id: "srv_laundry", label: "Standard Laundry", price: 600 },
-  { id: "srv_deepclean", label: "Premium Deep Clean", price: 1200 },
-  { id: "srv_polish", label: "Shoe Polish", price: 300 },
-  { id: "srv_waterproof", label: "Waterproofing", price: 500 },
-  { id: "srv_stain", label: "Stain Removal", price: 400 },
-  { id: "srv_odor", label: "Odor Treatment", price: 300 },
-  { id: "srv_sole_p", label: "Sole Pasting", price: 800 },
-  { id: "srv_sole_c", label: "Sole Change", price: 2000 },
-  { id: "srv_heel_c", label: "Heel Change", price: 1500 },
-  { id: "srv_heel_r", label: "Heel Repair", price: 1000 },
+  { id: "srv_laundry", label: "Standard Laundry" },
+  { id: "srv_deepclean", label: "Premium Deep Clean" },
+  { id: "srv_polish", label: "Shoe Polish" },
+  { id: "srv_waterproof", label: "Waterproofing" },
+  { id: "srv_stain", label: "Stain Removal" },
+  { id: "srv_odor", label: "Odor Treatment" },
+  { id: "srv_sole_p", label: "Sole Pasting" },
+  { id: "srv_sole_c", label: "Sole Change" },
+  { id: "srv_heel_c", label: "Heel Change" },
+  { id: "srv_heel_r", label: "Heel Repair" },
 ];
 
 interface OrderItemState {
@@ -28,8 +28,10 @@ interface OrderItemState {
   model: string;
   description: string;
   services: string[];
-  photoFile: File | null;
-  photoUrl?: string;
+  price: number; // per-item custom price
+  mainPhotoFile: File | null;
+  mainPhotoUrl?: string;
+  additionalPhotos: { file: File; url?: string; uploading: boolean }[];
   uploading: boolean;
 }
 
@@ -52,7 +54,6 @@ export default function NewOrderPage() {
 
   // Order state
   const [orderType, setOrderType] = useState("Sole Replacement");
-  const [orderPrice, setOrderPrice] = useState(0);
   const [advancePaid, setAdvancePaid] = useState(0);
   const [paymentMode, setPaymentMode] = useState("CASH");
   const [dueDate, setDueDate] = useState("");
@@ -69,12 +70,16 @@ export default function NewOrderPage() {
       model: "",
       description: "",
       services: [],
-      photoFile: null,
+      price: 0,
+      mainPhotoFile: null,
+      additionalPhotos: [],
       uploading: false,
     },
   ]);
 
-  // Load artisans
+  // Computed subtotal
+  const subtotal = items.reduce((sum, item) => sum + (item.price || 0), 0);
+
   useEffect(() => {
     fetch("/api/staff")
       .then((res) => res.json())
@@ -82,7 +87,6 @@ export default function NewOrderPage() {
       .catch((err) => console.error("Error loading staff:", err));
   }, []);
 
-  // Customer search
   useEffect(() => {
     if (customerSearch.trim().length > 1) {
       fetch(`/api/customers?search=${encodeURIComponent(customerSearch)}`)
@@ -127,7 +131,9 @@ export default function NewOrderPage() {
         model: "",
         description: "",
         services: [],
-        photoFile: null,
+        price: 0,
+        mainPhotoFile: null,
+        additionalPhotos: [],
         uploading: false,
       },
     ]);
@@ -137,7 +143,6 @@ export default function NewOrderPage() {
     const updated = [...items];
     updated[index] = { ...updated[index], [field]: value };
     setItems(updated);
-    recalculatePrice(updated);
   };
 
   const handleServiceToggle = (itemIndex: number, serviceLabel: string) => {
@@ -149,38 +154,55 @@ export default function NewOrderPage() {
       updated[itemIndex].services = [...currentServices, serviceLabel];
     }
     setItems(updated);
-    recalculatePrice(updated);
   };
 
-  const recalculatePrice = (updatedItems: OrderItemState[]) => {
-    let total = 0;
-    updatedItems.forEach((item) => {
-      item.services.forEach((srvLabel) => {
-        const matched = availableServices.find((s) => s.label === srvLabel);
-        if (matched) total += matched.price;
-      });
-    });
-    setOrderPrice(total);
-  };
-
-  const handleFileUpload = async (index: number, file: File) => {
+  // Upload main photo for item
+  const handleMainPhotoUpload = async (index: number, file: File) => {
     const updated = [...items];
     updated[index].uploading = true;
-    updated[index].photoFile = file;
-    setItems(updated);
+    updated[index].mainPhotoFile = file;
+    setItems([...updated]);
 
     try {
       const publicUrl = await uploadImage(file, "before-images");
-      updated[index].photoUrl = publicUrl;
-      console.log("Photo uploaded to Supabase:", publicUrl);
+      updated[index].mainPhotoUrl = publicUrl;
     } catch (err) {
-      console.error("Supabase Storage upload failed, fallback used:", err);
-      // fallback mock URL for local testing if no Supabase URL set
-      updated[index].photoUrl = "https://images.unsplash.com/photo-1542291026-7eec264c27ff";
+      console.error("Main photo upload failed:", err);
+      updated[index].mainPhotoUrl = URL.createObjectURL(file);
     } finally {
       updated[index].uploading = false;
       setItems([...updated]);
     }
+  };
+
+  // Add extra photos for item
+  const handleAdditionalPhotoUpload = async (index: number, files: FileList) => {
+    const updated = [...items];
+    const fileArray = Array.from(files);
+
+    // Add placeholders
+    const newPhotos = fileArray.map((f) => ({ file: f, uploading: true }));
+    updated[index].additionalPhotos = [...updated[index].additionalPhotos, ...newPhotos];
+    setItems([...updated]);
+
+    // Upload each
+    for (let i = 0; i < fileArray.length; i++) {
+      const file = fileArray[i];
+      const photoIdx = updated[index].additionalPhotos.length - fileArray.length + i;
+      try {
+        const url = await uploadImage(file, "before-images");
+        updated[index].additionalPhotos[photoIdx] = { file, url, uploading: false };
+      } catch {
+        updated[index].additionalPhotos[photoIdx].uploading = false;
+      }
+      setItems([...updated]);
+    }
+  };
+
+  const removeAdditionalPhoto = (itemIndex: number, photoIndex: number) => {
+    const updated = [...items];
+    updated[itemIndex].additionalPhotos.splice(photoIndex, 1);
+    setItems([...updated]);
   };
 
   const handleFormSubmit = async () => {
@@ -210,7 +232,7 @@ export default function NewOrderPage() {
       order: {
         serviceType: items.length > 0 && items[0].services.length > 0 ? items[0].services[0] : orderType,
         itemType: items.map((i) => `${i.brand || ""} ${i.model || i.category}`).join(", "),
-        price: orderPrice,
+        price: subtotal,
         dueDate: new Date(dueDate),
         notes: orderNotes,
         artisanId: artisanId || undefined,
@@ -221,7 +243,9 @@ export default function NewOrderPage() {
         model: i.model,
         description: i.description,
         services: i.services,
-        photoUrl: i.photoUrl,
+        price: i.price,
+        photoUrl: i.mainPhotoUrl,
+        additionalPhotos: i.additionalPhotos.filter(p => p.url).map(p => p.url!),
       })),
       payment: {
         advancePaid,
@@ -233,12 +257,10 @@ export default function NewOrderPage() {
     setIsSubmitting(false);
 
     if (res.success) {
-      // Redirect to invoice page with auto-print flag
       router.push(`/invoices/${res.orderId}?print=1`);
     } else {
       alert("Error creating order: " + res.error);
     }
-
   };
 
   return (
@@ -420,7 +442,6 @@ export default function NewOrderPage() {
                     onClick={() => {
                       const updated = items.filter((_, idx) => idx !== itemIdx);
                       setItems(updated);
-                      recalculatePrice(updated);
                     }}
                     className="text-error font-medium hover:underline text-sm"
                   >
@@ -475,10 +496,10 @@ export default function NewOrderPage() {
                 </div>
               </div>
 
-              {/* Service Selection */}
+              {/* Service Selection — no fixed prices */}
               <div>
                 <label className="block text-sm font-medium text-on-surface mb-3">Select Services</label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-4 bg-surface-container-low rounded-xl border border-black/5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-4 bg-surface-container-low rounded-xl border border-black/5">
                   {availableServices.map((service) => {
                     const isChecked = item.services.includes(service.label);
                     return (
@@ -489,41 +510,122 @@ export default function NewOrderPage() {
                           onChange={() => handleServiceToggle(itemIdx, service.label)}
                           className="rounded text-primary focus:ring-primary border-black/10 w-4 h-4"
                         />
-                        <div className="flex-1 flex justify-between text-sm">
-                          <span className="font-medium">{service.label}</span>
-                          <span className="text-on-surface-variant font-semibold">₹{service.price}</span>
-                        </div>
+                        <span className="text-sm font-medium flex-1">{service.label}</span>
                       </label>
                     );
                   })}
                 </div>
               </div>
 
-              {/* Upload Intake Photo */}
+              {/* Per-Item Price */}
               <div>
-                <label className="block text-sm font-medium text-on-surface mb-3">Upload Intake Photo</label>
-                <div className="flex items-center gap-6">
-                  <label className="w-full h-40 border-2 border-dashed border-black/10 dark:border-white/10 rounded-xl bg-white/30 hover:bg-white/50 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer">
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="sr-only"
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleFileUpload(itemIdx, file);
-                      }}
-                    />
-                    <span className="material-symbols-outlined text-primary-container text-[28px]">
-                      add_a_photo
-                    </span>
-                    <span className="text-sm font-medium text-primary">Click to upload intake image</span>
-                    {item.uploading && <span className="text-xs text-on-surface-variant">Uploading...</span>}
-                  </label>
-                  {item.photoUrl && (
-                    <div className="w-40 h-40 rounded-xl overflow-hidden border border-black/5 flex-shrink-0 relative">
-                      <img src={item.photoUrl} alt="Uploaded intake preview" className="w-full h-full object-cover" />
-                    </div>
-                  )}
+                <label className="block text-sm font-medium text-on-surface mb-2">
+                  Price for this item
+                </label>
+                <div className="relative w-48">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-semibold">₹</span>
+                  <input
+                    type="number"
+                    min="0"
+                    value={item.price || ""}
+                    onChange={(e) => handleItemChange(itemIdx, "price", Number(e.target.value))}
+                    className="w-full bg-white/50 border-2 border-primary/20 rounded-xl py-3 pl-8 pr-4 text-lg font-bold focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
+                    placeholder="0"
+                  />
+                </div>
+                <p className="text-xs text-on-surface-variant mt-1">This will be added to the invoice subtotal</p>
+              </div>
+
+              {/* Intake Photos Section */}
+              <div>
+                <label className="block text-sm font-medium text-on-surface mb-3">
+                  <span className="material-symbols-outlined text-[16px] align-middle mr-1">photo_camera</span>
+                  Intake Photos
+                </label>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Main Photo (shown on bill) */}
+                  <div>
+                    <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Main Photo (For Bill)</p>
+                    <label className="block w-full h-40 border-2 border-dashed border-primary/20 rounded-xl bg-white/30 hover:bg-white/50 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer relative overflow-hidden">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="sr-only"
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleMainPhotoUpload(itemIdx, file);
+                        }}
+                      />
+                      {item.mainPhotoUrl ? (
+                        <img src={item.mainPhotoUrl} alt="Main photo" className="w-full h-full object-cover absolute inset-0 rounded-xl" />
+                      ) : (
+                        <>
+                          <span className="material-symbols-outlined text-primary-container text-[32px]">add_a_photo</span>
+                          <span className="text-sm font-medium text-primary">Click to upload main photo</span>
+                          {item.uploading && <span className="text-xs text-on-surface-variant">Uploading...</span>}
+                        </>
+                      )}
+                    </label>
+                    {item.mainPhotoUrl && (
+                      <button
+                        type="button"
+                        onClick={() => handleItemChange(itemIdx, "mainPhotoUrl", undefined)}
+                        className="text-xs text-error mt-1 hover:underline"
+                      >
+                        Remove
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Additional Photos */}
+                  <div>
+                    <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Additional Photos</p>
+                    <label className="block w-full h-40 border-2 border-dashed border-black/10 rounded-xl bg-white/20 hover:bg-white/40 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer">
+                      <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        className="sr-only"
+                        onChange={(e) => {
+                          if (e.target.files?.length) handleAdditionalPhotoUpload(itemIdx, e.target.files);
+                        }}
+                      />
+                      <span className="material-symbols-outlined text-on-surface-variant text-[32px]">photo_library</span>
+                      <span className="text-sm font-medium text-on-surface-variant">Upload more 'Before' photos</span>
+                      <span className="text-xs text-on-surface-variant opacity-70">Multiple files allowed</span>
+                    </label>
+
+                    {/* Thumbnails */}
+                    {item.additionalPhotos.length > 0 && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {item.additionalPhotos.map((photo, photoIdx) => (
+                          <div key={photoIdx} className="relative w-14 h-14 rounded-lg overflow-hidden border border-black/10 flex-shrink-0">
+                            {photo.uploading ? (
+                              <div className="w-full h-full bg-black/10 flex items-center justify-center">
+                                <span className="material-symbols-outlined text-[18px] animate-spin">sync</span>
+                              </div>
+                            ) : (
+                              <>
+                                <img
+                                  src={photo.url || URL.createObjectURL(photo.file)}
+                                  alt={`Extra ${photoIdx + 1}`}
+                                  className="w-full h-full object-cover"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => removeAdditionalPhoto(itemIdx, photoIdx)}
+                                  className="absolute top-0 right-0 bg-black/60 text-white rounded-bl-lg w-5 h-5 flex items-center justify-center text-[10px]"
+                                >
+                                  ✕
+                                </button>
+                              </>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -534,7 +636,7 @@ export default function NewOrderPage() {
             onClick={handleAddItem}
             className="w-full py-4 border-2 border-dashed border-primary-container/30 rounded-xl text-primary font-semibold flex items-center justify-center gap-2 hover:bg-primary-fixed/10 transition-colors"
           >
-            <span className="material-symbols-outlined">add_circle</span> + Add Another Item
+            <span className="material-symbols-outlined">add_circle</span> + Add Another Pair / Item
           </button>
         </div>
 
@@ -614,9 +716,21 @@ export default function NewOrderPage() {
                   ))}
                 </div>
 
+                {/* Per-item breakdown */}
+                {items.length > 1 && (
+                  <div className="bg-white/30 rounded-lg p-3 space-y-1 border border-black/5">
+                    {items.map((item, i) => (
+                      <div key={i} className="flex justify-between text-xs text-on-surface-variant">
+                        <span>Item #{i + 1} — {item.category || "Unset"}</span>
+                        <span>₹{(item.price || 0).toLocaleString("en-IN")}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
                 <div className="flex justify-between items-center pt-2">
                   <span className="text-sm text-on-surface">Subtotal</span>
-                  <span className="font-semibold text-primary dark:text-primary-fixed">₹{orderPrice}</span>
+                  <span className="font-semibold text-primary dark:text-primary-fixed">₹{subtotal.toLocaleString("en-IN")}</span>
                 </div>
 
                 <div className="flex justify-between items-center">
@@ -636,7 +750,7 @@ export default function NewOrderPage() {
                 <div className="flex justify-between items-end pt-4 border-t border-black/5">
                   <span className="text-sm text-on-surface-variant">Balance Due</span>
                   <span className="font-numeral-xl text-numeral-xl text-primary dark:text-primary-fixed">
-                    ₹{orderPrice - advancePaid}
+                    ₹{(subtotal - advancePaid).toLocaleString("en-IN")}
                   </span>
                 </div>
 
