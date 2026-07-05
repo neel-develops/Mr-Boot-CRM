@@ -67,13 +67,13 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
   return (
     <div className="w-full min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       {/* Invoice Box */}
-      <div className="glass-card w-full max-w-2xl rounded-[1.5rem] overflow-hidden relative border border-white/20 shadow-2xl bg-white/70">
+      <div id="invoice-box" className="glass-card w-full max-w-2xl rounded-[1.5rem] overflow-hidden relative border border-white/20 shadow-2xl bg-white/70">
         {/* Top Accent Line */}
         <div className="h-2.5 w-full bg-primary"></div>
         <div className="p-8 md:p-12">
           {/* Interactive Actions: Print + WhatsApp (Client Component) */}
           <Suspense fallback={null}>
-            <InvoiceActions waShareUrl={waShareUrl} />
+            <InvoiceActions waShareUrl={waShareUrl} invoiceNumber={invoice.invoiceNumber} />
           </Suspense>
 
           {/* Header Row */}
@@ -110,15 +110,31 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
             </div>
 
             {order.items.map((item) => (
-              <div key={item.id} className="flex justify-between items-start border-b border-dashed border-black/5 pb-4 mb-4">
-                <div className="pr-4">
-                  <p className="text-md font-semibold text-primary mb-0.5">{item.brand ? `${item.brand} ${item.model}` : item.category}</p>
-                  <p className="text-xs text-on-surface-variant">{item.services.join(", ")}</p>
+              <div key={item.id} className="border-b border-dashed border-black/5 pb-4 mb-4">
+                <div className="flex justify-between items-start">
+                  <div className="pr-4 flex-1">
+                    <p className="text-md font-semibold text-primary mb-0.5">{item.brand ? `${item.brand} ${item.model}` : item.category}</p>
+                    <p className="text-xs text-on-surface-variant">{item.services.join(", ")}</p>
+                  </div>
+                  <p className="font-semibold text-primary whitespace-nowrap">₹{Number(order.price).toLocaleString("en-IN")}</p>
                 </div>
-                <p className="font-semibold text-primary whitespace-nowrap">₹{Number(order.price).toLocaleString("en-IN")}</p>
+                {/* Item Photo — show intake/proof photo if uploaded */}
+                {item.photoUrl && (
+                  <div className="mt-3">
+                    <p className="text-[10px] text-on-surface-variant uppercase tracking-wider mb-1.5 font-semibold">Item Photo</p>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={item.photoUrl}
+                      alt={`${item.category} photo`}
+                      crossOrigin="anonymous"
+                      className="w-28 h-28 object-cover rounded-lg border border-black/10 shadow-sm"
+                    />
+                  </div>
+                )}
               </div>
             ))}
           </div>
+
 
           {/* Totals & QR Tracker Section */}
           <div className="flex flex-col sm:flex-row justify-between items-end gap-6 mb-8 pt-4">
