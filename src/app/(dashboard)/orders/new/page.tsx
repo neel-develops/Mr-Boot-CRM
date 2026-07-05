@@ -172,9 +172,15 @@ export default function NewOrderPage() {
         const cust = await res.json();
         setSelectedCustomer(cust);
         setShowAddCustomer(false);
+      } else if (res.status === 409) {
+        const errorData = await res.json();
+        alert(errorData.error || "Customer already exists.");
+      } else {
+        alert("Failed to create customer. Please try again.");
       }
     } catch (err) {
       console.error(err);
+      alert("Network error occurred.");
     }
   };
 

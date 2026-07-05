@@ -162,3 +162,68 @@ function getColLetter(colCount: number): string {
   }
   return letter || 'A';
 }
+
+export async function deleteFromSheet({ table, id }: { table: string; id: string }): Promise<void> {
+  deleteProcess({ table, id }).catch((error) => {
+    console.error(`[Google Sheets Delete Failed] Table: ${table}, Record ID: ${id}. Error:`, error);
+  });
+}
+
+async function deleteProcess({ table, id }: { table: string; id: string }): Promise<void> {
+  if (!clientEmail || !privateKey || !spreadsheetId) return;
+
+  const auth = getAuthClient();
+  const sheets = google.sheets({ version: 'v4', auth });
+
+  let rangeValues: any[][] = [];
+  try {
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: `${table}!A:Z`,
+    });
+    rangeValues = response.data.values || [];
+  } catch (err: any) {
+    return; // Tab likely doesn't exist, nothing to delete
+  }
+
+  if (rangeValues.length === 0) return;
+  const headers = rangeValues[0];
+  const idColIndex = headers.indexOf('id');
+  if (idColIndex === -1) return;
+
+  let rowIndexToDelete = -1; // 0-indexed for batchUpdate
+  for (let i = 1; i < rangeValues.length; i++) {
+    if (rangeValues[i][idColIndex] === id) {
+      rowIndexToDelete = i;
+      break;
+    }
+  }
+
+  if (rowIndexToDelete === -1) return; // Not found
+
+  // To delete a row, we need the specific sheetId (tab ID)
+  const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
+  const sheet = spreadsheet.data.sheets?.find(s => s.properties?.title === table);
+  const sheetId = sheet?.properties?.sheetId;
+
+  if (sheetId === undefined) return;
+
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId,
+    requestBody: {
+      requests: [
+        {
+          deleteDimension: {
+            range: {
+              sheetId,
+              dimension: 'ROWS',
+              startIndex: rowIndexToDelete,
+              endIndex: rowIndexToDelete + 1,
+            },
+          },
+        },
+      ],
+    },
+  });
+  console.log(`[Google Sheets Delete] Deleted row index ${rowIndexToDelete} in ${table}`);
+}

@@ -4,6 +4,18 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
 import { supabase } from "@/lib/supabase";
+import { useState } from "react";
+
+const urlBase64ToUint8Array = (base64String: string) => {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) {
+    outputArray[i] = rawData.charCodeAt(i);
+  }
+  return outputArray;
+};
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: "dashboard" },
@@ -24,6 +36,44 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
+  const [isSubscribing, setIsSubscribing] = useState(false);
+
+  const subscribeUser = async () => {
+    if ('serviceWorker' in navigator && 'PushManager' in window) {
+      setIsSubscribing(true);
+      try {
+        const register = await navigator.serviceWorker.register('/sw.js');
+        const publicVapidKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
+        
+        if (!publicVapidKey) {
+          alert('VAPID public key not configured.');
+          setIsSubscribing(false);
+          return;
+        }
+        
+        const subscription = await register.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(publicVapidKey)
+        });
+        
+        await fetch('/api/notifications/subscribe', {
+          method: 'POST',
+          body: JSON.stringify(subscription),
+          headers: {
+            'content-type': 'application/json'
+          }
+        });
+        alert('Device Notifications Enabled!');
+      } catch (e) {
+        console.error(e);
+        alert('Failed to enable notifications. Ensure you granted permissions.');
+      } finally {
+        setIsSubscribing(false);
+      }
+    } else {
+      alert('Push notifications are not supported in this browser/device.');
+    }
+  };
 
   return (
     <aside
@@ -108,6 +158,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
           >
             <span className="material-symbols-outlined text-[20px] text-error">logout</span>
             <span className="text-label-sm font-label-sm text-error">Sign Out</span>
+          </button>
+          <button
+            onClick={subscribeUser}
+            disabled={isSubscribing}
+            className="flex items-center gap-3 px-4 py-2 w-full text-left rounded-lg text-primary hover:bg-primary/10 transition-all duration-250 ease-out"
+          >
+            <span className="material-symbols-outlined text-[20px] text-primary">notifications_active</span>
+            <span className="text-label-sm font-label-sm text-primary">{isSubscribing ? 'Enabling...' : 'Enable Notifications'}</span>
           </button>
           <div className="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-outline-variant">
             <span className="material-symbols-outlined text-[20px]">verified_user</span>

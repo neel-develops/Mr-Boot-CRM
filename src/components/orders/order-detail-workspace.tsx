@@ -66,6 +66,20 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
     }
   };
 
+  const [isDeleting, setIsDeleting] = useState(false);
+  const handleDeleteOrder = async () => {
+    if (confirm("Are you sure you want to permanently delete this order? This will remove it from the database and Google Sheets.")) {
+      setIsDeleting(true);
+      const res = await deleteOrder(order.id);
+      if (res.success) {
+        window.location.href = "/orders";
+      } else {
+        alert("Error deleting order: " + res.error);
+        setIsDeleting(false);
+      }
+    }
+  };
+
   const customerName = order.customer.firstName;
   const phone = order.customer.phone.replace(/[^0-9]/g, "");
 
@@ -181,13 +195,23 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
               </div>
               <div className="flex gap-2">
                 {!isEditing && (
-                  <button
-                    onClick={() => setIsEditing(true)}
-                    className="px-3 py-1 bg-primary text-on-primary font-semibold text-sm rounded-lg hover:opacity-90 flex items-center gap-1 shadow-sm transition-all"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">edit</span>
-                    Edit
-                  </button>
+                  <>
+                    <button
+                      onClick={handleDeleteOrder}
+                      disabled={isDeleting}
+                      className="px-3 py-1 bg-error/10 text-error font-semibold text-sm rounded-lg hover:bg-error hover:text-white flex items-center gap-1 shadow-sm transition-all"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">delete</span>
+                      {isDeleting ? "Deleting..." : "Delete"}
+                    </button>
+                    <button
+                      onClick={() => setIsEditing(true)}
+                      className="px-3 py-1 bg-primary text-on-primary font-semibold text-sm rounded-lg hover:opacity-90 flex items-center gap-1 shadow-sm transition-all"
+                    >
+                      <span className="material-symbols-outlined text-[16px]">edit</span>
+                      Edit
+                    </button>
+                  </>
                 )}
                 <span
                   className={`px-3 py-1 rounded-full font-label-sm text-label-sm border ${

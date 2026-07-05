@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
-import { syncToSheet } from "@/lib/sheets";
+import { syncToSheet, deleteFromSheet } from "@/lib/sheets";
 import { OrderStatus, Role } from "@prisma/client";
 import { nanoid } from "nanoid";
 
@@ -500,3 +500,27 @@ export async function removeAddonFromOrder(addonId: string, orderId: string) {
   }
 }
 
+export async function deleteOrder(orderId: string) {
+  try {
+    // Check if invoices exist to delete them from sheets too
+    const invoices = await prisma.invoice.findMany({ where: { orderId } });
+    for (const inv of invoices) {
+      await deleteFromSheet({ table: "invoices", id: inv.id });
+    }
+
+    // Delete order from sheets
+    await deleteFromSheet({ table: "orders", id: orderId });
+
+    // Delete from DB (cascades invoices, notifications, public links, items)
+    await prisma.order.delete({
+      where: { id: orderId },
+    });
+
+    revalidatePath("/orders");
+    revalidatePath("/billing");
+    return { success: true };
+  } catch (err: any) {
+    console.error("Error deleting order:", err);
+    return { success: false, error: err.message || "Failed to delete order" };
+  }
+}

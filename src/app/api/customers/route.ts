@@ -29,6 +29,19 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const { firstName, lastName, email, phone, notes } = await request.json();
+
+    // Check if customer with EXACT same name and phone already exists
+    const existing = await prisma.customer.findFirst({
+      where: {
+        firstName: { equals: firstName, mode: 'insensitive' },
+        phone: phone,
+      }
+    });
+
+    if (existing) {
+      return NextResponse.json({ error: "Customer with this name and phone already exists." }, { status: 409 });
+    }
+
     const newCustomer = await prisma.customer.create({
       data: { firstName, lastName, email, phone, notes },
     });
