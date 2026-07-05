@@ -2,6 +2,7 @@ import React from "react";
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import QRCode from "qrcode";
+import { InvoiceActions } from "@/components/invoices/invoice-actions";
 
 interface InvoicePageProps {
   params: {
@@ -70,16 +71,8 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
         {/* Top Accent Line */}
         <div className="h-2.5 w-full bg-primary"></div>
         <div className="p-8 md:p-12">
-          {/* Print Button (Hidden in Print Mode) */}
-          <div className="flex justify-end mb-6 print:hidden">
-            <button
-              onClick={() => window.print()}
-              className="px-4 py-2 border border-black/10 hover:bg-black/5 text-primary text-xs font-semibold rounded-lg flex items-center gap-1.5 transition-all"
-            >
-              <span className="material-symbols-outlined text-[16px]">print</span>
-              Print Invoice
-            </button>
-          </div>
+          {/* Interactive Actions: Print + WhatsApp (Client Component) */}
+          <InvoiceActions waShareUrl={waShareUrl} />
 
           {/* Header Row */}
           <div className="flex flex-col sm:flex-row justify-between items-start gap-6 mb-8">
@@ -158,18 +151,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
             </div>
           </div>
 
-          {/* Share Option */}
-          <div className="flex justify-center sm:justify-start pt-4 border-t border-black/5 print:hidden">
-            <a
-              href={waShareUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#25D366] text-white hover:bg-[#128C7E] transition-colors font-semibold text-xs shadow-sm"
-            >
-              <span className="material-symbols-outlined text-[16px]">send</span>
-              Share via WhatsApp
-            </a>
-          </div>
+
 
           {/* Signature Footer */}
           <div className="text-center mt-12 pt-6 border-t border-black/5">
