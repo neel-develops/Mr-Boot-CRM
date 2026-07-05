@@ -38,12 +38,12 @@ async function main() {
       {
         name: "Pankaj",
         email: "pankaj@mrboot.com",
-        role: "ARTISAN",
+        role: "ADMIN",
       },
       {
         name: "Vinita",
         email: "vinita@mrboot.com",
-        role: "ARTISAN",
+        role: "ADMIN",
       },
     ],
   });

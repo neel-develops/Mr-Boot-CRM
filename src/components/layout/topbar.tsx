@@ -20,6 +20,9 @@ export const Topbar = () => {
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
 
   // Fetch notifications from real database API
   const fetchNotifications = async () => {
@@ -41,11 +44,23 @@ export const Topbar = () => {
     return () => clearInterval(interval);
   }, []);
 
+  // Fetch current logged-in user
+  useEffect(() => {
+    import("@/lib/supabase").then(({ supabase }) => {
+      supabase.auth.getUser().then(({ data }) => {
+        setCurrentUserEmail(data?.user?.email || null);
+      });
+    });
+  }, []);
+
   // Close dropdown on click outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setDropdownOpen(false);
+      }
+      if (profileRef.current && !profileRef.current.contains(event.target as Node)) {
+        setProfileOpen(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -193,11 +208,41 @@ export const Topbar = () => {
             Quick Settings
             <span className="material-symbols-outlined text-[16px]">bolt</span>
           </Link>
-          <img
-            alt="Manager Avatar"
-            className="w-8 h-8 md:w-9 md:h-9 rounded-full object-cover border-2 border-white shadow-sm cursor-pointer hover:scale-105 transition-transform"
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaMhlLoZVT9pyylupgHlp6NjqRGvFSsOsypIK1HEVtfvfdAIfboMw7ReIRVNCgM509RlKqdUGPn1jGhJAPGBgFSErzcTosfFaFd7I-WbZSMdnJ3XKc3ax0ev2IGDZMfBiVGl_4KElx--d5-RCEQgUE_3JxN4IyBs-_gAhxQZe8g4dgTU5s-Pa3yVgDWRSsUavWb5dOD56R9r5m1WKrdpg3jkgB_rpeIYsKJNmMiQRUpvszpyrEOVTOdog8nyb7-5CWhSvcYiK22mk"
-          />
+          {/* Profile Dropdown */}
+          <div className="relative" ref={profileRef}>
+            <button
+              onClick={() => setProfileOpen(!profileOpen)}
+              className="flex items-center gap-2 focus:outline-none"
+            >
+              <img
+                alt="Manager Avatar"
+                className="w-8 h-8 md:w-9 md:h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform"
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaMhlLoZVT9pyylupgHlp6NjqRGvFSsOsypIK1HEVtfvfdAIfboMw7ReIRVNCgM509RlKqdUGPn1jGhJAPGBgFSErzcTosfFaFd7I-WbZSMdnJ3XKc3ax0ev2IGDZMfBiVGl_4KElx--d5-RCEQgUE_3JxN4IyBs-_gAhxQZe8g4dgTU5s-Pa3yVgDWRSsUavWb5dOD56R9r5m1WKrdpg3jkgB_rpeIYsKJNmMiQRUpvszpyrEOVTOdog8nyb7-5CWhSvcYiK22mk"
+              />
+            </button>
+
+            {profileOpen && (
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-900 border border-black/5 dark:border-zinc-800 rounded-xl shadow-lg py-2 z-50 text-on-surface">
+              <div className="px-4 py-2 border-b border-black/5 dark:border-zinc-800 flex flex-col">
+                  <span className="font-semibold text-sm text-primary dark:text-primary-fixed">
+                    {currentUserEmail ? currentUserEmail.split('@')[0] : 'Active Staff'}
+                  </span>
+                  <span className="text-[11px] text-on-surface-variant">{currentUserEmail || 'Workspace Session'}</span>
+                </div>
+                <button
+                  onClick={async () => {
+                    const { supabase } = await import("@/lib/supabase");
+                    await supabase.auth.signOut();
+                    window.location.reload();
+                  }}
+                  className="w-full text-left px-4 py-2 hover:bg-black/5 dark:hover:bg-white/5 text-error text-sm font-semibold flex items-center gap-2 transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[18px]">logout</span>
+                  Sign Out
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </header>

@@ -1,6 +1,8 @@
 import React from "react";
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { GlassCard } from "@/components/ui/glass-card";
+
 
 export default async function FinancialsPage() {
   // 1. Fetch Invoices from DB
@@ -93,13 +95,14 @@ export default async function FinancialsPage() {
                 <th className="p-4 font-medium">Amount</th>
                 <th className="p-4 font-medium">Advance Paid</th>
                 <th className="p-4 font-medium">Balance Due</th>
-                <th className="p-4 font-medium pr-6">Date</th>
+                <th className="p-4 font-medium">Date</th>
+                <th className="p-4 font-medium pr-6">Bill</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-black/5 text-sm font-body-md">
               {invoices.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-on-surface-variant">
+                  <td colSpan={8} className="p-8 text-center text-on-surface-variant">
                     No transactions recorded.
                   </td>
                 </tr>
@@ -122,8 +125,17 @@ export default async function FinancialsPage() {
                     <td className={`p-4 font-semibold ${Number(inv.balanceDue) > 0 ? "text-error" : "text-[#2E7D32]"}`}>
                       ₹{Number(inv.balanceDue).toLocaleString("en-IN")}
                     </td>
-                    <td className="p-4 text-on-surface-variant pr-6">
+                    <td className="p-4 text-on-surface-variant">
                       {new Date(inv.createdAt).toLocaleDateString("en-IN")}
+                    </td>
+                    <td className="p-4 pr-6">
+                      <Link
+                        href={`/invoices/${inv.orderId}`}
+                        className="inline-flex items-center gap-1 px-3 py-1.5 bg-primary text-on-primary text-xs font-semibold rounded-lg hover:opacity-90 transition-opacity"
+                      >
+                        <span className="material-symbols-outlined text-[14px]">receipt</span>
+                        View Bill
+                      </Link>
                     </td>
                   </tr>
                 ))
