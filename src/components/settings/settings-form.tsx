@@ -30,6 +30,7 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ settings: initialSet
       billReadyTemplate,
       reviewRequestTemplate,
       googleReviewLink,
+      darkMode: false,
     });
     setSaving(false);
 
