@@ -27,8 +27,8 @@ export async function createOrder(formData: {
     dueDate: Date;
     notes?: string;
     artisanId?: string;
-    isPorter?: boolean;
-    porterCharge?: number;
+    pickupByPorter?: boolean;
+    dropByPorter?: boolean;
   };
   items: Array<{
     category: string;
@@ -79,8 +79,8 @@ export async function createOrder(formData: {
         notes: formData.order.notes 
           ? `${formData.order.notes}\n\nCreated By: ${formData.createdBy || "Neel Sonawane"}`
           : `Created By: ${formData.createdBy || "Neel Sonawane"}`,
-        isPorter: formData.order.isPorter || false,
-        porterCharge: formData.order.porterCharge || 0,
+        pickupByPorter: formData.order.pickupByPorter || false,
+        dropByPorter: formData.order.dropByPorter || false,
         items: {
           create: formData.items.map((item) => ({
             category: item.category,
@@ -353,40 +353,31 @@ export async function revertOrderToPending(orderId: string) {
   }
 }
 
-export async function togglePorterService(orderId: string, isPorter: boolean, porterCharge: number, actorEmail: string = "sarah@mrboot.com") {
+export async function updatePorterService(
+  orderId: string,
+  pickupByPorter: boolean,
+  dropByPorter: boolean,
+  actorEmail: string = "sarah@mrboot.com"
+) {
   try {
     const order = await prisma.order.update({
       where: { id: orderId },
-      data: {
-        isPorter,
-        porterCharge,
-      },
-      include: {
-        invoices: true,
-      }
+      data: { pickupByPorter, dropByPorter },
+      include: { invoices: true },
     });
 
-    if (order.invoices.length > 0) {
-      const invoice = order.invoices[0];
-      const finalAmount = Number(order.price);
-      const balanceDue = finalAmount - Number(invoice.advancePaid);
-      await prisma.invoice.update({
-        where: { id: invoice.id },
-        data: {
-          amount: finalAmount,
-          balanceDue,
-        }
-      });
-    }
+    // Determine label for log
+    let porterLabel = "Self Pickup & Self Drop";
+    if (pickupByPorter && dropByPorter) porterLabel = "Porter Pickup & Porter Drop";
+    else if (pickupByPorter) porterLabel = "Porter Pickup / Self Drop";
+    else if (dropByPorter) porterLabel = "Self Pickup / Porter Drop";
 
     await prisma.activityLog.create({
       data: {
         orderId,
-        event: isPorter 
-          ? `Pick & Drop via Porter activated (Charge: ₹${porterCharge})` 
-          : "Pick & Drop via Porter deactivated",
+        event: `Delivery mode updated: ${porterLabel}`,
         actor: actorEmail,
-      }
+      },
     });
 
     revalidatePath(`/orders/${orderId}`);
@@ -394,9 +385,14 @@ export async function togglePorterService(orderId: string, isPorter: boolean, po
     revalidatePath("/logistics");
     return { success: true };
   } catch (error: any) {
-    console.error("Failed to toggle Porter service:", error);
+    console.error("Failed to update Porter service:", error);
     return { success: false, error: error.message };
   }
+}
+
+// Keep legacy function for backwards compat (used internally)
+export async function togglePorterService(orderId: string, isPorter: boolean, porterCharge: number, actorEmail: string = "sarah@mrboot.com") {
+  return updatePorterService(orderId, isPorter, isPorter, actorEmail);
 }
 
 export async function updateOrderDetails(orderId: string, price: number, dueDate: string, notes: string) {
@@ -432,6 +428,74 @@ export async function updateOrderDetails(orderId: string, price: number, dueDate
     return { success: true };
   } catch (error: any) {
     console.error("Failed to update order details:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function addAddonToOrder(
+  orderId: string,
+  itemName: string,
+  qty: number,
+  unitCost: number
+) {
+  try {
+    const totalCost = qty * unitCost;
+    const addon = await prisma.orderAddon.create({
+      data: { orderId, itemName, qty, unitCost, totalCost },
+    });
+
+    // Recalculate invoice total
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { invoices: true, addons: true },
+    });
+    if (order && order.invoices.length > 0) {
+      const addonTotal = order.addons.reduce((sum, a) => sum + Number(a.totalCost), 0);
+      const basePrice = Number(order.price);
+      const newTotal = basePrice + addonTotal;
+      const invoice = order.invoices[0];
+      const newBalance = newTotal - Number(invoice.advancePaid);
+      await prisma.invoice.update({
+        where: { id: invoice.id },
+        data: { amount: newTotal, balanceDue: newBalance },
+      });
+    }
+
+    revalidatePath(`/orders/${orderId}`);
+    revalidatePath(`/invoices/${orderId}`);
+    return { success: true, addon };
+  } catch (error: any) {
+    console.error("Failed to add addon:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function removeAddonFromOrder(addonId: string, orderId: string) {
+  try {
+    await prisma.orderAddon.delete({ where: { id: addonId } });
+
+    // Recalculate invoice total
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { invoices: true, addons: true },
+    });
+    if (order && order.invoices.length > 0) {
+      const addonTotal = order.addons.reduce((sum, a) => sum + Number(a.totalCost), 0);
+      const basePrice = Number(order.price);
+      const newTotal = basePrice + addonTotal;
+      const invoice = order.invoices[0];
+      const newBalance = newTotal - Number(invoice.advancePaid);
+      await prisma.invoice.update({
+        where: { id: invoice.id },
+        data: { amount: newTotal, balanceDue: newBalance },
+      });
+    }
+
+    revalidatePath(`/orders/${orderId}`);
+    revalidatePath(`/invoices/${orderId}`);
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to remove addon:", error);
     return { success: false, error: error.message };
   }
 }

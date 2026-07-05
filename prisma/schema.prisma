@@ -60,14 +60,15 @@ model Order {
   artisanId        String?
   artisan          Staff?            @relation(fields: [artisanId], references: [id])
   notes            String?
-  isPorter         Boolean           @default(false)
-  porterCharge     Decimal           @default(0) @db.Decimal(10, 2)
+  pickupByPorter   Boolean           @default(false)
+  dropByPorter     Boolean           @default(false)
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   items            OrderItem[]
   activityLogs     ActivityLog[]
   invoices         Invoice[]
   publicOrderLinks PublicOrderLink[]
+  addons           OrderAddon[]
 
   @@map("orders")
 }
@@ -94,10 +95,24 @@ model Inventory {
   itemName         String   @unique
   stockQty         Int
   reorderThreshold Int
+  unitCost         Decimal  @default(0) @db.Decimal(10, 2)
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
   @@map("inventory")
+}
+
+model OrderAddon {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  itemName  String
+  qty       Int      @default(1)
+  unitCost  Decimal  @db.Decimal(10, 2)
+  totalCost Decimal  @db.Decimal(10, 2)
+  createdAt DateTime @default(now())
+
+  @@map("order_addons")
 }
 
 model ActivityLog {

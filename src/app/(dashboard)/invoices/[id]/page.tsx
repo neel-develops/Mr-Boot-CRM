@@ -21,6 +21,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
       items: true,
       invoices: true,
       publicOrderLinks: true,
+      addons: { orderBy: { createdAt: "asc" } },
     },
   });
 
@@ -141,19 +142,33 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
                 <p className="text-lg font-bold text-[#361f1a]">{order.customer.firstName} {order.customer.lastName}</p>
                 <p className="text-xs text-zinc-500 mt-0.5">{order.customer.phone}</p>
               </div>
+              {/* Porter/Delivery Info */}
               <div className="flex flex-col gap-1 bg-white border border-zinc-200/80 rounded-lg py-2 px-3 self-start sm:self-auto min-w-[200px] shadow-sm">
-                <div className="flex items-center gap-2 text-xs font-semibold text-zinc-700">
-                  <input
-                    type="checkbox"
-                    checked={order.isPorter || false}
-                    readOnly
-                    className="rounded border-zinc-300 text-zinc-800 focus:ring-zinc-800 w-4 h-4 pointer-events-none"
-                  />
-                  <span>Pick & Drop via Porter</span>
-                </div>
-                <div className="flex items-center gap-2 text-[10px] text-zinc-400 pl-6">
-                  <span>{order.isPorter ? `Porter Courier Active` : "Self Pickup"}</span>
-                </div>
+                {(() => {
+                  const pickup = order.pickupByPorter || false;
+                  const drop = order.dropByPorter || false;
+                  let label = "Self Pickup & Self Drop";
+                  if (pickup && drop) label = "Porter Pickup & Drop";
+                  else if (pickup) label = "Porter Pickup / Self Drop";
+                  else if (drop) label = "Self Pickup / Porter Drop";
+                  const hasPorter = pickup || drop;
+                  return (
+                    <>
+                      <div className="flex items-center gap-2 text-xs font-semibold text-zinc-700">
+                        <input
+                          type="checkbox"
+                          checked={hasPorter}
+                          readOnly
+                          className="rounded border-zinc-300 text-zinc-800 focus:ring-zinc-800 w-4 h-4 pointer-events-none"
+                        />
+                        <span>Delivery Mode</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-[10px] text-zinc-500 pl-6">
+                        <span className="font-semibold">{label}</span>
+                      </div>
+                    </>
+                  );
+                })()}
               </div>
             </div>
 
@@ -191,6 +206,27 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
                 </div>
               ))}
             </div>
+
+            {/* Addons Section */}
+            {(order.addons || []).length > 0 && (
+              <div className="mb-8">
+                <div className="flex justify-between items-center border-b border-zinc-200 pb-2 mb-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                  <span>ADD-ONS & EXTRAS</span>
+                  <span className="text-right">AMOUNT</span>
+                </div>
+                {(order.addons as any[]).map((addon) => (
+                  <div key={addon.id} className="flex justify-between items-center border-b border-dashed border-zinc-200 pb-3 mb-3">
+                    <div>
+                      <p className="text-sm font-semibold text-[#361f1a]">{addon.itemName}</p>
+                      <p className="text-xs text-zinc-400">{addon.qty} × ₹{Number(addon.unitCost).toLocaleString("en-IN")}</p>
+                    </div>
+                    <p className="font-bold text-[#361f1a]">
+                      ₹{Number(addon.totalCost).toLocaleString("en-IN")}.00
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
 
             {/* Totals & QR Tracker Section */}
             <div className="flex flex-col sm:flex-row justify-between items-end gap-6 mb-4 pt-4 relative">

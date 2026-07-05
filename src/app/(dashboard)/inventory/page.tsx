@@ -13,17 +13,12 @@ export default async function InventoryPage() {
   const items = dbItems.map((item) => {
     let category = "Workshop Supply";
     if (item.itemName.includes("Spray")) category = "Protective";
-    else if (item.itemName.includes("Laces")) category = "Accessory";
+    else if (item.itemName.includes("Laces") || item.itemName.includes("lace")) category = "Accessory";
     else if (item.itemName.includes("Glue")) category = "Adhesive";
     else if (item.itemName.includes("Brush")) category = "Tool";
     else if (item.itemName.includes("Dressing")) category = "Restoration";
-
-    let cost = 150;
-    if (item.itemName.includes("Spray")) cost = 450;
-    else if (item.itemName.includes("Laces")) cost = 120;
-    else if (item.itemName.includes("Glue")) cost = 280;
-    else if (item.itemName.includes("Brush")) cost = 350;
-    else if (item.itemName.includes("Dressing")) cost = 180;
+    else if (item.itemName.includes("Insole") || item.itemName.includes("insole")) category = "Accessory";
+    else if (item.itemName.includes("Sole")) category = "Component";
 
     return {
       id: item.id,
@@ -31,7 +26,7 @@ export default async function InventoryPage() {
       category,
       stock: item.stockQty,
       minThreshold: item.reorderThreshold,
-      cost,
+      unitCost: Number(item.unitCost),
     };
   });
 
@@ -40,7 +35,7 @@ export default async function InventoryPage() {
 
   let totalValue = 0;
   items.forEach((item) => {
-    totalValue += item.stock * item.cost;
+    totalValue += item.stock * item.unitCost;
   });
 
   return (

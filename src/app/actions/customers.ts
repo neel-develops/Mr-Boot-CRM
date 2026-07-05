@@ -11,9 +11,22 @@ export async function deleteCustomer(formData: FormData) {
   }
 
   try {
-    await prisma.customer.delete({
-      where: { id: customerId },
+    // Manually cascade: delete order addons, activity logs, invoices, order items, public links, then orders, then customer
+    const orders = await prisma.order.findMany({
+      where: { customerId },
+      select: { id: true },
     });
+
+    for (const order of orders) {
+      await prisma.orderAddon.deleteMany({ where: { orderId: order.id } });
+      await prisma.activityLog.deleteMany({ where: { orderId: order.id } });
+      await prisma.invoice.deleteMany({ where: { orderId: order.id } });
+      await prisma.orderItem.deleteMany({ where: { orderId: order.id } });
+      await prisma.publicOrderLink.deleteMany({ where: { orderId: order.id } });
+    }
+
+    await prisma.order.deleteMany({ where: { customerId } });
+    await prisma.customer.delete({ where: { id: customerId } });
   } catch (error: any) {
     console.error("Failed to delete customer:", error);
     throw new Error(error.message || "Failed to delete customer");

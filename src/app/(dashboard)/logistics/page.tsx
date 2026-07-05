@@ -5,7 +5,7 @@ import { GlassCard } from "@/components/ui/glass-card";
 import Link from "next/link";
 
 export default async function LogisticsPage() {
-  // Fetch orders that are either READY/DELIVERED or have isPorter enabled
+  // Fetch orders that are READY/DELIVERED OR have any porter service active
   const logisticsOrders = await prisma.order.findMany({
     where: {
       OR: [
@@ -14,9 +14,8 @@ export default async function LogisticsPage() {
             in: [OrderStatus.READY, OrderStatus.DELIVERED],
           },
         },
-        {
-          isPorter: true,
-        }
+        { pickupByPorter: true },
+        { dropByPorter: true },
       ]
     },
     include: {
@@ -28,11 +27,16 @@ export default async function LogisticsPage() {
   const activeDeliveries = logisticsOrders.filter((o) => o.status === OrderStatus.READY).length;
   const completedToday = logisticsOrders.filter((o) => o.status === OrderStatus.DELIVERED).length;
 
-  const totalPorterMoney = logisticsOrders
-    .filter((o) => o.isPorter)
-    .reduce((sum, o) => sum + Number(o.porterCharge || 0), 0);
+  const activePorterOrders = logisticsOrders.filter(
+    (o) => (o.pickupByPorter || o.dropByPorter) && o.status !== OrderStatus.DELIVERED
+  ).length;
 
-  const activePorterOrders = logisticsOrders.filter((o) => o.isPorter && o.status !== OrderStatus.DELIVERED).length;
+  const getPorterLabel = (pickup: boolean, drop: boolean) => {
+    if (pickup && drop) return "Porter Pickup & Drop";
+    if (pickup) return "Porter Pickup / Self Drop";
+    if (drop) return "Self Pickup / Porter Drop";
+    return "Self Pickup & Self Drop";
+  };
 
   return (
     <div className="w-full max-w-[1200px] px-4 md:px-gutter mx-auto py-4">
@@ -60,7 +64,7 @@ export default async function LogisticsPage() {
               </p>
             </div>
           </div>
-          <div className="mt-8 grid grid-cols-2 sm:grid-cols-4 gap-4 z-10 relative">
+          <div className="mt-8 grid grid-cols-2 sm:grid-cols-3 gap-4 z-10 relative">
             <div className="bg-white/40 rounded-xl p-4 border border-white/20">
               <p className="text-label-sm font-label-sm text-on-surface-variant mb-1">Pending Dispatch</p>
               <p className="text-3xl font-bold text-primary">{activeDeliveries}</p>
@@ -68,10 +72,6 @@ export default async function LogisticsPage() {
             <div className="bg-white/40 rounded-xl p-4 border border-white/20">
               <p className="text-label-sm font-label-sm text-on-surface-variant mb-1">Delivered Today</p>
               <p className="text-3xl font-bold text-primary">{completedToday}</p>
-            </div>
-            <div className="bg-white/40 rounded-xl p-4 border border-white/20">
-              <p className="text-label-sm font-label-sm text-on-surface-variant mb-1">Porter Money</p>
-              <p className="text-3xl font-bold text-primary">₹{totalPorterMoney.toLocaleString("en-IN")}</p>
             </div>
             <div className="bg-white/40 rounded-xl p-4 border border-white/20">
               <p className="text-label-sm font-label-sm text-on-surface-variant mb-1">Porter Orders</p>
@@ -129,7 +129,7 @@ export default async function LogisticsPage() {
       {/* Deliveries Logs Table */}
       <GlassCard className="overflow-hidden">
         <div className="p-6 border-b border-black/5 bg-surface-bright/30">
-          <h3 className="font-headline-lg text-[20px] text-primary">Active & Completed Deliveries</h3>
+          <h3 className="font-headline-lg text-[20px] text-primary">Active &amp; Completed Deliveries</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
@@ -138,7 +138,7 @@ export default async function LogisticsPage() {
                 <th className="p-4 font-medium pl-6">Order ID</th>
                 <th className="p-4 font-medium">Customer</th>
                 <th className="p-4 font-medium">Item Details</th>
-                <th className="p-4 font-medium">Service Mode</th>
+                <th className="p-4 font-medium">Delivery Mode</th>
                 <th className="p-4 font-medium">Status</th>
                 <th className="p-4 font-medium pr-6 text-right">Actions</th>
               </tr>
@@ -151,61 +151,63 @@ export default async function LogisticsPage() {
                   </td>
                 </tr>
               ) : (
-                logisticsOrders.map((order) => (
-                  <tr key={order.id} className="hover:bg-white/30 transition-colors">
-                    <td className="p-4 pl-6 font-semibold text-primary">
-                      #{order.id.slice(-6).toUpperCase()}
-                    </td>
-                    <td className="p-4">
-                      <p className="font-medium">{order.customer.firstName} {order.customer.lastName}</p>
-                      <p className="text-xs text-on-surface-variant">{order.customer.phone}</p>
-                    </td>
-                    <td className="p-4 text-on-surface-variant">
-                      {order.itemType}
-                    </td>
-                    <td className="p-4">
-                      {order.isPorter ? (
-                        <div>
+                logisticsOrders.map((order) => {
+                  const hasPorter = order.pickupByPorter || order.dropByPorter;
+                  const label = getPorterLabel(order.pickupByPorter, order.dropByPorter);
+
+                  return (
+                    <tr key={order.id} className="hover:bg-white/30 transition-colors">
+                      <td className="p-4 pl-6 font-semibold text-primary">
+                        #{order.id.slice(-6).toUpperCase()}
+                      </td>
+                      <td className="p-4">
+                        <p className="font-medium">{order.customer.firstName} {order.customer.lastName}</p>
+                        <p className="text-xs text-on-surface-variant">{order.customer.phone}</p>
+                      </td>
+                      <td className="p-4 text-on-surface-variant">
+                        {order.itemType}
+                      </td>
+                      <td className="p-4">
+                        {hasPorter ? (
                           <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
                             <span className="material-symbols-outlined text-[14px]">local_shipping</span>
-                            Porter Courier
+                            {label}
                           </span>
-                          <p className="text-xs text-on-surface-variant mt-1 font-medium">Charge: ₹{Number(order.porterCharge).toLocaleString("en-IN")}</p>
-                        </div>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-zinc-600 bg-zinc-50 px-2.5 py-0.5 rounded-full border border-zinc-200">
-                          <span className="material-symbols-outlined text-[14px]">person</span>
-                          Self Pickup
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-xs font-semibold text-zinc-600 bg-zinc-50 px-2.5 py-0.5 rounded-full border border-zinc-200">
+                            <span className="material-symbols-outlined text-[14px]">person</span>
+                            Self Pickup &amp; Drop
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-4">
+                        <span
+                          className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${
+                            order.status === OrderStatus.DELIVERED
+                              ? "bg-[#E8F5E9] text-[#2E7D32] border-[#C8E6C9]"
+                              : order.status === OrderStatus.READY
+                              ? "bg-[#FFF3E0] text-[#E65100] border-[#FFE0B2]"
+                              : "bg-blue-50 text-blue-700 border-blue-200"
+                          }`}
+                        >
+                          {order.status === OrderStatus.READY
+                            ? "Ready for Dispatch"
+                            : order.status === OrderStatus.DELIVERED
+                            ? "Delivered"
+                            : order.status.replace("_", " ")}
                         </span>
-                      )}
-                    </td>
-                    <td className="p-4">
-                      <span
-                        className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${
-                          order.status === OrderStatus.DELIVERED
-                            ? "bg-[#E8F5E9] text-[#2E7D32] border-[#C8E6C9]"
-                            : order.status === OrderStatus.READY
-                            ? "bg-[#FFF3E0] text-[#E65100] border-[#FFE0B2]"
-                            : "bg-blue-50 text-blue-700 border-blue-200"
-                        }`}
-                      >
-                        {order.status === OrderStatus.READY
-                          ? "Ready for Dispatch"
-                          : order.status === OrderStatus.DELIVERED
-                          ? "Delivered"
-                          : order.status.replace("_", " ")}
-                      </span>
-                    </td>
-                    <td className="p-4 text-right pr-6">
-                      <Link
-                        href={`/orders/${order.id}`}
-                        className="px-4 py-1.5 bg-primary text-on-primary text-xs font-semibold rounded hover:opacity-90 transition-all inline-block"
-                      >
-                        Manage Dispatch
-                      </Link>
-                    </td>
-                  </tr>
-                ))
+                      </td>
+                      <td className="p-4 text-right pr-6">
+                        <Link
+                          href={`/orders/${order.id}`}
+                          className="px-4 py-1.5 bg-primary text-on-primary text-xs font-semibold rounded hover:opacity-90 transition-all inline-block"
+                        >
+                          Manage Dispatch
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>

@@ -140,12 +140,18 @@ export default async function PublicTrackingPage({ params }: PublicTrackingPageP
             </span>
           </div>
 
-          {order.isPorter && (
+          {(order.pickupByPorter || order.dropByPorter) && (
             <div className="flex items-center gap-3 p-4 bg-amber-500/5 border border-amber-500/10 rounded-2xl">
               <span className="material-symbols-outlined text-amber-600 text-[24px]">local_shipping</span>
               <div>
-                <p className="text-sm font-bold text-[#4e342e]">Pick & Drop Service Active</p>
-                <p className="text-xs text-zinc-500">Your order is scheduled for Pick & Drop via Porter courier.</p>
+                <p className="text-sm font-bold text-[#4e342e]">Porter Delivery Active</p>
+                <p className="text-xs text-zinc-500">
+                  {order.pickupByPorter && order.dropByPorter
+                    ? "Porter will both pick up and deliver your order."
+                    : order.pickupByPorter
+                    ? "Porter will pick up your order. You collect it yourself."
+                    : "You drop off your order. Porter will deliver it back."}
+                </p>
               </div>
             </div>
           )}

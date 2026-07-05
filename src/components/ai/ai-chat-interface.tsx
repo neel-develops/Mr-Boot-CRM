@@ -25,6 +25,8 @@ export const AIChatInterface: React.FC = () => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  const [apiKeyMissing, setApiKeyMissing] = useState(false);
+
   const handleSendMessage = async (text: string) => {
     if (!text.trim() || loading) return;
 
@@ -32,6 +34,7 @@ export const AIChatInterface: React.FC = () => {
     setMessages(newHistory);
     setInput("");
     setLoading(true);
+    setApiKeyMissing(false);
 
     try {
       const res = await askAssistant(newHistory);
@@ -40,11 +43,15 @@ export const AIChatInterface: React.FC = () => {
       if (res.success && res.reply) {
         setMessages([...newHistory, { role: "assistant", content: res.reply }]);
       } else {
+        const isKeyError = res.error?.includes("GROQ_API_KEY") || res.error?.includes("not configured");
+        if (isKeyError) setApiKeyMissing(true);
         setMessages([
           ...newHistory,
           {
             role: "assistant",
-            content: `⚠️ ${res.error || "Failed to communicate with the AI. Please check that the GROQ_API_KEY is configured."}`,
+            content: isKeyError
+              ? "⚠️ AI not connected — GROQ_API_KEY is missing. Add it to your Vercel Environment Variables (Settings → Environment Variables → GROQ_API_KEY). Get a free key at console.groq.com."
+              : `⚠️ ${res.error || "Failed to communicate with the AI."}`,
           },
         ]);
       }
@@ -58,7 +65,26 @@ export const AIChatInterface: React.FC = () => {
   };
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 h-[calc(100vh-200px)]">
+    <div className="flex flex-col gap-4">
+      {/* API Key Missing Banner */}
+      {apiKeyMissing && (
+        <div className="flex items-start gap-3 p-4 bg-amber-50 border border-amber-200 rounded-xl">
+          <span className="material-symbols-outlined text-amber-500 text-[22px] flex-shrink-0 mt-0.5">warning</span>
+          <div>
+            <p className="text-sm font-bold text-amber-800">AI Not Connected — API Key Missing</p>
+            <p className="text-xs text-amber-700 mt-1 leading-relaxed">
+              Add <code className="bg-amber-100 px-1 py-0.5 rounded font-mono text-[11px]">GROQ_API_KEY</code> to{" "}
+              <strong>Vercel → Project Settings → Environment Variables</strong>.{" "}
+              Get a free key at{" "}
+              <a href="https://console.groq.com" target="_blank" rel="noopener noreferrer" className="underline font-semibold">
+                console.groq.com
+              </a>
+              .
+            </p>
+          </div>
+        </div>
+      )}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-1 h-[calc(100vh-250px)]">
       {/* Left Chat Console */}
       <div className="lg:col-span-7 flex flex-col bg-white/65 dark:bg-primary/65 backdrop-blur-xl border border-white/22 rounded-2xl overflow-hidden relative shadow-sm h-full justify-between">
         {/* Glow */}
@@ -170,6 +196,7 @@ export const AIChatInterface: React.FC = () => {
           </div>
         </GlassCard>
       </div>
+    </div>
     </div>
   );
 };

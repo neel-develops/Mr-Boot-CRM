@@ -20,6 +20,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
       items: true,
       invoices: true,
       publicOrderLinks: true,
+      addons: { orderBy: { createdAt: "asc" } },
       activityLogs: {
         orderBy: { timestamp: "desc" },
       },
@@ -55,6 +56,15 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
     };
   }
 
+  // 4. Fetch inventory items for addons picker
+  const inventoryItems = await prisma.inventory.findMany({
+    orderBy: { itemName: "asc" },
+    select: { id: true, itemName: true, unitCost: true },
+  });
+
+  // Attach inventory items to order object for workspace
+  const orderWithExtras = { ...order, inventoryItems };
+
   return (
     <div className="w-full max-w-[1200px] px-4 md:px-gutter mx-auto py-4">
       {/* Page Header */}
@@ -66,7 +76,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
       </header>
 
       {/* Interactive detail workspace */}
-      <OrderDetailWorkspace order={order} staff={staff} settings={settings} />
+      <OrderDetailWorkspace order={orderWithExtras} staff={staff} settings={settings} />
     </div>
   );
 }

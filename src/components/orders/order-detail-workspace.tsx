@@ -3,9 +3,10 @@
 import React, { useState } from "react";
 import { OrderStatus } from "@prisma/client";
 import { GlassCard } from "@/components/ui/glass-card";
-import { updateOrderStatus, assignArtisan, uploadProofPhoto, logReviewRequest, createInvoiceForOrder, deleteOrder, revertOrderToPending, togglePorterService, updateOrderDetails } from "@/app/actions/orders";
+import { updateOrderStatus, assignArtisan, uploadProofPhoto, logReviewRequest, createInvoiceForOrder, deleteOrder, revertOrderToPending, updatePorterService, updateOrderDetails, addAddonToOrder, removeAddonFromOrder } from "@/app/actions/orders";
 import { uploadImage } from "@/lib/upload";
 import Link from "next/link";
+import { AddonsManager } from "@/components/invoices/addons-manager";
 
 interface OrderDetailWorkspaceProps {
   order: any;
@@ -25,31 +26,25 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
   const [generatingInvoice, setGeneratingInvoice] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [invoicePaymentMode, setInvoicePaymentMode] = useState("UPI");
-  const [isPorterChecked, setIsPorterChecked] = useState(order.isPorter || false);
-  const [porterFee, setPorterFee] = useState(Number(order.porterCharge || 150));
+  const [pickupByPorter, setPickupByPorter] = useState(order.pickupByPorter || false);
+  const [dropByPorter, setDropByPorter] = useState(order.dropByPorter || false);
   const [updatingPorter, setUpdatingPorter] = useState(false);
 
-  const handlePorterToggle = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const checked = e.target.checked;
-    setIsPorterChecked(checked);
-    setUpdatingPorter(true);
-    const res = await togglePorterService(order.id, checked, porterFee);
-    setUpdatingPorter(false);
-    if (res.success) {
-      window.location.reload();
-    } else {
-      alert("Error toggling Porter service: " + res.error);
-    }
+  const getPorterLabel = (pickup: boolean, drop: boolean) => {
+    if (pickup && drop) return "Porter Pickup & Drop";
+    if (pickup) return "Porter Pickup / Self Drop";
+    if (drop) return "Self Pickup / Porter Drop";
+    return "Self Pickup & Self Drop";
   };
 
-  const handleSavePorterFee = async () => {
+  const handlePorterChange = async (newPickup: boolean, newDrop: boolean) => {
+    setPickupByPorter(newPickup);
+    setDropByPorter(newDrop);
     setUpdatingPorter(true);
-    const res = await togglePorterService(order.id, isPorterChecked, porterFee);
+    const res = await updatePorterService(order.id, newPickup, newDrop);
     setUpdatingPorter(false);
-    if (res.success) {
-      window.location.reload();
-    } else {
-      alert("Error updating Porter fee: " + res.error);
+    if (!res.success) {
+      alert("Error updating delivery mode: " + res.error);
     }
   };
 
@@ -89,6 +84,10 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
 
   const waBillUrl = `https://wa.me/${phone}?text=${encodeURIComponent(formattedBillMsg)}`;
   const waReviewUrl = `https://wa.me/${phone}?text=${encodeURIComponent(formattedReviewMsg)}`;
+
+  // WhatsApp "Order Ready" blast message
+  const readyMsg = `Hi ${customerName}! 🎉 Great news — your ${order.itemType} is ready for pickup/delivery at *Mr. Boot*! Please let us know when you're coming or if you need pick & drop. 👟✨`;
+  const waReadyUrl = `https://wa.me/${phone}?text=${encodeURIComponent(readyMsg)}`;
 
   const hasAfterPhoto = order.activityLogs.some(
     (log: any) => log.event === "After Photo uploaded as completion proof"
@@ -308,6 +307,24 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
                 </div>
               </div>
             )}
+            {/* Addons Section — after photos */}
+            {(order.addons || []).length >= 0 && order.inventoryItems !== undefined || true ? (
+              <AddonsManager
+                orderId={order.id}
+                existingAddons={(order.addons || []).map((a: any) => ({
+                  id: a.id,
+                  itemName: a.itemName,
+                  qty: a.qty,
+                  unitCost: Number(a.unitCost),
+                  totalCost: Number(a.totalCost),
+                }))}
+                inventoryItems={(order.inventoryItems || []).map((i: any) => ({
+                  id: i.id,
+                  name: i.itemName || i.name,
+                  unitCost: Number(i.unitCost),
+                }))}
+              />
+            ) : null}
           </div>
         </GlassCard>
 
@@ -360,43 +377,39 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
             Logistics & Delivery
           </h3>
           <div className="flex flex-col gap-3">
-            <label className="flex items-center gap-3 cursor-pointer">
+            <p className="text-[10px] text-zinc-400 uppercase tracking-widest font-bold mb-1">
+              Current: <span className="text-primary font-bold">{getPorterLabel(pickupByPorter, dropByPorter)}</span>
+            </p>
+            {/* Pickup row */}
+            <label className="flex items-center gap-3 cursor-pointer p-2.5 rounded-lg hover:bg-black/5 transition-colors">
               <input
                 type="checkbox"
-                checked={isPorterChecked}
-                onChange={handlePorterToggle}
+                checked={pickupByPorter}
+                onChange={(e) => handlePorterChange(e.target.checked, dropByPorter)}
                 disabled={updatingPorter}
                 className="rounded border-gray-300 text-primary focus:ring-primary w-4 h-4"
               />
               <div className="flex flex-col">
-                <span className="text-xs font-semibold text-on-surface">Pick & Drop Service (via Porter)</span>
-                <span className="text-[10px] text-on-surface-variant">Activate Porter courier delivery & add fee to invoice</span>
+                <span className="text-xs font-semibold text-on-surface">Porter Pickup</span>
+                <span className="text-[10px] text-on-surface-variant">Porter picks up from customer's address</span>
               </div>
             </label>
-            {isPorterChecked && (
-              <div className="flex items-center justify-between mt-2 pt-2 border-t border-black/5">
-                <span className="text-xs text-on-surface-variant">Porter Service Charge</span>
-                <div className="flex items-center gap-2">
-                  <div className="relative w-24">
-                    <span className="absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-xs">₹</span>
-                    <input
-                      type="number"
-                      value={porterFee}
-                      onChange={(e) => setPorterFee(Number(e.target.value))}
-                      className="w-full bg-white/50 border border-black/5 rounded-md py-1 pl-5 pr-2 text-xs text-right focus:outline-none"
-                      placeholder="150"
-                    />
-                  </div>
-                  <button
-                    onClick={handleSavePorterFee}
-                    disabled={updatingPorter}
-                    className="p-1 text-primary hover:bg-black/5 rounded flex items-center justify-center"
-                    title="Save Porter Fee"
-                  >
-                    <span className="material-symbols-outlined text-[18px]">check_circle</span>
-                  </button>
-                </div>
+            {/* Drop row */}
+            <label className="flex items-center gap-3 cursor-pointer p-2.5 rounded-lg hover:bg-black/5 transition-colors">
+              <input
+                type="checkbox"
+                checked={dropByPorter}
+                onChange={(e) => handlePorterChange(pickupByPorter, e.target.checked)}
+                disabled={updatingPorter}
+                className="rounded border-gray-300 text-primary focus:ring-primary w-4 h-4"
+              />
+              <div className="flex flex-col">
+                <span className="text-xs font-semibold text-on-surface">Porter Drop</span>
+                <span className="text-[10px] text-on-surface-variant">Porter delivers back to customer's address</span>
               </div>
+            </label>
+            {updatingPorter && (
+              <p className="text-[10px] text-zinc-400 italic">Saving delivery mode...</p>
             )}
           </div>
         </GlassCard>
@@ -474,6 +487,19 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
               >
                 Mark as Delivered & Closed
               </button>
+            )}
+
+            {/* WhatsApp Order Ready Blast — shown prominently when READY */}
+            {status === OrderStatus.READY && (
+              <a
+                href={waReadyUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-3 bg-[#25D366] hover:bg-[#128C7E] text-white font-bold rounded-lg flex items-center justify-center gap-2 text-sm transition-colors shadow-md animate-pulse-once"
+              >
+                <span className="material-symbols-outlined text-[20px]">notifications_active</span>
+                📦 Notify Customer — Order Ready!
+              </a>
             )}
 
             {/* Manual Invoice Generation if missing */}
