@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { OrderStatus } from "@prisma/client";
 import { GlassCard } from "@/components/ui/glass-card";
-import { updateOrderStatus, assignArtisan, uploadProofPhoto, logReviewRequest, createInvoiceForOrder } from "@/app/actions/orders";
+import { updateOrderStatus, assignArtisan, uploadProofPhoto, logReviewRequest, createInvoiceForOrder, deleteOrder, revertOrderToPending } from "@/app/actions/orders";
 import { uploadImage } from "@/lib/upload";
 import Link from "next/link";
 
@@ -30,7 +30,7 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
   const phone = order.customer.phone.replace(/[^0-9]/g, "");
 
   // Generate WhatsApp links safely without throwing ReferenceError on server-side pre-rendering
-  const appUrl = typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000");
+  const appUrl = typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || "https://mr-boot-crm.vercel.app");
   const trackingLink = `${appUrl}/track/${order.publicOrderLinks[0]?.token || ""}`;
 
   const formattedBillMsg = settings.billReadyTemplate
@@ -370,6 +370,44 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
                 View / Print Premium Invoice
               </Link>
             )}
+
+            {/* Undo to Pending */}
+            {status !== OrderStatus.RECEIVED && (
+              <button
+                onClick={async () => {
+                  if (confirm("Are you sure you want to revert this order back to RECEIVED / Pending?")) {
+                    const res = await revertOrderToPending(order.id);
+                    if (res.success) {
+                      window.location.reload();
+                    } else {
+                      alert("Error reverting order: " + res.error);
+                    }
+                  }
+                }}
+                className="w-full py-2 border border-[#cb9e3f]/40 hover:bg-[#cb9e3f]/5 text-[#cb9e3f] text-center font-semibold text-xs rounded-lg transition-colors flex items-center justify-center gap-1.5"
+              >
+                <span className="material-symbols-outlined text-[14px]">undo</span>
+                Undo to Pending
+              </button>
+            )}
+
+            {/* Delete Order */}
+            <button
+              onClick={async () => {
+                if (confirm("🚨 WARNING: Are you sure you want to delete this order? This will permanently remove the order, invoices, photos, and all logs. This action cannot be undone.")) {
+                  const res = await deleteOrder(order.id);
+                  if (res.success) {
+                    window.location.href = "/orders";
+                  } else {
+                    alert("Error deleting order: " + res.error);
+                  }
+                }
+              }}
+              className="w-full py-2 border border-red-200 hover:bg-red-50 text-red-600 text-center font-semibold text-xs rounded-lg transition-colors flex items-center justify-center gap-1.5 dark:border-red-900/30 dark:hover:bg-red-950/20"
+            >
+              <span className="material-symbols-outlined text-[14px]">delete</span>
+              Delete Order
+            </button>
           </div>
         </GlassCard>
       </div>

@@ -160,11 +160,11 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
         ) : (
           orders.map((order) => {
             const trackingLink = order.publicOrderLinks[0]
-              ? `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/track/${order.publicOrderLinks[0].token}`
+              ? `${process.env.NEXT_PUBLIC_APP_URL || "https://mr-boot-crm.vercel.app"}/track/${order.publicOrderLinks[0].token}`
               : "#";
 
             const invoice = order.invoices[0];
-            const invoiceLink = invoice ? `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/invoices/${order.id}` : "#";
+            const invoiceLink = invoice ? `${process.env.NEXT_PUBLIC_APP_URL || "https://mr-boot-crm.vercel.app"}/invoices/${order.id}` : "#";
 
             // Prefilled WhatsApp reminder texts
             const formattedBillMsg = settings.billReadyTemplate

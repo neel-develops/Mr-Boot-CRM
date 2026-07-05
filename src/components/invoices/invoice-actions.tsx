@@ -24,7 +24,7 @@ export const InvoiceActions: React.FC<InvoiceActionsProps> = ({ waShareUrl, invo
         return;
       }
       const canvas = await html2canvas(invoiceEl, {
-        scale: 2,           // 2x for higher resolution
+        scale: 3,           // 3x for high resolution quality
         useCORS: true,      // allow cross-origin images (Supabase photos)
         backgroundColor: "#ffffff",
         logging: false,
@@ -77,14 +77,16 @@ export const InvoiceActions: React.FC<InvoiceActionsProps> = ({ waShareUrl, invo
       </div>
 
       {/* WhatsApp Share — below invoice content (rendered by parent) */}
-      <div className="flex justify-center sm:justify-start pt-4 border-t border-black/5 print:hidden mt-4">
+      <div className="flex justify-center sm:justify-start pt-4 border-t border-zinc-100 print:hidden mt-4">
         <a
           href={waShareUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#25D366] text-white hover:bg-[#128C7E] transition-colors font-semibold text-xs shadow-sm"
+          className="flex items-center gap-3 px-6 py-3 rounded-full border border-emerald-500 bg-white text-emerald-600 hover:bg-emerald-50 transition-colors font-bold text-sm shadow-sm"
         >
-          <span className="material-symbols-outlined text-[16px]">send</span>
+          <span className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white text-[14px] material-symbols-outlined font-normal">
+            chat
+          </span>
           Share via WhatsApp
         </a>
       </div>

@@ -14,7 +14,11 @@ interface NotificationItem {
   createdAt: string;
 }
 
-export const Topbar = () => {
+interface TopbarProps {
+  onToggleSidebar?: () => void;
+}
+
+export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
@@ -111,10 +115,18 @@ export const Topbar = () => {
       <div className="flex justify-between items-center h-16 px-6 md:px-8 max-w-full">
         {/* Mobile Brand Logo & Search */}
         <div className="flex items-center gap-4 flex-1">
-          <div className="md:hidden flex items-center">
+          <div className="md:hidden flex items-center gap-2">
+            <button
+              onClick={onToggleSidebar}
+              className="p-2 rounded-full hover:bg-black/5 flex items-center justify-center text-[#361f1a] dark:text-white"
+              aria-label="Toggle Navigation Sidebar"
+              type="button"
+            >
+              <span className="material-symbols-outlined text-[24px]">menu</span>
+            </button>
             <img
               alt="Mr. Boot Logo"
-              className="w-10 h-10 object-contain"
+              className="w-8 h-8 object-contain rounded-lg"
               src="https://lh3.googleusercontent.com/aida-public/AB6AXuCn7lW1vtQ0lZyfs5lXTaByxV89HdnteWqn32a8d3s-HaptrgDl_YBkkfJQL2pQMkLaxg-_LYJJyqPTZEvFhqt8zFxvFcr-9ijYS2t-9_bptwCa9AEFh6CLCFtKo2RLDNDaSi1AOuHJ5wWVx3oofr8KPKOVKC4jMSCXFwr29Ow55QFlKEq0wMWUqkkq6plvRdfrzUAYvF90N2yqWSLY-YkGA-OlXECjxuB7cfNrQkWrqrMBki4ezsWl4bosEXFEMlWSyFdYT3MFUs8"
             />
           </div>

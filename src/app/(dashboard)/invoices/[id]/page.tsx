@@ -30,7 +30,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
 
   const invoice = order.invoices[0];
   const token = order.publicOrderLinks[0]?.token || "";
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://mr-boot-crm.vercel.app";
   const trackingUrl = `${appUrl}/track/${token}`;
 
   // 2. Generate QR code server-side
@@ -51,7 +51,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
   // Pre-formatted dates
   const invoiceDate = new Date(invoice.createdAt).toLocaleDateString("en-IN", {
     year: "numeric",
-    month: "long",
+    month: "short",
     day: "numeric",
   });
 
@@ -64,122 +64,163 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
     .replace("{{invoice_pdf_or_track_link}}", trackingUrl);
   const waShareUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
+  // Find first photo to display in the main top container
+  const mainPhotoUrl = order.items.find(item => item.photoUrl)?.photoUrl;
+
+  const fallbackShoeImg = "https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=150&auto=format&fit=crop&q=60"; // Classic premium brown shoe
+
   return (
     <div className="w-full min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      {/* Invoice Box */}
-      <div id="invoice-box" className="glass-card w-full max-w-2xl rounded-[1.5rem] overflow-hidden relative border border-white/20 shadow-2xl bg-white/70">
-        {/* Top Accent Line */}
-        <div className="h-2.5 w-full bg-primary"></div>
-        <div className="p-8 md:p-12">
-          {/* Interactive Actions: Print + WhatsApp (Client Component) */}
-          <Suspense fallback={null}>
-            <InvoiceActions waShareUrl={waShareUrl} invoiceNumber={invoice.invoiceNumber} />
-          </Suspense>
+      {/* Container holding controls and the printable/savable invoice box */}
+      <div className="w-full max-w-2xl flex flex-col gap-4">
+        {/* Interactive Actions: Print + WhatsApp (Client Component) */}
+        <Suspense fallback={null}>
+          <InvoiceActions waShareUrl={waShareUrl} invoiceNumber={invoice.invoiceNumber} />
+        </Suspense>
 
-          {/* Header Row */}
-          <div className="flex flex-col sm:flex-row justify-between items-start gap-6 mb-8">
-            <div className="flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full overflow-hidden border border-black/5 bg-white flex-shrink-0 flex items-center justify-center text-primary font-bold text-2xl">
-                MB
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-primary">Mr. Boot</h1>
-                <p className="text-xs text-[#cb9e3f] tracking-widest uppercase mt-0.5">Premium Shoe Laundry</p>
-              </div>
-            </div>
-
-            <div className="text-left sm:text-right">
-              <h2 className="text-xl font-bold text-primary mb-1 uppercase">Receipt</h2>
-              <p className="text-xs text-on-surface-variant">Invoice: <span className="font-semibold text-primary">#{invoice.invoiceNumber}</span></p>
-              <p className="text-xs text-on-surface-variant">Date: {invoiceDate}</p>
-            </div>
-          </div>
-
-          {/* Billed To Customer Info */}
-          <div className="mb-8 bg-black/5 rounded-xl p-6 border border-black/5">
-            <p className="text-xs text-on-surface-variant uppercase tracking-wider mb-1 font-semibold">Billed To</p>
-            <p className="text-lg font-bold text-primary">{order.customer.firstName} {order.customer.lastName}</p>
-            <p className="text-xs text-on-surface-variant mt-0.5">{order.customer.phone}</p>
-          </div>
-
-          {/* Items Section */}
-          <div className="mb-8">
-            <div className="flex justify-between items-center border-b border-black/5 pb-2 mb-4 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-              <span>Service Description</span>
-              <span className="text-right">Amount</span>
-            </div>
-
-            {order.items.map((item) => (
-              <div key={item.id} className="border-b border-dashed border-black/5 pb-4 mb-4">
-                <div className="flex justify-between items-start">
-                  <div className="pr-4 flex-1">
-                    <p className="text-md font-semibold text-primary mb-0.5">{item.brand ? `${item.brand} ${item.model}` : item.category}</p>
-                    <p className="text-xs text-on-surface-variant">{item.services.join(", ")}</p>
-                  </div>
-                  <p className="font-semibold text-primary whitespace-nowrap">₹{Number(order.price).toLocaleString("en-IN")}</p>
-                </div>
-                {/* Item Photo — show intake/proof photo if uploaded */}
-                {item.photoUrl && (
-                  <div className="mt-3">
-                    <p className="text-[10px] text-on-surface-variant uppercase tracking-wider mb-1.5 font-semibold">Item Photo</p>
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={item.photoUrl}
-                      alt={`${item.category} photo`}
-                      crossOrigin="anonymous"
-                      className="w-28 h-28 object-cover rounded-lg border border-black/10 shadow-sm"
-                    />
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-
-
-          {/* Totals & QR Tracker Section */}
-          <div className="flex flex-col sm:flex-row justify-between items-end gap-6 mb-8 pt-4">
-            {/* QR Code */}
-            {qrCodeDataUrl && (
-              <div className="flex items-center gap-4 w-full sm:w-auto relative border border-black/5 p-3 rounded-xl bg-white">
-                <img src={qrCodeDataUrl} alt="Track status QR code" className="w-20 h-20 rounded flex-shrink-0" />
+        {/* Invoice Box */}
+        <div id="invoice-box" className="w-full rounded-[1.5rem] overflow-hidden relative border border-black/5 bg-white text-zinc-900 shadow-xl relative">
+          {/* Top Accent Line */}
+          <div className="h-2.5 w-full bg-[#361f1a]"></div>
+          
+          <div className="p-8 md:p-12">
+            {/* Header Row */}
+            <div className="flex justify-between items-start gap-6 mb-8">
+              <div className="flex items-center gap-4">
+                <img
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuCn7lW1vtQ0lZyfs5lXTaByxV89HdnteWqn32a8d3s-HaptrgDl_YBkkfJQL2pQMkLaxg-_LYJJyqPTZEvFhqt8zFxvFcr-9ijYS2t-9_bptwCa9AEFh6CLCFtKo2RLDNDaSi1AOuHJ5wWVx3oofr8KPKOVKC4jMSCXFwr29Ow55QFlKEq0wMWUqkkq6plvRdfrzUAYvF90N2yqWSLY-YkGA-OlXECjxuB7cfNrQkWrqrMBki4ezsWl4bosEXFEMlWSyFdYT3MFUs8"
+                  alt="Mr. Boot Logo"
+                  crossOrigin="anonymous"
+                  className="w-16 h-16 rounded-full object-cover border border-black/5"
+                />
                 <div>
-                  <p className="text-xs font-bold text-primary mb-0.5">Track Order Status</p>
-                  <p className="text-[11px] text-on-surface-variant">Scan to view live restoration progress</p>
+                  <h1 className="text-2xl font-bold text-[#361f1a] tracking-tight">Mr. Boot</h1>
+                  <p className="text-xs text-[#cb9e3f] font-bold tracking-widest uppercase mt-0.5">PREMIUM CARE</p>
                 </div>
               </div>
-            )}
 
-            {/* Price breakdown */}
-            <div className="w-full sm:w-60 space-y-2 text-sm text-on-surface-variant">
-              <div className="flex justify-between">
-                <span>Advance Paid</span>
-                <span>₹{Number(invoice.advancePaid).toLocaleString("en-IN")}</span>
-              </div>
-              <div className="flex justify-between font-semibold text-primary">
-                <span>Balance Due</span>
-                <span className={Number(invoice.balanceDue) > 0 ? "text-error" : "text-[#2E7D32]"}>
-                  ₹{Number(invoice.balanceDue).toLocaleString("en-IN")}
-                </span>
-              </div>
-              <div className="h-px bg-black/10 my-2"></div>
-              <div className="flex justify-between items-end">
-                <span className="font-semibold text-primary">Total Amount</span>
-                <span className="text-2xl font-bold text-primary">₹{Number(invoice.amount).toLocaleString("en-IN")}</span>
+              <div className="text-right">
+                <h2 className="text-xl font-bold text-[#361f1a] tracking-wider uppercase mb-1">RECEIPT</h2>
+                <p className="text-xs text-zinc-500">Order: <span className="font-semibold text-[#361f1a]">#{invoice.invoiceNumber}</span></p>
+                <p className="text-xs text-zinc-500">Date: {invoiceDate}</p>
               </div>
             </div>
-          </div>
 
+            {/* Main Item Intake / Preview Box */}
+            <div className="mb-6 w-full bg-zinc-50 rounded-2xl p-4 flex items-center justify-center border border-zinc-100 min-h-[180px]">
+              {mainPhotoUrl ? (
+                <img
+                  src={mainPhotoUrl}
+                  alt="Item intake"
+                  crossOrigin="anonymous"
+                  className="max-h-64 object-contain rounded-xl shadow-md border border-white"
+                />
+              ) : (
+                <div className="flex flex-col items-center justify-center text-zinc-400">
+                  <span className="material-symbols-outlined text-[48px] text-[#cb9e3f] mb-2">dry_cleaning</span>
+                  <p className="text-sm font-semibold text-zinc-600">Premium Care Intake</p>
+                  <p className="text-xs text-zinc-400">No photos uploaded for this order</p>
+                </div>
+              )}
+            </div>
 
+            {/* Billed To Customer Info */}
+            <div className="mb-8 bg-zinc-50 rounded-xl p-5 border border-zinc-100 flex flex-col">
+              <span className="text-[10px] text-zinc-400 uppercase tracking-widest mb-1.5 font-bold">Billed To</span>
+              <p className="text-lg font-bold text-[#361f1a]">{order.customer.firstName} {order.customer.lastName}</p>
+              <p className="text-xs text-zinc-500 mt-0.5">{order.customer.phone}</p>
+            </div>
 
-          {/* Signature Footer */}
-          <div className="text-center mt-12 pt-6 border-t border-black/5">
-            <p className="text-xs text-on-surface-variant italic max-w-md mx-auto">
-              &ldquo;True craftsmanship takes time. Thank you for trusting Mr. Boot with your prized footwear. Wear them in good health.&rdquo;
-            </p>
+            {/* Items Section */}
+            <div className="mb-8">
+              <div className="flex justify-between items-center border-b border-zinc-200 pb-2 mb-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+                <span>SERVICE DESCRIPTION</span>
+                <span className="text-right">AMOUNT</span>
+              </div>
+
+              {order.items.map((item) => (
+                <div key={item.id} className="flex justify-between items-start border-b border-dashed border-zinc-200 pb-4 mb-4">
+                  <div className="flex items-center gap-4 flex-1 pr-4">
+                    {/* Shoe card preview */}
+                    <div className="w-20 h-20 bg-zinc-50 rounded-xl border border-zinc-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
+                      <img
+                        src={item.photoUrl || fallbackShoeImg}
+                        alt={`${item.category} thumbnail`}
+                        crossOrigin="anonymous"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <p className="text-base font-bold text-[#361f1a] mb-1">
+                        {item.brand ? `${item.brand} ${item.model || item.category}` : item.category}
+                      </p>
+                      <p className="text-xs text-zinc-500 leading-relaxed">
+                        {item.services.join(", ")} {item.description && `— ${item.description}`}
+                      </p>
+                    </div>
+                  </div>
+                  <p className="font-bold text-[#361f1a] text-lg whitespace-nowrap">
+                    ₹{Number(order.price).toLocaleString("en-IN")}.00
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            {/* Totals & QR Tracker Section */}
+            <div className="flex flex-col sm:flex-row justify-between items-end gap-6 mb-4 pt-4 relative">
+              {/* QR Code */}
+              {qrCodeDataUrl && (
+                <div className="flex items-center gap-4 w-full sm:w-auto relative border border-zinc-100 p-3 rounded-xl bg-white shadow-sm">
+                  <img src={qrCodeDataUrl} alt="Track status QR code" className="w-16 h-16 rounded flex-shrink-0" />
+                  <div>
+                    <p className="text-xs font-bold text-[#361f1a] mb-0.5">Track Order Status</p>
+                    <p className="text-[11px] text-zinc-400 leading-tight">Scan to view live restoration progress</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Price breakdown */}
+              <div className="w-full sm:w-64 space-y-2 text-sm text-zinc-500">
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span>₹{Number(order.price).toLocaleString("en-IN")}.00</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Advance Paid</span>
+                  <span>₹{Number(invoice.advancePaid).toLocaleString("en-IN")}.00</span>
+                </div>
+                <div className="flex justify-between font-bold text-[#361f1a]">
+                  <span>Balance Due</span>
+                  <span className={Number(invoice.balanceDue) > 0 ? "text-red-600" : "text-emerald-600"}>
+                    ₹{Number(invoice.balanceDue).toLocaleString("en-IN")}.00
+                  </span>
+                </div>
+                <div className="h-px bg-zinc-200 my-2"></div>
+                <div className="flex justify-between items-end">
+                  <span className="font-bold text-[#361f1a]">Total</span>
+                  <span className="text-2xl font-bold text-[#361f1a]">₹{Number(invoice.amount).toLocaleString("en-IN")}.00</span>
+                </div>
+              </div>
+
+              {/* PAID stamp badge */}
+              {Number(invoice.balanceDue) === 0 && (
+                <div className="absolute right-[45%] bottom-[120px] transform -rotate-12 border-4 border-emerald-600 text-emerald-600 font-black text-2xl px-6 py-1.5 rounded uppercase tracking-widest opacity-80 pointer-events-none select-none">
+                  PAID
+                </div>
+              )}
+            </div>
+
+            {/* Signature Footer */}
+            <div className="text-center mt-12 pt-6 border-t border-zinc-100">
+              <p className="text-xs text-zinc-400 italic max-w-md mx-auto">
+                &ldquo;True craftsmanship takes time. Thank you for trusting Mr. Boot with your prized footwear. Wear them in good health.&rdquo;
+              </p>
+            </div>
           </div>
         </div>
       </div>
     </div>
   );
 }
+
 export const dynamic = 'force-dynamic';

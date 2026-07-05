@@ -15,11 +15,21 @@ const navItems = [
   { href: "/settings", label: "Settings", icon: "settings" },
 ];
 
-export const Sidebar = () => {
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 h-screen bg-white/65 dark:bg-primary/65 backdrop-blur-xl border-r border-white/22 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] flex flex-col fixed left-0 top-0 z-50">
+    <aside
+      className={clsx(
+        "w-64 h-screen bg-white/65 dark:bg-primary/65 backdrop-blur-xl border-r border-white/22 dark:border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.04)] flex flex-col fixed left-0 top-0 z-50 transition-transform duration-300 md:translate-x-0",
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      )}
+    >
       <div className="flex flex-col h-full py-8 px-4">
         {/* Brand Logo & Name */}
         <div className="mb-10 px-4 flex items-center gap-3">
@@ -47,6 +57,7 @@ export const Sidebar = () => {
                 <li key={item.href}>
                   <Link
                     href={item.href}
+                    onClick={onClose}
                     className={clsx(
                       "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-250 ease-out group",
                       isActive
@@ -70,7 +81,7 @@ export const Sidebar = () => {
 
         {/* Create Order Button */}
         <div className="mt-auto pt-6 px-2 pb-6 border-b border-black/5">
-          <Link href="/orders/new" className="w-full bg-primary-container text-on-primary-container hover:bg-primary-container/90 transition-all duration-250 ease-out py-3 rounded-xl font-label-sm text-label-sm flex items-center justify-center gap-2 shadow-sm hover:-translate-y-0.5 hover:shadow-md">
+          <Link href="/orders/new" onClick={onClose} className="w-full bg-primary-container text-on-primary-container hover:bg-primary-container/90 transition-all duration-250 ease-out py-3 rounded-xl font-label-sm text-label-sm flex items-center justify-center gap-2 shadow-sm hover:-translate-y-0.5 hover:shadow-md">
             <span className="material-symbols-outlined text-[18px]">add</span>
             New Order
           </Link>
@@ -80,6 +91,7 @@ export const Sidebar = () => {
         <div className="pt-4 flex flex-col gap-1">
           <Link
             href="/settings"
+            onClick={onClose}
             className="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out"
           >
             <span className="material-symbols-outlined text-[20px]">help</span>

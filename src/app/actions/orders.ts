@@ -6,6 +6,11 @@ import { syncToSheet } from "@/lib/sheets";
 import { OrderStatus, Role } from "@prisma/client";
 import { nanoid } from "nanoid";
 
+async function generateSequentialInvoiceNumber() {
+  const count = await prisma.invoice.count();
+  return `MB-${String(count + 1).padStart(3, '0')}`;
+}
+
 export async function createOrder(formData: {
   customer: {
     firstName: string;
@@ -87,7 +92,7 @@ export async function createOrder(formData: {
     syncToSheet({ table: "orders", data: order });
 
     // 3. Create Invoice
-    const invoiceNumber = `INV-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
+    const invoiceNumber = await generateSequentialInvoiceNumber();
     const balanceDue = formData.order.price - formData.payment.advancePaid;
     const invoice = await prisma.invoice.create({
       data: {
@@ -101,6 +106,7 @@ export async function createOrder(formData: {
     });
     // Sync Invoice to Sheet
     syncToSheet({ table: "invoices", data: invoice });
+
 
     // 4. Create Public Tracking Link
     const token = nanoid(12);
@@ -260,7 +266,7 @@ export async function createInvoiceForOrder(orderId: string, paymentMode: string
       return { success: false, error: "Invoice already exists for this order" };
     }
 
-    const invoiceNumber = `INV-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
+    const invoiceNumber = await generateSequentialInvoiceNumber();
     const invoice = await prisma.invoice.create({
       data: {
         orderId: order.id,
@@ -282,3 +288,44 @@ export async function createInvoiceForOrder(orderId: string, paymentMode: string
     return { success: false, error: error.message };
   }
 }
+
+export async function deleteOrder(orderId: string) {
+  try {
+    await prisma.order.delete({
+      where: { id: orderId },
+    });
+    revalidatePath("/orders");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to delete order:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+export async function revertOrderToPending(orderId: string) {
+  try {
+    const order = await prisma.order.update({
+      where: { id: orderId },
+      data: { status: OrderStatus.RECEIVED },
+    });
+
+    // Sync to sheet
+    syncToSheet({ table: "orders", data: order });
+
+    await prisma.activityLog.create({
+      data: {
+        orderId,
+        event: "Order status reverted to Pending (RECEIVED)",
+        actor: "sarah@mrboot.com",
+      },
+    });
+
+    revalidatePath(`/orders/${orderId}`);
+    revalidatePath("/orders");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to revert order status:", error);
+    return { success: false, error: error.message };
+  }
+}
+
