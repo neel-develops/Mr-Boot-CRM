@@ -195,6 +195,12 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
                   <span>Subtotal</span>
                   <span>₹{Number(order.price).toLocaleString("en-IN")}.00</span>
                 </div>
+                {order.isPorter && (
+                  <div className="flex justify-between">
+                    <span>Porter Service (Pick & Drop)</span>
+                    <span>₹{Number(order.porterCharge).toLocaleString("en-IN")}.00</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span>Advance Paid</span>
                   <span>₹{Number(invoice.advancePaid).toLocaleString("en-IN")}.00</span>

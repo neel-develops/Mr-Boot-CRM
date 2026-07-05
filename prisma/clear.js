@@ -62,7 +62,7 @@ async function main() {
         billReadyTemplate: "Hi {{customer_first_name}}, Neel Sonawane here from Mr Boot. Your bill is ready: {{invoice_pdf_or_track_link}}",
         reviewRequestTemplate: "Hi {{customer_first_name}}, hope you're loving your {{item_type}}! Would mean a lot if you could leave us a quick review: {{google_review_link}}",
         googleReviewLink: "https://g.page/r/your-google-review-link",
-        darkMode: true,
+        darkMode: false,
       },
     });
   }

@@ -5,22 +5,34 @@ import { GlassCard } from "@/components/ui/glass-card";
 import Link from "next/link";
 
 export default async function LogisticsPage() {
-  // 1. Query orders for logistics tracking (READY or DELIVERED)
+  // Fetch orders that are either READY/DELIVERED or have isPorter enabled
   const logisticsOrders = await prisma.order.findMany({
     where: {
-      status: {
-        in: [OrderStatus.READY, OrderStatus.DELIVERED],
-      },
+      OR: [
+        {
+          status: {
+            in: [OrderStatus.READY, OrderStatus.DELIVERED],
+          },
+        },
+        {
+          isPorter: true,
+        }
+      ]
     },
     include: {
       customer: true,
     },
     orderBy: { updatedAt: "desc" },
-    take: 20,
   });
 
   const activeDeliveries = logisticsOrders.filter((o) => o.status === OrderStatus.READY).length;
   const completedToday = logisticsOrders.filter((o) => o.status === OrderStatus.DELIVERED).length;
+
+  const totalPorterMoney = logisticsOrders
+    .filter((o) => o.isPorter)
+    .reduce((sum, o) => sum + Number(o.porterCharge || 0), 0);
+
+  const activePorterOrders = logisticsOrders.filter((o) => o.isPorter && o.status !== OrderStatus.DELIVERED).length;
 
   return (
     <div className="w-full max-w-[1200px] px-4 md:px-gutter mx-auto py-4">
@@ -58,12 +70,12 @@ export default async function LogisticsPage() {
               <p className="text-3xl font-bold text-primary">{completedToday}</p>
             </div>
             <div className="bg-white/40 rounded-xl p-4 border border-white/20">
-              <p className="text-label-sm font-label-sm text-on-surface-variant mb-1">Transit Exceptions</p>
-              <p className="text-3xl font-bold text-error">0</p>
+              <p className="text-label-sm font-label-sm text-on-surface-variant mb-1">Porter Money</p>
+              <p className="text-3xl font-bold text-primary">₹{totalPorterMoney.toLocaleString("en-IN")}</p>
             </div>
             <div className="bg-white/40 rounded-xl p-4 border border-white/20">
-              <p className="text-label-sm font-label-sm text-on-surface-variant mb-1">Partner Networks</p>
-              <p className="text-3xl font-bold text-primary">3</p>
+              <p className="text-label-sm font-label-sm text-on-surface-variant mb-1">Porter Orders</p>
+              <p className="text-3xl font-bold text-primary">{activePorterOrders}</p>
             </div>
           </div>
         </div>
@@ -126,15 +138,16 @@ export default async function LogisticsPage() {
                 <th className="p-4 font-medium pl-6">Order ID</th>
                 <th className="p-4 font-medium">Customer</th>
                 <th className="p-4 font-medium">Item Details</th>
-                <th className="p-4 font-medium">Logistics Status</th>
+                <th className="p-4 font-medium">Service Mode</th>
+                <th className="p-4 font-medium">Status</th>
                 <th className="p-4 font-medium pr-6 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-black/5 text-sm font-body-md">
               {logisticsOrders.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-on-surface-variant">
-                    No orders ready for delivery.
+                  <td colSpan={6} className="p-8 text-center text-on-surface-variant">
+                    No active delivery or logistics orders.
                   </td>
                 </tr>
               ) : (
@@ -151,14 +164,36 @@ export default async function LogisticsPage() {
                       {order.itemType}
                     </td>
                     <td className="p-4">
+                      {order.isPorter ? (
+                        <div>
+                          <span className="inline-flex items-center gap-1 text-xs font-semibold text-amber-700 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200">
+                            <span className="material-symbols-outlined text-[14px]">local_shipping</span>
+                            Porter Courier
+                          </span>
+                          <p className="text-xs text-on-surface-variant mt-1 font-medium">Charge: ₹{Number(order.porterCharge).toLocaleString("en-IN")}</p>
+                        </div>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 text-xs font-semibold text-zinc-600 bg-zinc-50 px-2.5 py-0.5 rounded-full border border-zinc-200">
+                          <span className="material-symbols-outlined text-[14px]">person</span>
+                          Self Pickup
+                        </span>
+                      )}
+                    </td>
+                    <td className="p-4">
                       <span
                         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${
                           order.status === OrderStatus.DELIVERED
                             ? "bg-[#E8F5E9] text-[#2E7D32] border-[#C8E6C9]"
-                            : "bg-[#FFF3E0] text-[#E65100] border-[#FFE0B2]"
+                            : order.status === OrderStatus.READY
+                            ? "bg-[#FFF3E0] text-[#E65100] border-[#FFE0B2]"
+                            : "bg-blue-50 text-blue-700 border-blue-200"
                         }`}
                       >
-                        {order.status === OrderStatus.READY ? "Ready for Dispatch" : "Delivered"}
+                        {order.status === OrderStatus.READY
+                          ? "Ready for Dispatch"
+                          : order.status === OrderStatus.DELIVERED
+                          ? "Delivered"
+                          : order.status.replace("_", " ")}
                       </span>
                     </td>
                     <td className="p-4 text-right pr-6">

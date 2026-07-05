@@ -100,6 +100,8 @@ export default function NewOrderPage() {
   const [orderNotes, setOrderNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [artisanId, setArtisanId] = useState("");
+  const [isPorter, setIsPorter] = useState(false);
+  const [porterCharge, setPorterCharge] = useState(150);
 
 
   // Unified Order Intake Photos state (uploaded at the end of all items)
@@ -275,6 +277,8 @@ export default function NewOrderPage() {
         price: subtotal,
         dueDate: new Date(dueDate),
         notes: orderNotes,
+        isPorter,
+        porterCharge,
       },
       items: items.map((i, idx) => {
         // Map services list, replacing "Other" with textbox content if populated
@@ -818,10 +822,48 @@ export default function NewOrderPage() {
                   </div>
                 )}
 
+                {/* Pick & Drop (via Porter) Checkbox */}
+                <div className="flex flex-col gap-2 p-3 bg-white/30 rounded-lg border border-black/5">
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isPorter}
+                      onChange={(e) => setIsPorter(e.target.checked)}
+                      className="rounded border-gray-300 text-primary focus:ring-primary w-4 h-4"
+                    />
+                    <div className="flex flex-col">
+                      <span className="text-xs font-semibold text-on-surface">Pick & Drop Service (via Porter)</span>
+                      <span className="text-[10px] text-on-surface-variant">Adds courier fee to the bill & tracks in Logistics</span>
+                    </div>
+                  </label>
+                  {isPorter && (
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-black/5">
+                      <span className="text-xs text-on-surface-variant">Porter Service Charge</span>
+                      <div className="relative w-24">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-xs">₹</span>
+                        <input
+                          type="number"
+                          value={porterCharge || ""}
+                          onChange={(e) => setPorterCharge(Number(e.target.value))}
+                          className="w-full bg-white/50 border border-black/5 rounded-md py-1 pl-5 pr-2 text-xs text-right focus:outline-none"
+                          placeholder="150"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex justify-between items-center pt-2">
                   <span className="text-sm text-on-surface">Subtotal</span>
                   <span className="font-semibold text-primary dark:text-primary-fixed">₹{subtotal.toLocaleString("en-IN")}</span>
                 </div>
+
+                {isPorter && (
+                  <div className="flex justify-between items-center text-xs text-on-surface-variant">
+                    <span>Porter Service Charge</span>
+                    <span>₹{porterCharge.toLocaleString("en-IN")}</span>
+                  </div>
+                )}
 
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-on-surface">Advance Paid</span>
@@ -840,7 +882,7 @@ export default function NewOrderPage() {
                 <div className="flex justify-between items-end pt-4 border-t border-black/5">
                   <span className="text-sm text-on-surface-variant">Balance Due</span>
                   <span className="font-numeral-xl text-numeral-xl text-primary dark:text-primary-fixed">
-                    ₹{(subtotal - advancePaid).toLocaleString("en-IN")}
+                    ₹{(subtotal + (isPorter ? porterCharge : 0) - advancePaid).toLocaleString("en-IN")}
                   </span>
                 </div>
 

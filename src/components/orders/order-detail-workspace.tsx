@@ -45,8 +45,16 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
   const waBillUrl = `https://wa.me/${phone}?text=${encodeURIComponent(formattedBillMsg)}`;
   const waReviewUrl = `https://wa.me/${phone}?text=${encodeURIComponent(formattedReviewMsg)}`;
 
+  const hasAfterPhoto = order.activityLogs.some(
+    (log: any) => log.event === "After Photo uploaded as completion proof"
+  );
+
   // Handle status transitions
   const handleStatusChange = async (newStatus: OrderStatus) => {
+    if ((newStatus === OrderStatus.READY || newStatus === OrderStatus.DELIVERED) && !hasAfterPhoto) {
+      alert("Error: You cannot close this entry or mark it as Ready/Delivered without uploading an After Photo (proof of completion). Please upload a proof photo first.");
+      return;
+    }
     setUpdatingStatus(true);
     const res = await updateOrderStatus(order.id, newStatus);
     setUpdatingStatus(false);

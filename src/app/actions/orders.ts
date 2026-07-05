@@ -27,6 +27,8 @@ export async function createOrder(formData: {
     dueDate: Date;
     notes?: string;
     artisanId?: string;
+    isPorter?: boolean;
+    porterCharge?: number;
   };
   items: Array<{
     category: string;
@@ -77,6 +79,8 @@ export async function createOrder(formData: {
         notes: formData.order.notes 
           ? `${formData.order.notes}\n\nCreated By: ${formData.createdBy || "Neel Sonawane"}`
           : `Created By: ${formData.createdBy || "Neel Sonawane"}`,
+        isPorter: formData.order.isPorter || false,
+        porterCharge: formData.order.porterCharge || 0,
         items: {
           create: formData.items.map((item) => ({
             category: item.category,
@@ -98,12 +102,14 @@ export async function createOrder(formData: {
 
     // 3. Create Invoice
     const invoiceNumber = await generateSequentialInvoiceNumber();
-    const balanceDue = formData.order.price - formData.payment.advancePaid;
+    const porterAmt = formData.order.isPorter ? (formData.order.porterCharge || 0) : 0;
+    const finalAmount = formData.order.price + porterAmt;
+    const balanceDue = finalAmount - formData.payment.advancePaid;
     const invoice = await prisma.invoice.create({
       data: {
         orderId: order.id,
         invoiceNumber,
-        amount: formData.order.price,
+        amount: finalAmount,
         advancePaid: formData.payment.advancePaid,
         balanceDue,
         paymentMode: formData.payment.paymentMode,
@@ -214,10 +220,24 @@ export async function assignArtisan(orderId: string, artisanId: string, actorEma
 
 export async function uploadProofPhoto(orderItemId: string, photoUrl: string, orderId: string, actorEmail: string = "arthur@mrboot.com") {
   try {
+    // Fetch the current item to preserve the intake photo in additionalPhotos
+    const item = await prisma.orderItem.findUnique({
+      where: { id: orderItemId },
+      select: { photoUrl: true, additionalPhotos: true },
+    });
+
+    const additionalPhotos = item?.additionalPhotos || [];
+    const newAdditionalPhotos = [...additionalPhotos];
+    
+    if (item?.photoUrl && !newAdditionalPhotos.includes(item.photoUrl)) {
+      newAdditionalPhotos.push(item.photoUrl);
+    }
+
     await prisma.orderItem.update({
       where: { id: orderItemId },
       data: {
-        photoUrl, // Sets the after photo / main photo
+        photoUrl, // Sets the after photo as the main photo (replaces it for the bill/receipt)
+        additionalPhotos: newAdditionalPhotos, // Adds the original main photo to the gallery
       },
     });
 

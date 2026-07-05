@@ -60,6 +60,8 @@ model Order {
   artisanId        String?
   artisan          Staff?            @relation(fields: [artisanId], references: [id])
   notes            String?
+  isPorter         Boolean           @default(false)
+  porterCharge     Decimal           @default(0) @db.Decimal(10, 2)
   createdAt        DateTime          @default(now())
   updatedAt        DateTime          @updatedAt
   items            OrderItem[]
