@@ -399,3 +399,40 @@ export async function togglePorterService(orderId: string, isPorter: boolean, po
   }
 }
 
+export async function updateOrderDetails(orderId: string, price: number, dueDate: string, notes: string) {
+  try {
+    const updatedOrder = await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        price,
+        dueDate: new Date(dueDate),
+        notes,
+      },
+      include: {
+        invoices: true,
+      }
+    });
+
+    if (updatedOrder.invoices.length > 0) {
+      const invoice = updatedOrder.invoices[0];
+      const finalAmount = price;
+      const balanceDue = finalAmount - Number(invoice.advancePaid);
+      await prisma.invoice.update({
+        where: { id: invoice.id },
+        data: {
+          amount: finalAmount,
+          balanceDue,
+        }
+      });
+    }
+
+    revalidatePath(`/orders/${orderId}`);
+    revalidatePath(`/invoices/${orderId}`);
+    revalidatePath("/orders");
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to update order details:", error);
+    return { success: false, error: error.message };
+  }
+}
+

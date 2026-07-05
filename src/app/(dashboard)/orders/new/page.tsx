@@ -61,7 +61,7 @@ interface OrderItemState {
 export default function NewOrderPage() {
   const router = useRouter();
   const [artisans, setArtisans] = useState<any[]>([]);
-  const [currentUser, setCurrentUser] = useState("Neel Sonawane");
+  const [currentUser, setCurrentUser] = useState("Active Staff");
 
   // Load current logged in user to pass to createdBy
   useEffect(() => {
@@ -69,11 +69,9 @@ export default function NewOrderPage() {
       supabase.auth.getUser().then(({ data }) => {
         const email = data?.user?.email;
         if (email) {
-          if (email.includes("vinita")) {
-            setCurrentUser("Vinita Sonawane");
-          } else {
-            setCurrentUser("Neel Sonawane");
-          }
+          const username = email.split('@')[0];
+          const name = username.split(/[._-]/).map(part => part.charAt(0).toUpperCase() + part.slice(1)).join(" ");
+          setCurrentUser(name);
         }
       });
     });

@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { OrderStatus } from "@prisma/client";
 import { GlassCard } from "@/components/ui/glass-card";
-import { updateOrderStatus, assignArtisan, uploadProofPhoto, logReviewRequest, createInvoiceForOrder, deleteOrder, revertOrderToPending, togglePorterService } from "@/app/actions/orders";
+import { updateOrderStatus, assignArtisan, uploadProofPhoto, logReviewRequest, createInvoiceForOrder, deleteOrder, revertOrderToPending, togglePorterService, updateOrderDetails } from "@/app/actions/orders";
 import { uploadImage } from "@/lib/upload";
 import Link from "next/link";
 
@@ -50,6 +50,24 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
       window.location.reload();
     } else {
       alert("Error updating Porter fee: " + res.error);
+    }
+  };
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [editPrice, setEditPrice] = useState(Number(order.price));
+  const [editDueDate, setEditDueDate] = useState(new Date(order.dueDate).toISOString().split('T')[0]);
+  const [editNotes, setEditNotes] = useState(order.notes || "");
+  const [savingEdit, setSavingEdit] = useState(false);
+
+  const handleSaveEdit = async () => {
+    setSavingEdit(true);
+    const res = await updateOrderDetails(order.id, editPrice, editDueDate, editNotes);
+    setSavingEdit(false);
+    if (res.success) {
+      setIsEditing(false);
+      window.location.reload();
+    } else {
+      alert("Error saving order details: " + res.error);
     }
   };
 
@@ -174,6 +192,82 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
                 {status.replace("_", " ")}
               </span>
             </div>
+
+            {/* Price, Due Date & Notes Section */}
+            {!isEditing ? (
+              <div className="flex flex-col gap-3 bg-zinc-50 rounded-xl p-4 border border-zinc-100/50">
+                <div className="grid grid-cols-2 gap-4 text-xs">
+                  <div>
+                    <span className="text-[10px] text-zinc-400 uppercase tracking-widest block font-bold mb-0.5">Price / Cost</span>
+                    <span className="text-sm font-bold text-primary">₹{Number(order.price).toLocaleString("en-IN")}.00</span>
+                  </div>
+                  <div>
+                    <span className="text-[10px] text-zinc-400 uppercase tracking-widest block font-bold mb-0.5">Expected Due Date</span>
+                    <span className="text-sm font-bold text-on-surface">{new Date(order.dueDate).toLocaleDateString("en-IN", { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                  </div>
+                </div>
+                <div className="border-t border-black/5 pt-2 flex flex-col gap-1">
+                  <span className="text-[10px] text-zinc-400 uppercase tracking-widest block font-bold">Order Notes</span>
+                  <span className="text-xs text-on-surface-variant leading-relaxed">
+                    {order.notes || "No special instructions recorded."}
+                  </span>
+                </div>
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="mt-1 flex items-center justify-center gap-1 py-1 px-3 border border-black/5 hover:bg-black/5 text-primary text-[11px] font-bold rounded-lg self-start transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[14px]">edit</span>
+                  Edit Details
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-3 bg-zinc-50 rounded-xl p-4 border border-zinc-100/50">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-[10px] text-zinc-400 uppercase tracking-widest block font-bold mb-1">Price (₹)</label>
+                    <input
+                      type="number"
+                      value={editPrice}
+                      onChange={(e) => setEditPrice(Number(e.target.value))}
+                      className="w-full bg-white border border-black/5 rounded-lg py-1.5 px-3 text-xs focus:outline-none focus:ring-1 focus:ring-primary text-on-surface"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] text-zinc-400 uppercase tracking-widest block font-bold mb-1">Due Date</label>
+                    <input
+                      type="date"
+                      value={editDueDate}
+                      onChange={(e) => setEditDueDate(e.target.value)}
+                      className="w-full bg-white border border-black/5 rounded-lg py-1.5 px-3 text-xs focus:outline-none focus:ring-1 focus:ring-primary text-on-surface"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="text-[10px] text-zinc-400 uppercase tracking-widest block font-bold mb-1">Order Notes</label>
+                  <textarea
+                    value={editNotes}
+                    onChange={(e) => setEditNotes(e.target.value)}
+                    className="w-full bg-white border border-black/5 rounded-lg py-1.5 px-3 text-xs focus:outline-none focus:ring-1 focus:ring-primary text-on-surface h-16 resize-none"
+                  />
+                </div>
+                <div className="flex gap-2 justify-end mt-1 border-t border-black/5 pt-2">
+                  <button
+                    onClick={() => setIsEditing(false)}
+                    disabled={savingEdit}
+                    className="py-1 px-3 bg-zinc-200 hover:bg-zinc-300 text-on-surface text-[11px] font-bold rounded-lg transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleSaveEdit}
+                    disabled={savingEdit}
+                    className="py-1 px-3 bg-primary text-on-primary text-[11px] font-bold rounded-lg hover:opacity-90 transition-opacity"
+                  >
+                    {savingEdit ? "Saving..." : "Save Details"}
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Services details */}
             <div className="border-t border-black/5 pt-4">
