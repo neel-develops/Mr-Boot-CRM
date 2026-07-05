@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { OrderStatus } from "@prisma/client";
 import { GlassCard } from "@/components/ui/glass-card";
-import { updateOrderStatus, assignArtisan, uploadProofPhoto, logReviewRequest } from "@/app/actions/orders";
+import { updateOrderStatus, assignArtisan, uploadProofPhoto, logReviewRequest, createInvoiceForOrder } from "@/app/actions/orders";
 import { uploadImage } from "@/lib/upload";
 import Link from "next/link";
 
@@ -23,12 +23,15 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
   const [artisanId, setArtisanId] = useState(order.artisanId || "");
   const [uploading, setUploading] = useState(false);
   const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [invoicePaymentMode, setInvoicePaymentMode] = useState("UPI");
+  const [generatingInvoice, setGeneratingInvoice] = useState(false);
 
   const customerName = order.customer.firstName;
   const phone = order.customer.phone.replace(/[^0-9]/g, "");
 
-  // Generate WhatsApp links dynamically from settings templates
-  const trackingLink = `${window.location.origin}/track/${order.publicOrderLinks[0]?.token || ""}`;
+  // Generate WhatsApp links safely without throwing ReferenceError on server-side pre-rendering
+  const appUrl = typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000");
+  const trackingLink = `${appUrl}/track/${order.publicOrderLinks[0]?.token || ""}`;
 
   const formattedBillMsg = settings.billReadyTemplate
     .replace("{{customer_first_name}}", customerName)
@@ -281,6 +284,43 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
               >
                 Mark as Delivered & Closed
               </button>
+            )}
+
+            {/* Manual Invoice Generation if missing */}
+            {!isInvoiceGenerated && (
+              <div className="p-4 bg-error/5 border border-error/20 rounded-xl flex flex-col gap-3 mb-2 mt-4">
+                <div className="flex flex-col">
+                  <span className="text-xs font-semibold text-error uppercase tracking-wider">No Bill / Invoice Found</span>
+                  <span className="text-xs text-on-surface-variant mt-0.5">Generate a bill to activate payment details and Send Bill triggers.</span>
+                </div>
+                <div className="flex gap-2 items-center">
+                  <select
+                    value={invoicePaymentMode}
+                    onChange={(e) => setInvoicePaymentMode(e.target.value)}
+                    className="bg-white/70 border border-black/5 rounded-lg py-1.5 px-3 text-xs focus:outline-none flex-1 dark:bg-zinc-800 dark:border-zinc-700 text-on-surface"
+                  >
+                    <option value="UPI">UPI</option>
+                    <option value="CASH">CASH</option>
+                    <option value="CARD">CARD</option>
+                  </select>
+                  <button
+                    onClick={async () => {
+                      setGeneratingInvoice(true);
+                      const res = await createInvoiceForOrder(order.id, invoicePaymentMode);
+                      setGeneratingInvoice(false);
+                      if (res.success) {
+                        window.location.reload();
+                      } else {
+                        alert("Failed to generate invoice: " + res.error);
+                      }
+                    }}
+                    disabled={generatingInvoice}
+                    className="py-1.5 px-4 bg-primary text-on-primary text-xs font-semibold rounded-lg hover:opacity-90 transition-opacity"
+                  >
+                    {generatingInvoice ? "Generating..." : "Generate Bill"}
+                  </button>
+                </div>
+              </div>
             )}
 
             {/* TWO distinct WhatsApp Buttons */}

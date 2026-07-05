@@ -244,3 +244,41 @@ export async function logReviewRequest(orderId: string, actorEmail: string = "sa
     return { success: false, error: error.message };
   }
 }
+
+export async function createInvoiceForOrder(orderId: string, paymentMode: string = "UPI") {
+  try {
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { invoices: true },
+    });
+
+    if (!order) {
+      return { success: false, error: "Order not found" };
+    }
+
+    if (order.invoices.length > 0) {
+      return { success: false, error: "Invoice already exists for this order" };
+    }
+
+    const invoiceNumber = `INV-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
+    const invoice = await prisma.invoice.create({
+      data: {
+        orderId: order.id,
+        invoiceNumber,
+        amount: order.price,
+        advancePaid: 0,
+        balanceDue: order.price,
+        paymentMode,
+      },
+    });
+
+    // Sync to Sheets
+    syncToSheet({ table: "invoices", data: invoice });
+
+    revalidatePath(`/orders/${orderId}`);
+    return { success: true, invoice };
+  } catch (error: any) {
+    console.error("Failed to generate invoice:", error);
+    return { success: false, error: error.message };
+  }
+}

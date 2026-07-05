@@ -1,6 +1,7 @@
 import React from "react";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
+import { AuthGuard } from "@/components/layout/auth-guard";
 
 export default function DashboardLayout({
   children,
@@ -8,7 +9,8 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen relative bg-background">
+    <AuthGuard>
+      <div className="min-h-screen relative bg-background">
       {/* Background Ambience */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 bg-background"></div>
@@ -24,6 +26,7 @@ export default function DashboardLayout({
       <main className="pt-20 md:pt-24 pb-24 md:pb-12 px-4 md:px-8 lg:px-container-padding md:ml-64 relative z-10 max-w-[1440px] mx-auto min-h-screen flex flex-col gap-gutter">
         {children}
       </main>
-    </div>
+      </div>
+    </AuthGuard>
   );
 }
