@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { OrderStatus } from "@prisma/client";
 import { GlassCard } from "@/components/ui/glass-card";
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
+import WorkspaceWidget from "@/components/dashboard/workspace-widget";
 
 export default async function ExecutiveDashboardPage() {
   const startOfToday = new Date();
@@ -20,7 +21,6 @@ export default async function ExecutiveDashboardPage() {
     todayRevenueAggregate,
     todayOrders,
     readyPickupCount,
-    recentLogs,
     serviceGroups,
     invoicesLast30Days,
   ] = await Promise.all([
@@ -43,13 +43,6 @@ export default async function ExecutiveDashboardPage() {
     }),
     prisma.order.count({
       where: { status: OrderStatus.READY },
-    }),
-    prisma.activityLog.findMany({
-      orderBy: { timestamp: "desc" },
-      take: 5,
-      include: {
-        order: true,
-      },
     }),
     prisma.order.groupBy({
       by: ["serviceType"],
@@ -183,42 +176,10 @@ export default async function ExecutiveDashboardPage() {
           <DashboardClient chartData={chartData} />
         </div>
 
-        {/* Recent Activity Logs */}
-        <GlassCard className="flex flex-col h-[400px]">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-body-md font-body-md font-semibold text-primary dark:text-primary-fixed">Recent Activity</h3>
-            <Link href="/orders" className="text-label-sm font-label-sm text-primary hover:underline">
-              View Orders
-            </Link>
-          </div>
-          <div className="flex-grow overflow-y-auto pr-2 custom-scrollbar relative">
-            <div className="absolute left-[11px] top-2 bottom-2 w-0.5 bg-black/5"></div>
-            <div className="flex flex-col gap-6 relative z-10">
-              {recentLogs.length === 0 ? (
-                <p className="text-center text-on-surface-variant text-sm py-12">No activity logged.</p>
-              ) : (
-                recentLogs.map((log) => (
-                  <div key={log.id} className="flex gap-4">
-                    <div className="w-6 h-6 rounded-full bg-white border-2 border-[#c89b3c] flex items-center justify-center shadow-sm shrink-0 mt-0.5 relative z-10">
-                      <span className="w-2 h-2 rounded-full bg-[#c89b3c]"></span>
-                    </div>
-                    <div>
-                      <p className="text-label-sm font-label-sm text-primary dark:text-primary-fixed font-semibold">
-                        {log.event}
-                      </p>
-                      <p className="text-[13px] text-on-surface-variant mt-0.5">
-                        Order #{log.order.id.slice(-6).toUpperCase()} • {log.order.itemType}
-                      </p>
-                      <span className="text-[11px] text-on-surface-variant/60 block mt-1">
-                        {new Date(log.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        </GlassCard>
+        {/* Workspace Widget */}
+        <div className="flex flex-col items-center justify-center">
+          <WorkspaceWidget />
+        </div>
       </div>
 
       {/* Lower Section: Services & deep insights */}
