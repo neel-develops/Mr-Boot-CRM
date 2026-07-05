@@ -313,19 +313,6 @@ export async function createInvoiceForOrder(orderId: string, paymentMode: string
   }
 }
 
-export async function deleteOrder(orderId: string) {
-  try {
-    await prisma.order.delete({
-      where: { id: orderId },
-    });
-    revalidatePath("/orders");
-    return { success: true };
-  } catch (error: any) {
-    console.error("Failed to delete order:", error);
-    return { success: false, error: error.message };
-  }
-}
-
 export async function revertOrderToPending(orderId: string) {
   try {
     const order = await prisma.order.update({
