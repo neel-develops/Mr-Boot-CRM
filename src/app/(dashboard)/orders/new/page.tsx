@@ -859,9 +859,12 @@ export default function NewOrderPage() {
                 </div>
 
                 {isPorter && (
-                  <div className="flex justify-between items-center text-xs text-on-surface-variant">
-                    <span>Porter Service Charge</span>
-                    <span>₹{porterCharge.toLocaleString("en-IN")}</span>
+                  <div className="flex justify-between items-center text-xs text-on-surface-variant bg-zinc-50 p-2 rounded border border-black/5">
+                    <span className="flex items-center gap-1">
+                      <span className="material-symbols-outlined text-[14px]">local_shipping</span>
+                      Porter Service Active
+                    </span>
+                    <span className="text-[10px] bg-primary/10 text-primary px-1.5 py-0.5 rounded font-semibold">PAID SEPARATELY</span>
                   </div>
                 )}
 
@@ -882,7 +885,7 @@ export default function NewOrderPage() {
                 <div className="flex justify-between items-end pt-4 border-t border-black/5">
                   <span className="text-sm text-on-surface-variant">Balance Due</span>
                   <span className="font-numeral-xl text-numeral-xl text-primary dark:text-primary-fixed">
-                    ₹{(subtotal + (isPorter ? porterCharge : 0) - advancePaid).toLocaleString("en-IN")}
+                    ₹{(subtotal - advancePaid).toLocaleString("en-IN")}
                   </span>
                 </div>
 

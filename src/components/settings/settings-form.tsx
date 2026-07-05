@@ -109,47 +109,7 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ settings: initialSet
             </div>
           </GlassCard>
 
-          {/* Theme Settings */}
-          <GlassCard>
-            <div className="flex items-center gap-3 mb-6">
-              <span className="material-symbols-outlined text-primary p-2 bg-primary-fixed/20 rounded-lg">
-                palette
-              </span>
-              <h3 className="font-semibold text-lg text-primary dark:text-primary-fixed">
-                Theme Configurations
-              </h3>
-            </div>
 
-            <div className="flex justify-between items-center py-2">
-              <div>
-                <p className="font-medium text-on-surface">Dark Mode</p>
-                <p className="text-xs text-on-surface-variant">Toggle dark glassmorphism styling</p>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  const nextDark = !darkMode;
-                  setDarkMode(nextDark);
-                  if (nextDark) {
-                    document.documentElement.classList.add("dark");
-                    document.documentElement.classList.remove("light");
-                  } else {
-                    document.documentElement.classList.remove("dark");
-                    document.documentElement.classList.add("light");
-                  }
-                }}
-                className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 focus:outline-none ${
-                  darkMode ? "bg-primary" : "bg-surface-container-high"
-                }`}
-              >
-                <div
-                  className={`w-4 h-4 rounded-full bg-white shadow-sm transition-transform duration-200 ${
-                    darkMode ? "translate-x-6" : "translate-x-0"
-                  }`}
-                />
-              </button>
-            </div>
-          </GlassCard>
         </div>
 
         {/* Right Column: WhatsApp Messaging Templates */}

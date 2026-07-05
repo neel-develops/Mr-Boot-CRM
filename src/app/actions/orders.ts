@@ -102,8 +102,7 @@ export async function createOrder(formData: {
 
     // 3. Create Invoice
     const invoiceNumber = await generateSequentialInvoiceNumber();
-    const porterAmt = formData.order.isPorter ? (formData.order.porterCharge || 0) : 0;
-    const finalAmount = formData.order.price + porterAmt;
+    const finalAmount = formData.order.price;
     const balanceDue = finalAmount - formData.payment.advancePaid;
     const invoice = await prisma.invoice.create({
       data: {
@@ -369,7 +368,7 @@ export async function togglePorterService(orderId: string, isPorter: boolean, po
 
     if (order.invoices.length > 0) {
       const invoice = order.invoices[0];
-      const finalAmount = Number(order.price) + (isPorter ? porterCharge : 0);
+      const finalAmount = Number(order.price);
       const balanceDue = finalAmount - Number(invoice.advancePaid);
       await prisma.invoice.update({
         where: { id: invoice.id },

@@ -12,13 +12,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const settings = await prisma.settings.findUnique({
-    where: { id: "singleton" },
-  });
-  const isDarkMode = settings?.darkMode || false;
-
   return (
-    <html lang="en" className={isDarkMode ? "dark" : ""}>
+    <html lang="en" className="">
       <body className="bg-background text-on-background font-body-md antialiased overflow-x-hidden min-h-screen relative">
         {children}
       </body>

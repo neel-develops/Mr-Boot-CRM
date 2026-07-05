@@ -187,17 +187,7 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
               <span className="material-symbols-outlined text-[22px]">qr_code_scanner</span>
             </button>
 
-            {/* Theme Toggle Button */}
-            <button
-              onClick={handleToggleDarkMode}
-              className="p-2 rounded-full hover:bg-black/5 transition-colors flex items-center justify-center text-on-surface-variant dark:text-white"
-              title={isDark ? "Activate Light Mode" : "Activate Dark Mode"}
-              type="button"
-            >
-              <span className="material-symbols-outlined text-[22px]">
-                {isDark ? "light_mode" : "dark_mode"}
-              </span>
-            </button>
+
 
             {/* Notification Bell Dropdown */}
             <div className="relative" ref={dropdownRef}>

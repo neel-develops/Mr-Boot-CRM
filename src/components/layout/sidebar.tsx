@@ -13,6 +13,7 @@ const navItems = [
   { href: "/customers", label: "Customers", icon: "group" },
   { href: "/financials", label: "Financials", icon: "payments" },
   { href: "/staff", label: "Staff", icon: "badge" },
+  { href: "/ai-assistant", label: "AI Assistant", icon: "psychology" },
   { href: "/settings", label: "Settings", icon: "settings" },
 ];
 

@@ -135,10 +135,26 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
             </div>
 
             {/* Billed To Customer Info */}
-            <div className="mb-8 bg-zinc-50 rounded-xl p-5 border border-zinc-100 flex flex-col">
-              <span className="text-[10px] text-zinc-400 uppercase tracking-widest mb-1.5 font-bold">Billed To</span>
-              <p className="text-lg font-bold text-[#361f1a]">{order.customer.firstName} {order.customer.lastName}</p>
-              <p className="text-xs text-zinc-500 mt-0.5">{order.customer.phone}</p>
+            <div className="mb-8 bg-zinc-50 rounded-xl p-5 border border-zinc-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <span className="text-[10px] text-zinc-400 uppercase tracking-widest mb-1.5 font-bold">Billed To</span>
+                <p className="text-lg font-bold text-[#361f1a]">{order.customer.firstName} {order.customer.lastName}</p>
+                <p className="text-xs text-zinc-500 mt-0.5">{order.customer.phone}</p>
+              </div>
+              <div className="flex flex-col gap-1 bg-white border border-zinc-200/80 rounded-lg py-2 px-3 self-start sm:self-auto min-w-[200px] shadow-sm">
+                <div className="flex items-center gap-2 text-xs font-semibold text-zinc-700">
+                  <input
+                    type="checkbox"
+                    checked={order.isPorter || false}
+                    readOnly
+                    className="rounded border-zinc-300 text-zinc-800 focus:ring-zinc-800 w-4 h-4 pointer-events-none"
+                  />
+                  <span>Pick & Drop via Porter</span>
+                </div>
+                <div className="flex items-center gap-2 text-[10px] text-zinc-400 pl-6">
+                  <span>{order.isPorter ? `Porter Courier Active` : "Self Pickup"}</span>
+                </div>
+              </div>
             </div>
 
             {/* Items Section */}
@@ -195,12 +211,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
                   <span>Subtotal</span>
                   <span>₹{Number(order.price).toLocaleString("en-IN")}.00</span>
                 </div>
-                {order.isPorter && (
-                  <div className="flex justify-between">
-                    <span>Porter Service (Pick & Drop)</span>
-                    <span>₹{Number(order.porterCharge).toLocaleString("en-IN")}.00</span>
-                  </div>
-                )}
+
                 <div className="flex justify-between">
                   <span>Advance Paid</span>
                   <span>₹{Number(invoice.advancePaid).toLocaleString("en-IN")}.00</span>
