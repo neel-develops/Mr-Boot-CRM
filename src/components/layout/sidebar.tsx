@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { clsx } from "clsx";
+import { supabase } from "@/lib/supabase";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: "dashboard" },
@@ -84,6 +85,16 @@ export const Sidebar = () => {
             <span className="material-symbols-outlined text-[20px]">help</span>
             <span className="text-label-sm font-label-sm">Support</span>
           </Link>
+          <button
+            onClick={async () => {
+              await supabase.auth.signOut();
+              window.location.reload();
+            }}
+            className="flex items-center gap-3 px-4 py-2 w-full text-left rounded-lg text-error hover:bg-red-500/10 transition-all duration-250 ease-out"
+          >
+            <span className="material-symbols-outlined text-[20px] text-error">logout</span>
+            <span className="text-label-sm font-label-sm text-error">Sign Out</span>
+          </button>
           <div className="flex items-center gap-3 px-4 py-2 text-on-surface-variant dark:text-outline-variant">
             <span className="material-symbols-outlined text-[20px]">verified_user</span>
             <span className="text-[12px] font-label-sm opacity-80">RBAC Active</span>
