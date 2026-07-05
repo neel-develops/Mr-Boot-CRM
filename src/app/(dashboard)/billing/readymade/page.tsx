@@ -28,6 +28,7 @@ export default function ReadymadeBillingPage() {
   const [paymentMade, setPaymentMade] = useState(12500);
   const [adjustment, setAdjustment] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const fallbackShoeImg = "https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=150&auto=format&fit=crop&q=60";
 
   // Auto redirect to bespoke if handmade toggle is turned ON
   useEffect(() => {
