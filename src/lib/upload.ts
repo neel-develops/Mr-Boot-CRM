@@ -1,6 +1,9 @@
 import { supabase } from './supabase';
 
-export async function uploadImage(file: File, bucket: 'order-photos' | 'bill-images' = 'order-photos'): Promise<string> {
+// Bucket names must match what was created in Supabase Storage
+export type StorageBucket = 'before-images' | 'after-images' | 'invoices';
+
+export async function uploadImage(file: File, bucket: StorageBucket = 'before-images'): Promise<string> {
   try {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}-${Math.floor(1000 + Math.random() * 9000)}.${fileExt}`;
@@ -15,7 +18,8 @@ export async function uploadImage(file: File, bucket: 'order-photos' | 'bill-ima
       });
 
     if (error) {
-      throw error;
+      console.error('Supabase storage upload error:', JSON.stringify(error));
+      throw new Error(`Upload failed: ${error.message}`);
     }
 
     // Get public url
@@ -29,3 +33,4 @@ export async function uploadImage(file: File, bucket: 'order-photos' | 'bill-ima
     throw err;
   }
 }
+

@@ -170,7 +170,7 @@ export default function NewOrderPage() {
     setItems(updated);
 
     try {
-      const publicUrl = await uploadImage(file, "order-photos");
+      const publicUrl = await uploadImage(file, "before-images");
       updated[index].photoUrl = publicUrl;
       console.log("Photo uploaded to Supabase:", publicUrl);
     } catch (err) {

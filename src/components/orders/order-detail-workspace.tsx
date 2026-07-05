@@ -78,7 +78,7 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
 
     setUploading(true);
     try {
-      const publicUrl = await uploadImage(file, "order-photos");
+      const publicUrl = await uploadImage(file, "after-images");
       // Update item #1 photoUrl (or matching item)
       const itemId = order.items[0]?.id;
       if (itemId) {
