@@ -27,6 +27,29 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    setIsDark(document.documentElement.classList.contains("dark"));
+  }, []);
+
+  const handleToggleDarkMode = async () => {
+    const nextDark = !isDark;
+    setIsDark(nextDark);
+    if (nextDark) {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+    } else {
+      document.documentElement.classList.remove("dark");
+      document.documentElement.classList.add("light");
+    }
+    try {
+      const { updateDarkMode } = await import("@/app/actions/settings");
+      await updateDarkMode(nextDark);
+    } catch (err) {
+      console.error("Failed to save dark mode setting:", err);
+    }
+  };
 
   // Fetch notifications from real database API
   const fetchNotifications = async () => {
@@ -162,6 +185,18 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
             </button>
             <button className="p-2 rounded-full hover:bg-black/5 transition-colors flex items-center justify-center" title="Scan QR Code (Mock)">
               <span className="material-symbols-outlined text-[22px]">qr_code_scanner</span>
+            </button>
+
+            {/* Theme Toggle Button */}
+            <button
+              onClick={handleToggleDarkMode}
+              className="p-2 rounded-full hover:bg-black/5 transition-colors flex items-center justify-center text-on-surface-variant dark:text-white"
+              title={isDark ? "Activate Light Mode" : "Activate Dark Mode"}
+              type="button"
+            >
+              <span className="material-symbols-outlined text-[22px]">
+                {isDark ? "light_mode" : "dark_mode"}
+              </span>
             </button>
 
             {/* Notification Bell Dropdown */}

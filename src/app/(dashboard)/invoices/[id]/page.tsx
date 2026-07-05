@@ -69,6 +69,15 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
 
   const fallbackShoeImg = "https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=150&auto=format&fit=crop&q=60"; // Classic premium brown shoe
 
+  // Extract Created By
+  let createdBy = "Neel Sonawane";
+  if (order.notes) {
+    const creatorMatch = order.notes.match(/Created By:\s*([^\n\r]+)/i);
+    if (creatorMatch && creatorMatch[1]) {
+      createdBy = creatorMatch[1].trim();
+    }
+  }
+
   return (
     <div className="w-full min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       {/* Container holding controls and the printable/savable invoice box */}
@@ -103,6 +112,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
                 <h2 className="text-xl font-bold text-[#361f1a] tracking-wider uppercase mb-1">RECEIPT</h2>
                 <p className="text-xs text-zinc-500">Order: <span className="font-semibold text-[#361f1a]">#{invoice.invoiceNumber}</span></p>
                 <p className="text-xs text-zinc-500">Date: {invoiceDate}</p>
+                <p className="text-xs text-zinc-500">Created By: <span className="font-semibold text-[#361f1a]">{createdBy}</span></p>
               </div>
             </div>
 
@@ -194,6 +204,10 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
                   <span className={Number(invoice.balanceDue) > 0 ? "text-red-600" : "text-emerald-600"}>
                     ₹{Number(invoice.balanceDue).toLocaleString("en-IN")}.00
                   </span>
+                </div>
+                <div className="flex justify-between text-xs font-semibold text-zinc-500">
+                  <span>Payment Mode</span>
+                  <span className="uppercase text-[#361f1a]">{invoice.paymentMode}</span>
                 </div>
                 <div className="h-px bg-zinc-200 my-2"></div>
                 <div className="flex justify-between items-end">

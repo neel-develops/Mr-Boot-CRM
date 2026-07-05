@@ -127,7 +127,17 @@ export const SettingsForm: React.FC<SettingsFormProps> = ({ settings: initialSet
               </div>
               <button
                 type="button"
-                onClick={() => setDarkMode(!darkMode)}
+                onClick={() => {
+                  const nextDark = !darkMode;
+                  setDarkMode(nextDark);
+                  if (nextDark) {
+                    document.documentElement.classList.add("dark");
+                    document.documentElement.classList.remove("light");
+                  } else {
+                    document.documentElement.classList.remove("dark");
+                    document.documentElement.classList.add("light");
+                  }
+                }}
                 className={`w-12 h-6 rounded-full p-1 transition-colors duration-200 focus:outline-none ${
                   darkMode ? "bg-primary" : "bg-surface-container-high"
                 }`}

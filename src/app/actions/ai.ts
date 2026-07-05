@@ -19,13 +19,8 @@ export async function askAssistant(chatHistory: Array<{ role: "user" | "assistan
     // 1. Fetch live grounding data from Neon Postgres
     const totalOrders = await prisma.order.count();
     const totalCustomers = await prisma.customer.count();
-    const lowStockItems = await prisma.inventory.findMany({
-      where: {
-        stockQty: {
-          lte: prisma.inventory.fields.reorderThreshold, // Low stock check
-        },
-      },
-    });
+    const inventory = await prisma.inventory.findMany();
+    const lowStockItems = inventory.filter((i) => i.stockQty <= i.reorderThreshold);
 
     const revenueAggregate = await prisma.invoice.aggregate({
       _sum: { amount: true },

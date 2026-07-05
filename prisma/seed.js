@@ -11,13 +11,13 @@ async function main() {
     create: {
       id: 'singleton',
       orgName: 'Mr. Boot Premium Shoe Care',
-      orgPhone: '+919876543210',
+      orgPhone: '+919028983659',
       orgEmail: 'info@mrboot.com',
       orgAddress: '12 Luxury Arcade, Mumbai, India',
       billReadyTemplate: 'Hi {{customer_first_name}}, Neel Sonawane here from Mr Boot. Your bill is ready: {{invoice_pdf_or_track_link}}',
       reviewRequestTemplate: "Hi {{customer_first_name}}, hope you're loving your {{item_type}}! Would mean a lot if you could leave us a quick review: {{google_review_link}}",
       googleReviewLink: 'https://g.page/r/your-google-review-link',
-      darkMode: false,
+      darkMode: true,
     },
   });
   console.log('Upserted settings:', settings.id);

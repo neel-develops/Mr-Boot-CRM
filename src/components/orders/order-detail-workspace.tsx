@@ -156,13 +156,26 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
             </div>
 
             {/* Photo List */}
-            {mainPhoto && (
+            {(mainPhoto || (order.items[0]?.additionalPhotos && order.items[0].additionalPhotos.length > 0)) && (
               <div className="pt-4 border-t border-black/5">
-                <h4 className="font-semibold text-sm mb-3">Intake & Proof Images:</h4>
-                <div className="flex gap-4 overflow-x-auto pb-2">
-                  <div className="w-24 h-24 rounded-lg overflow-hidden border border-black/5 relative">
-                    <img src={mainPhoto} alt="Intake shoe" className="w-full h-full object-cover" />
-                  </div>
+                <h4 className="font-semibold text-sm mb-3 font-medium text-primary dark:text-primary-fixed uppercase tracking-wider">Intake & Proof Images:</h4>
+                <div className="flex flex-wrap gap-4">
+                  {mainPhoto && (
+                    <div className="flex flex-col gap-1 items-center">
+                      <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Main</span>
+                      <div className="w-24 h-24 rounded-xl overflow-hidden border border-black/5 relative bg-white">
+                        <img src={mainPhoto} alt="Intake shoe" className="w-full h-full object-cover" />
+                      </div>
+                    </div>
+                  )}
+                  {order.items[0]?.additionalPhotos?.map((url: string, idx: number) => (
+                    <div key={idx} className="flex flex-col gap-1 items-center">
+                      <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-widest">Extra #{idx + 1}</span>
+                      <div className="w-24 h-24 rounded-xl overflow-hidden border border-black/5 relative bg-white">
+                        <img src={url} alt={`Additional ${idx + 1}`} className="w-full h-full object-cover" />
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

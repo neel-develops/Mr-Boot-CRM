@@ -35,11 +35,13 @@ export async function createOrder(formData: {
     description?: string;
     services: string[];
     photoUrl?: string;
+    additionalPhotos?: string[];
   }>;
   payment: {
     advancePaid: number;
     paymentMode: string;
   };
+  createdBy?: string;
 }) {
   try {
     // 1. Find or create customer
@@ -72,7 +74,9 @@ export async function createOrder(formData: {
         dueDate: new Date(formData.order.dueDate),
         customerId: customer.id,
         artisanId: formData.order.artisanId || null,
-        notes: formData.order.notes || null,
+        notes: formData.order.notes 
+          ? `${formData.order.notes}\n\nCreated By: ${formData.createdBy || "Neel Sonawane"}`
+          : `Created By: ${formData.createdBy || "Neel Sonawane"}`,
         items: {
           create: formData.items.map((item) => ({
             category: item.category,
@@ -81,6 +85,7 @@ export async function createOrder(formData: {
             description: item.description || null,
             services: item.services,
             photoUrl: item.photoUrl || null,
+            additionalPhotos: item.additionalPhotos || [],
           })),
         },
       },
@@ -122,7 +127,7 @@ export async function createOrder(formData: {
       data: {
         orderId: order.id,
         event: "Order Intake Completed",
-        actor: "sarah@mrboot.com", // Default manager
+        actor: formData.createdBy || "Neel Sonawane",
       },
     });
 

@@ -10,16 +10,42 @@ const categories = [
 ];
 
 const availableServices = [
-  { id: "srv_laundry", label: "Standard Laundry" },
-  { id: "srv_deepclean", label: "Premium Deep Clean" },
-  { id: "srv_polish", label: "Shoe Polish" },
-  { id: "srv_waterproof", label: "Waterproofing" },
-  { id: "srv_stain", label: "Stain Removal" },
-  { id: "srv_odor", label: "Odor Treatment" },
-  { id: "srv_sole_p", label: "Sole Pasting" },
-  { id: "srv_sole_c", label: "Sole Change" },
-  { id: "srv_heel_c", label: "Heel Change" },
-  { id: "srv_heel_r", label: "Heel Repair" },
+  "Standard Laundry",
+  "Premium Deep Clean",
+  "Shoe Polish",
+  "Waterproofing",
+  "Stain Removal",
+  "Odor Treatment",
+  "Sole Pasting",
+  "Sole Change",
+  "Heel Change",
+  "Heel Repair",
+  "Counter Change",
+  "Zipper Repair",
+  "Zipper Change",
+  "Net Change",
+  "Patch Work",
+  "Stitching Repair",
+  "Grip Rubber",
+  "Grip TPR",
+  "Tongue Change",
+  "Insole Change",
+  "Lace Replacement",
+  "Buckle Repair",
+  "Strap Repair",
+  "Bag Chain Change",
+  "Bag Zipper Repair",
+  "Bag Handle Repair",
+  "Colour Dye",
+  "Color Restoration",
+  "Whitening Treatment",
+  "Suede Cleaning",
+  "Canvas Cleaning",
+  "Leather Conditioning",
+  "Full Restoration",
+  "Customization",
+  "Repair",
+  "Other"
 ];
 
 interface OrderItemState {
@@ -28,16 +54,30 @@ interface OrderItemState {
   model: string;
   description: string;
   services: string[];
+  customService?: string; // Textbox input if "Other" is selected
   price: number; // per-item custom price
-  mainPhotoFile: File | null;
-  mainPhotoUrl?: string;
-  additionalPhotos: { file: File; url?: string; uploading: boolean }[];
-  uploading: boolean;
 }
 
 export default function NewOrderPage() {
   const router = useRouter();
   const [artisans, setArtisans] = useState<any[]>([]);
+  const [currentUser, setCurrentUser] = useState("Neel Sonawane");
+
+  // Load current logged in user to pass to createdBy
+  useEffect(() => {
+    import("@/lib/supabase").then(({ supabase }) => {
+      supabase.auth.getUser().then(({ data }) => {
+        const email = data?.user?.email;
+        if (email) {
+          if (email.includes("vinita")) {
+            setCurrentUser("Vinita Sonawane");
+          } else {
+            setCurrentUser("Neel Sonawane");
+          }
+        }
+      });
+    });
+  }, []);
 
   // Customer state
   const [customerSearch, setCustomerSearch] = useState("");
@@ -57,10 +97,15 @@ export default function NewOrderPage() {
   const [advancePaid, setAdvancePaid] = useState(0);
   const [paymentMode, setPaymentMode] = useState("CASH");
   const [dueDate, setDueDate] = useState("");
-  const [orderDate, setOrderDate] = useState(new Date().toISOString().split("T")[0]);
-  const [artisanId, setArtisanId] = useState("");
   const [orderNotes, setOrderNotes] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [artisanId, setArtisanId] = useState("");
+
+
+  // Unified Order Intake Photos state (uploaded at the end of all items)
+  const [mainPhotoUrl, setMainPhotoUrl] = useState("");
+  const [mainUploading, setMainUploading] = useState(false);
+  const [additionalPhotos, setAdditionalPhotos] = useState<{ url: string; uploading: boolean }[]>([]);
 
   // Multi-item state
   const [items, setItems] = useState<OrderItemState[]>([
@@ -71,15 +116,16 @@ export default function NewOrderPage() {
       description: "",
       services: [],
       price: 0,
-      mainPhotoFile: null,
-      additionalPhotos: [],
-      uploading: false,
     },
   ]);
+
+  // Dropdown open states per item
+  const [openDropdownIdx, setOpenDropdownIdx] = useState<number | null>(null);
 
   // Computed subtotal
   const subtotal = items.reduce((sum, item) => sum + (item.price || 0), 0);
 
+  // Load artisans
   useEffect(() => {
     fetch("/api/staff")
       .then((res) => res.json())
@@ -87,6 +133,7 @@ export default function NewOrderPage() {
       .catch((err) => console.error("Error loading staff:", err));
   }, []);
 
+  // Customer search
   useEffect(() => {
     if (customerSearch.trim().length > 1) {
       fetch(`/api/customers?search=${encodeURIComponent(customerSearch)}`)
@@ -132,9 +179,6 @@ export default function NewOrderPage() {
         description: "",
         services: [],
         price: 0,
-        mainPhotoFile: null,
-        additionalPhotos: [],
-        uploading: false,
       },
     ]);
   };
@@ -156,53 +200,49 @@ export default function NewOrderPage() {
     setItems(updated);
   };
 
-  // Upload main photo for item
-  const handleMainPhotoUpload = async (index: number, file: File) => {
-    const updated = [...items];
-    updated[index].uploading = true;
-    updated[index].mainPhotoFile = file;
-    setItems([...updated]);
-
+  // Unified photo handlers
+  const handleMainPhotoUpload = async (file: File) => {
+    setMainUploading(true);
     try {
-      const publicUrl = await uploadImage(file, "before-images");
-      updated[index].mainPhotoUrl = publicUrl;
+      const url = await uploadImage(file, "before-images");
+      setMainPhotoUrl(url);
     } catch (err) {
       console.error("Main photo upload failed:", err);
-      updated[index].mainPhotoUrl = URL.createObjectURL(file);
+      setMainPhotoUrl(URL.createObjectURL(file));
     } finally {
-      updated[index].uploading = false;
-      setItems([...updated]);
+      setMainUploading(false);
     }
   };
 
-  // Add extra photos for item
-  const handleAdditionalPhotoUpload = async (index: number, files: FileList) => {
-    const updated = [...items];
+  const handleAdditionalPhotosUpload = async (files: FileList) => {
     const fileArray = Array.from(files);
+    const newPhotos = fileArray.map(() => ({ url: "", uploading: true }));
+    setAdditionalPhotos((prev) => [...prev, ...newPhotos]);
 
-    // Add placeholders
-    const newPhotos = fileArray.map((f) => ({ file: f, uploading: true }));
-    updated[index].additionalPhotos = [...updated[index].additionalPhotos, ...newPhotos];
-    setItems([...updated]);
-
-    // Upload each
     for (let i = 0; i < fileArray.length; i++) {
       const file = fileArray[i];
-      const photoIdx = updated[index].additionalPhotos.length - fileArray.length + i;
+      const photoIdx = additionalPhotos.length + i;
       try {
         const url = await uploadImage(file, "before-images");
-        updated[index].additionalPhotos[photoIdx] = { file, url, uploading: false };
+        setAdditionalPhotos((prev) => {
+          const copy = [...prev];
+          if (copy[photoIdx]) {
+            copy[photoIdx] = { url, uploading: false };
+          }
+          return copy;
+        });
       } catch {
-        updated[index].additionalPhotos[photoIdx].uploading = false;
+        setAdditionalPhotos((prev) => {
+          const copy = [...prev];
+          if (copy[photoIdx]) copy[photoIdx].uploading = false;
+          return copy;
+        });
       }
-      setItems([...updated]);
     }
   };
 
-  const removeAdditionalPhoto = (itemIndex: number, photoIndex: number) => {
-    const updated = [...items];
-    updated[itemIndex].additionalPhotos.splice(photoIndex, 1);
-    setItems([...updated]);
+  const handleRemoveAdditionalPhoto = (photoIdx: number) => {
+    setAdditionalPhotos((prev) => prev.filter((_, idx) => idx !== photoIdx));
   };
 
   const handleFormSubmit = async () => {
@@ -235,22 +275,31 @@ export default function NewOrderPage() {
         price: subtotal,
         dueDate: new Date(dueDate),
         notes: orderNotes,
-        artisanId: artisanId || undefined,
       },
-      items: items.map((i) => ({
-        category: i.category,
-        brand: i.brand,
-        model: i.model,
-        description: i.description,
-        services: i.services,
-        price: i.price,
-        photoUrl: i.mainPhotoUrl,
-        additionalPhotos: i.additionalPhotos.filter(p => p.url).map(p => p.url!),
-      })),
+      items: items.map((i, idx) => {
+        // Map services list, replacing "Other" with textbox content if populated
+        const finalServices = i.services.map(s => {
+          if (s === "Other" && i.customService) return `Other: ${i.customService}`;
+          return s;
+        });
+
+        return {
+          category: i.category,
+          brand: i.brand,
+          model: i.model,
+          description: i.description,
+          services: finalServices,
+          price: i.price,
+          // Single main photo & additional photos are attached to the first item
+          photoUrl: idx === 0 ? mainPhotoUrl : undefined,
+          additionalPhotos: idx === 0 ? additionalPhotos.filter(p => p.url).map(p => p.url) : [],
+        };
+      }),
       payment: {
         advancePaid,
         paymentMode,
       },
+      createdBy: currentUser,
     };
 
     const res = await createOrder(payload);
@@ -496,32 +545,69 @@ export default function NewOrderPage() {
                 </div>
               </div>
 
-              {/* Service Selection — no fixed prices */}
-              <div>
-                <label className="block text-sm font-medium text-on-surface mb-3">Select Services</label>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 p-4 bg-surface-container-low rounded-xl border border-black/5">
-                  {availableServices.map((service) => {
-                    const isChecked = item.services.includes(service.label);
-                    return (
-                      <label key={service.id} className="flex items-center gap-3 cursor-pointer p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg">
-                        <input
-                          type="checkbox"
-                          checked={isChecked}
-                          onChange={() => handleServiceToggle(itemIdx, service.label)}
-                          className="rounded text-primary focus:ring-primary border-black/10 w-4 h-4"
-                        />
-                        <span className="text-sm font-medium flex-1">{service.label}</span>
-                      </label>
-                    );
-                  })}
-                </div>
+              {/* Cool Custom Select Services Dropdown List with multi-checkbox */}
+              <div className="relative">
+                <label className="block text-sm font-medium text-on-surface mb-2">Select Services</label>
+                
+                <button
+                  type="button"
+                  onClick={() => setOpenDropdownIdx(openDropdownIdx === itemIdx ? null : itemIdx)}
+                  className="w-full bg-white/50 border border-black/5 rounded-lg py-2.5 px-4 text-left font-body-md text-sm flex justify-between items-center"
+                >
+                  <span className="truncate">
+                    {item.services.length === 0
+                      ? "Select services..."
+                      : item.services.map(s => s === "Other" && item.customService ? `Other: ${item.customService}` : s).join(", ")
+                    }
+                  </span>
+                  <span className="material-symbols-outlined text-[20px] transition-transform duration-200" style={{ transform: openDropdownIdx === itemIdx ? "rotate(180deg)" : "rotate(0)" }}>
+                    keyboard_arrow_down
+                  </span>
+                </button>
+
+                {openDropdownIdx === itemIdx && (
+                  <>
+                    {/* Backdrop to close */}
+                    <div className="fixed inset-0 z-30" onClick={() => setOpenDropdownIdx(null)} />
+                    
+                    {/* Dropdown Card */}
+                    <div className="absolute left-0 right-0 mt-2 bg-white dark:bg-zinc-900 border border-black/10 rounded-xl shadow-xl z-40 max-h-60 overflow-y-auto p-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {availableServices.map((service) => {
+                        const isChecked = item.services.includes(service);
+                        return (
+                          <label key={service} className="flex items-center gap-3 cursor-pointer p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => handleServiceToggle(itemIdx, service)}
+                              className="rounded text-primary focus:ring-primary border-black/10 w-4 h-4"
+                            />
+                            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{service}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+
+                {/* Conditional Textbox if "Other" service is selected */}
+                {item.services.includes("Other") && (
+                  <div className="mt-3 animate-fadeIn">
+                    <label className="block text-xs font-semibold text-on-surface-variant uppercase mb-1.5">Specify Other Service</label>
+                    <input
+                      type="text"
+                      value={item.customService || ""}
+                      onChange={(e) => handleItemChange(itemIdx, "customService", e.target.value)}
+                      placeholder="e.g. Custom logo engraving"
+                      className="w-full bg-white/50 border border-black/5 rounded-lg py-2.5 px-4 font-body-md text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+                )}
               </div>
 
-              {/* Per-Item Price */}
+              {/* Per-Item Custom Price input */}
               <div>
-                <label className="block text-sm font-medium text-on-surface mb-2">
-                  Price for this item
-                </label>
+                <label className="block text-sm font-medium text-on-surface mb-2">Price for this item</label>
                 <div className="relative w-48">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-semibold">₹</span>
                   <input
@@ -533,104 +619,11 @@ export default function NewOrderPage() {
                     placeholder="0"
                   />
                 </div>
-                <p className="text-xs text-on-surface-variant mt-1">This will be added to the invoice subtotal</p>
-              </div>
-
-              {/* Intake Photos Section */}
-              <div>
-                <label className="block text-sm font-medium text-on-surface mb-3">
-                  <span className="material-symbols-outlined text-[16px] align-middle mr-1">photo_camera</span>
-                  Intake Photos
-                </label>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* Main Photo (shown on bill) */}
-                  <div>
-                    <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Main Photo (For Bill)</p>
-                    <label className="block w-full h-40 border-2 border-dashed border-primary/20 rounded-xl bg-white/30 hover:bg-white/50 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer relative overflow-hidden">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="sr-only"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0];
-                          if (file) handleMainPhotoUpload(itemIdx, file);
-                        }}
-                      />
-                      {item.mainPhotoUrl ? (
-                        <img src={item.mainPhotoUrl} alt="Main photo" className="w-full h-full object-cover absolute inset-0 rounded-xl" />
-                      ) : (
-                        <>
-                          <span className="material-symbols-outlined text-primary-container text-[32px]">add_a_photo</span>
-                          <span className="text-sm font-medium text-primary">Click to upload main photo</span>
-                          {item.uploading && <span className="text-xs text-on-surface-variant">Uploading...</span>}
-                        </>
-                      )}
-                    </label>
-                    {item.mainPhotoUrl && (
-                      <button
-                        type="button"
-                        onClick={() => handleItemChange(itemIdx, "mainPhotoUrl", undefined)}
-                        className="text-xs text-error mt-1 hover:underline"
-                      >
-                        Remove
-                      </button>
-                    )}
-                  </div>
-
-                  {/* Additional Photos */}
-                  <div>
-                    <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Additional Photos</p>
-                    <label className="block w-full h-40 border-2 border-dashed border-black/10 rounded-xl bg-white/20 hover:bg-white/40 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer">
-                      <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        className="sr-only"
-                        onChange={(e) => {
-                          if (e.target.files?.length) handleAdditionalPhotoUpload(itemIdx, e.target.files);
-                        }}
-                      />
-                      <span className="material-symbols-outlined text-on-surface-variant text-[32px]">photo_library</span>
-                      <span className="text-sm font-medium text-on-surface-variant">Upload more 'Before' photos</span>
-                      <span className="text-xs text-on-surface-variant opacity-70">Multiple files allowed</span>
-                    </label>
-
-                    {/* Thumbnails */}
-                    {item.additionalPhotos.length > 0 && (
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {item.additionalPhotos.map((photo, photoIdx) => (
-                          <div key={photoIdx} className="relative w-14 h-14 rounded-lg overflow-hidden border border-black/10 flex-shrink-0">
-                            {photo.uploading ? (
-                              <div className="w-full h-full bg-black/10 flex items-center justify-center">
-                                <span className="material-symbols-outlined text-[18px] animate-spin">sync</span>
-                              </div>
-                            ) : (
-                              <>
-                                <img
-                                  src={photo.url || URL.createObjectURL(photo.file)}
-                                  alt={`Extra ${photoIdx + 1}`}
-                                  className="w-full h-full object-cover"
-                                />
-                                <button
-                                  type="button"
-                                  onClick={() => removeAdditionalPhoto(itemIdx, photoIdx)}
-                                  className="absolute top-0 right-0 bg-black/60 text-white rounded-bl-lg w-5 h-5 flex items-center justify-center text-[10px]"
-                                >
-                                  ✕
-                                </button>
-                              </>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                </div>
               </div>
             </div>
           ))}
 
+          {/* Add Another Pair / Item Button */}
           <button
             type="button"
             onClick={handleAddItem}
@@ -638,6 +631,103 @@ export default function NewOrderPage() {
           >
             <span className="material-symbols-outlined">add_circle</span> + Add Another Pair / Item
           </button>
+
+          {/* Unified Order Intake Photos Card (after all shoes are added) */}
+          <section className="bg-white/65 dark:bg-primary/65 backdrop-blur-xl border border-white/22 dark:border-white/10 rounded-xl p-8 shadow-sm space-y-6">
+            <div className="flex items-center gap-3 border-b border-black/5 pb-4">
+              <span className="material-symbols-outlined text-primary-container p-2 bg-primary-fixed/20 rounded-lg">
+                photo_camera
+              </span>
+              <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary-fixed">
+                Order Intake Photos
+              </h2>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Main Photo (compulsory) */}
+              <div>
+                <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Main Photo (For Bill)</p>
+                <label className="block w-full h-40 border-2 border-dashed border-primary/20 rounded-xl bg-white/30 hover:bg-white/50 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer relative overflow-hidden">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    className="sr-only"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleMainPhotoUpload(file);
+                    }}
+                  />
+                  {mainPhotoUrl ? (
+                    <img src={mainPhotoUrl} alt="Main photo" className="w-full h-full object-cover absolute inset-0 rounded-xl" />
+                  ) : (
+                    <>
+                      <span className="material-symbols-outlined text-primary-container text-[32px]">add_a_photo</span>
+                      <span className="text-sm font-medium text-primary">Click to upload main photo</span>
+                      {mainUploading && <span className="text-xs text-on-surface-variant">Uploading...</span>}
+                    </>
+                  )}
+                </label>
+                {mainPhotoUrl && (
+                  <button
+                    type="button"
+                    onClick={() => setMainPhotoUrl("")}
+                    className="text-xs text-error mt-1 hover:underline"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+
+              {/* Additional Photos */}
+              <div>
+                <p className="text-xs font-semibold text-on-surface-variant uppercase tracking-wider mb-2">Additional Photos</p>
+                <label className="block w-full h-40 border-2 border-dashed border-black/10 rounded-xl bg-white/20 hover:bg-white/40 transition-colors flex flex-col items-center justify-center gap-2 cursor-pointer">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    className="sr-only"
+                    onChange={(e) => {
+                      if (e.target.files?.length) handleAdditionalPhotosUpload(e.target.files);
+                    }}
+                  />
+                  <span className="material-symbols-outlined text-on-surface-variant text-[32px]">photo_library</span>
+                  <span className="text-sm font-medium text-on-surface-variant">Upload more 'Before' photos</span>
+                  <span className="text-xs text-on-surface-variant opacity-70">Multiple files allowed</span>
+                </label>
+
+                {/* Thumbnails */}
+                {additionalPhotos.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {additionalPhotos.map((photo, photoIdx) => (
+                      <div key={photoIdx} className="relative w-14 h-14 rounded-lg overflow-hidden border border-black/10 flex-shrink-0">
+                        {photo.uploading ? (
+                          <div className="w-full h-full bg-black/10 flex items-center justify-center">
+                            <span className="material-symbols-outlined text-[18px] animate-spin">sync</span>
+                          </div>
+                        ) : (
+                          <>
+                            <img
+                              src={photo.url || ""}
+                              alt={`Extra ${photoIdx + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveAdditionalPhoto(photoIdx)}
+                              className="absolute top-0 right-0 bg-black/60 text-white rounded-bl-lg w-5 h-5 flex items-center justify-center text-[10px]"
+                            >
+                              ✕
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </section>
         </div>
 
         {/* Right Column: Order Summary Card */}
@@ -754,11 +844,16 @@ export default function NewOrderPage() {
                   </span>
                 </div>
 
+                {/* Created By Info */}
+                <div className="text-[10px] text-on-surface-variant font-bold text-center mt-2">
+                  Order will be logged under: {currentUser}
+                </div>
+
                 <button
                   type="button"
                   onClick={handleFormSubmit}
                   disabled={isSubmitting}
-                  className="w-full mt-4 bg-primary text-on-primary hover:bg-primary/95 transition-all py-4 rounded-xl font-label-sm text-label-sm font-semibold flex justify-center items-center gap-2 shadow-lg shadow-primary-container/20 disabled:opacity-50"
+                  className="w-full mt-2 bg-primary text-on-primary hover:bg-primary/95 transition-all py-4 rounded-xl font-label-sm text-label-sm font-semibold flex justify-center items-center gap-2 shadow-lg shadow-primary-container/20 disabled:opacity-50"
                 >
                   <span className="material-symbols-outlined text-[20px]">save</span>
                   {isSubmitting ? "Saving..." : "Save Order"}

@@ -47,3 +47,23 @@ export async function updateSettings(data: {
     return { success: false, error: error.message };
   }
 }
+
+export async function updateDarkMode(darkMode: boolean) {
+  try {
+    const settings = await prisma.settings.upsert({
+      where: { id: "singleton" },
+      update: { darkMode },
+      create: {
+        id: "singleton",
+        darkMode,
+      },
+    });
+    revalidatePath("/settings");
+    revalidatePath("/orders");
+    return { success: true, settings };
+  } catch (error: any) {
+    console.error("Failed to update dark mode:", error);
+    return { success: false, error: error.message };
+  }
+}
+

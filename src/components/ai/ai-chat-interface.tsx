@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { askAssistant } from "@/app/actions/ai";
 import { GlassCard } from "@/components/ui/glass-card";
 
@@ -18,6 +18,12 @@ export const AIChatInterface: React.FC = () => {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
+
+  // Auto-scroll to bottom whenever messages change
+  useEffect(() => {
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages, loading]);
 
   const handleSendMessage = async (text: string) => {
     if (!text.trim() || loading) return;
@@ -27,18 +33,26 @@ export const AIChatInterface: React.FC = () => {
     setInput("");
     setLoading(true);
 
-    const res = await askAssistant(newHistory);
-    setLoading(false);
+    try {
+      const res = await askAssistant(newHistory);
+      setLoading(false);
 
-    if (res.success && res.reply) {
-      setMessages([...newHistory, { role: "assistant", content: res.reply }]);
-    } else {
+      if (res.success && res.reply) {
+        setMessages([...newHistory, { role: "assistant", content: res.reply }]);
+      } else {
+        setMessages([
+          ...newHistory,
+          {
+            role: "assistant",
+            content: `⚠️ ${res.error || "Failed to communicate with the AI. Please check that the GROQ_API_KEY is configured."}`,
+          },
+        ]);
+      }
+    } catch (e: any) {
+      setLoading(false);
       setMessages([
         ...newHistory,
-        {
-          role: "assistant",
-          content: `Error: ${res.error || "Failed to communicate with Groq."}`,
-        },
+        { role: "assistant", content: `⚠️ Error: ${e.message}` },
       ]);
     }
   };
@@ -78,7 +92,9 @@ export const AIChatInterface: React.FC = () => {
               </div>
             </div>
           )}
+          <div ref={bottomRef} />
         </div>
+
 
         {/* Action Controls Input */}
         <div className="p-4 bg-white/40 border-t border-black/5 backdrop-blur-md z-10 relative">

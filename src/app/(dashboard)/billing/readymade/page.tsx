@@ -25,8 +25,8 @@ export default function ReadymadeBillingPage() {
 
   // Financials
   const [totalPrice, setTotalPrice] = useState(12500);
-  const [paymentMade, setPaymentMade] = useState(12500);
   const [adjustment, setAdjustment] = useState(0);
+  const paymentMade = totalPrice - adjustment;
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fallbackShoeImg = "https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=150&auto=format&fit=crop&q=60";
 
@@ -295,8 +295,8 @@ export default function ReadymadeBillingPage() {
                 <input
                   type="number"
                   value={paymentMade}
-                  onChange={(e) => setPaymentMade(Number(e.target.value))}
-                  className="w-full bg-white border border-black/10 rounded-xl py-3 px-4 font-bold text-zinc-800 text-lg focus:outline-none"
+                  readOnly
+                  className="w-full bg-zinc-50 border border-black/10 rounded-xl py-3 px-4 font-bold text-zinc-400 text-lg focus:outline-none cursor-not-allowed"
                 />
               </div>
 

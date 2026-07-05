@@ -204,6 +204,9 @@ export function BillingHubClient({ initialInvoices }: BillingHubClientProps) {
                     >
                       {isPaid ? "PAID" : "UNPAID"}
                     </span>
+                    <span className="block text-[10px] font-bold text-zinc-400 uppercase mt-1 tracking-wider">
+                      {inv.paymentMode}
+                    </span>
                   </div>
 
                   {/* Icon Actions / Remind Button */}

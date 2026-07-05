@@ -44,8 +44,7 @@ function BespokeBillingContent() {
   // Financial calculations
   const workshopFee = 3500;
   const subtotal = Number(baseQuotation) + workshopFee;
-  const gst = Math.round(subtotal * 0.18);
-  const totalPayable = subtotal + gst;
+  const totalPayable = subtotal;
 
   const leathers = [
     {
@@ -387,10 +386,6 @@ function BespokeBillingContent() {
               <div className="flex justify-between">
                 <span>Artisan Workshop Fee</span>
                 <span className="text-zinc-800">₹{workshopFee.toLocaleString("en-IN")}.00</span>
-              </div>
-              <div className="flex justify-between">
-                <span>GST (18%)</span>
-                <span className="text-zinc-800">₹{gst.toLocaleString("en-IN")}.00</span>
               </div>
 
               <div className="h-px bg-black/5 my-4"></div>
