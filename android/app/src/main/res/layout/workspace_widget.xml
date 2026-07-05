@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_background"
+    android:padding="16dp"
+    android:textColor="#361F1A">
+
+    <!-- Header Section -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/btn_refresh">
+
+            <!-- Circular Logo Placeholder (We can load app icon) -->
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@mipmap/ic_launcher_round"
+                android:layout_marginRight="10dp" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mr. Boot"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="#361F1A" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="WORKSPACE"
+                    android:textSize="9sp"
+                    android:textStyle="bold"
+                    android:textColor="#7D6B63"
+                    android:letterSpacing="0.1" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btn_refresh"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_rotate"
+            android:contentDescription="Refresh Data"
+            android:tint="#361F1A" />
+    </RelativeLayout>
+
+    <!-- Pending Orders Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📦  PENDING ORDERS"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="#6D5D55"
+                android:letterSpacing="0.05" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="bottom"
+            android:layout_marginTop="2dp">
+
+            <TextView
+                android:id="@+id/txt_pending_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="--"
+                android:textSize="36sp"
+                android:textStyle="bold"
+                android:textColor="#361F1A"
+                android:includeFontPadding="false" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="in workshop"
+                android:textSize="14sp"
+                android:textColor="#6D5D55"
+                android:layout_marginLeft="6dp"
+                android:layout_marginBottom="4dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Upcoming Deliveries Section -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🕒  UPCOMING DELIVERIES"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textColor="#6D5D55"
+            android:layout_marginBottom="8dp"
+            android:letterSpacing="0.05" />
+
+        <!-- Card 1 -->
+        <LinearLayout
+            android:id="@+id/layout_delivery_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/card_background"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:layout_marginBottom="6dp"
+            android:visibility="gone">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/txt_delivery_time_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Today, 2:00 PM"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="#361F1A"
+                    android:layout_alignParentLeft="true" />
+
+                <TextView
+                    android:id="@+id/txt_delivery_price_1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="₹0"
+                    android:textSize="12sp"
+                    android:textColor="#6D5D55"
+                    android:layout_alignParentRight="true" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/txt_delivery_name_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Customer Name"
+                android:textSize="14sp"
+                android:textColor="#361F1A"
+                android:layout_marginTop="2dp" />
+
+            <TextView
+                android:id="@+id/txt_delivery_desc_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Service Details"
+                android:textSize="11sp"
+                android:textColor="#6D5D55" />
+        </LinearLayout>
+
+        <!-- Card 2 -->
+        <LinearLayout
+            android:id="@+id/layout_delivery_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/card_background"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:visibility="gone">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:id="@+id/txt_delivery_time_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tomorrow, 10:00 AM"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="#361F1A"
+                    android:layout_alignParentLeft="true" />
+
+                <TextView
+                    android:id="@+id/txt_delivery_price_2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="₹0"
+                    android:textSize="12sp"
+                    android:textColor="#6D5D55"
+                    android:layout_alignParentRight="true" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/txt_delivery_name_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Customer Name"
+                android:textSize="14sp"
+                android:textColor="#361F1A"
+                android:layout_marginTop="2dp" />
+
+            <TextView
+                android:id="@+id/txt_delivery_desc_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Service Details"
+                android:textSize="11sp"
+                android:textColor="#6D5D55" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txt_empty_deliveries"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="No upcoming deliveries."
+            android:textSize="12sp"
+            android:textColor="#7D6B63"
+            android:visibility="visible" />
+    </LinearLayout>
+
+    <!-- CTA Button -->
+    <TextView
+        android:id="@+id/btn_new_order"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@drawable/button_background"
+        android:gravity="center"
+        android:text="➕  NEW ORDER"
+        android:textColor="#FFFFFF"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:clickable="true"
+        android:focusable="true" />
+
+</LinearLayout>
