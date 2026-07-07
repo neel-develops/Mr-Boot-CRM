@@ -40,6 +40,7 @@ model Customer {
   email     String?
   phone     String
   notes     String?
+  shoeSize  String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   orders    Order[]

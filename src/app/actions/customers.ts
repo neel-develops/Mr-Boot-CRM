@@ -35,3 +35,41 @@ export async function deleteCustomer(formData: FormData) {
   revalidatePath("/customers");
   redirect("/customers");
 }
+
+export async function updateCustomer(
+  customerId: string,
+  data: {
+    firstName: string;
+    lastName: string;
+    email?: string;
+    phone: string;
+    notes?: string;
+    shoeSize?: string;
+  }
+) {
+  if (!customerId) {
+    throw new Error("Customer ID is required");
+  }
+
+  try {
+    const updated = await prisma.customer.update({
+      where: { id: customerId },
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email || null,
+        phone: data.phone,
+        notes: data.notes || null,
+        shoeSize: data.shoeSize || null,
+      },
+    });
+
+    revalidatePath(`/customers/${customerId}`);
+    revalidatePath("/customers");
+    return { success: true, customer: updated };
+  } catch (error: any) {
+    console.error("Failed to update customer:", error);
+    return { success: false, error: error.message || "Failed to update customer" };
+  }
+}
+

@@ -5,6 +5,7 @@ import { OrderStatus } from "@prisma/client";
 import { GlassCard } from "@/components/ui/glass-card";
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
 import WorkspaceWidget from "@/components/dashboard/workspace-widget";
+import { DashboardDateTracker } from "@/components/dashboard/dashboard-date-tracker";
 
 export default async function ExecutiveDashboardPage() {
   const startOfToday = new Date();
@@ -215,35 +216,8 @@ export default async function ExecutiveDashboardPage() {
           </div>
         </GlassCard>
 
-        {/* Business Strategy Suggestion */}
-        <div className="bg-gradient-to-br from-white/80 to-white/40 dark:from-primary/40 dark:to-primary/20 backdrop-blur-[20px] border border-white/40 shadow-[0_8px_32px_rgba(0,0,0,0.04)] rounded-xl p-6 relative overflow-hidden flex flex-col justify-between">
-          <div className="absolute -right-20 -top-20 w-64 h-64 bg-tertiary-fixed-dim/10 rounded-full blur-[40px] pointer-events-none"></div>
-          <div className="flex items-center gap-3 mb-6 relative z-10">
-            <div className="w-10 h-10 rounded-xl bg-tertiary-fixed-dim/20 flex items-center justify-center border border-tertiary-fixed-dim/30">
-              <span className="material-symbols-outlined text-tertiary-fixed-dim" style={{ fontVariationSettings: "'FILL' 1" }}>
-                lightbulb
-              </span>
-            </div>
-            <div>
-              <h3 className="text-body-md font-body-md font-semibold text-primary dark:text-primary-fixed">Business Strategy Suggestions</h3>
-              <p className="text-label-sm font-label-sm text-on-surface-variant">Intelligent Operations</p>
-            </div>
-          </div>
-          <div className="bg-white/50 dark:bg-primary/25 border border-white/50 rounded-xl p-4 flex-grow relative z-10 flex flex-col justify-between">
-            <p className="text-body-md font-body-md text-primary dark:text-primary-fixed leading-relaxed">
-              Maintain high stock levels for sole pasting glues and waterproofing sprays as monsoon and damp seasons approach. Assign extra staff to repair stations to handle high order intakes.
-            </p>
-            <div className="mt-4 border-t border-black/5 pt-4">
-              <h4 className="text-label-sm font-label-sm text-on-surface-variant uppercase tracking-wider mb-2">Suggested Inventory Action</h4>
-              <div className="flex justify-between items-center gap-4 bg-white/60 dark:bg-primary/30 p-3 rounded-lg border border-black/5">
-                <span className="text-sm font-medium">Barge Sole Glue & Laces</span>
-                <Link href="/inventory" className="bg-primary text-on-primary px-4 py-2 rounded-lg text-xs font-semibold hover:opacity-90 transition-all">
-                  Restock
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Day Tracker: Intakes and Deliveries */}
+        <DashboardDateTracker />
       </div>
     </div>
   );

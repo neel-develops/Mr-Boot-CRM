@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { GlassCard } from "@/components/ui/glass-card";
 import { DeleteCustomerButton } from "@/components/customers/delete-customer-button";
+import { EditCustomerButton } from "@/components/customers/edit-customer-button";
 
 interface CustomerDetailPageProps {
   params: {
@@ -103,6 +104,7 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
         </div>
 
         <div className="z-10 w-full md:w-auto flex flex-col sm:flex-row gap-3">
+          <EditCustomerButton customer={customer} />
           <DeleteCustomerButton customerId={customer.id} />
           <Link
             href="/orders/new"
@@ -170,7 +172,7 @@ export default async function CustomerDetailPage({ params }: CustomerDetailPageP
               <span className="material-symbols-outlined text-outline mt-0.5 text-[20px]">straighten</span>
               <div>
                 <div className="font-label-sm text-label-sm text-on-surface font-medium">Shoe Size</div>
-                <div className="text-on-surface-variant text-sm mt-0.5">Not Specified</div>
+                <div className="text-on-surface-variant text-sm mt-0.5">{customer.shoeSize || "Not Specified"}</div>
               </div>
             </div>
           </div>
