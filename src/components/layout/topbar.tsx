@@ -4,6 +4,8 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { clsx } from "clsx";
+import { VoiceSearchModal } from "@/components/modals/voice-search-modal";
+import { QRScannerModal } from "@/components/modals/qr-scanner-modal";
 
 interface NotificationItem {
   id: string;
@@ -27,6 +29,8 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
   const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
+  const [voiceOpen, setVoiceOpen] = useState(false);
+  const [scannerOpen, setScannerOpen] = useState(false);
 
   // Fetch notifications from real database API
   const fetchNotifications = async () => {
@@ -157,10 +161,18 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
         {/* Trailing Actions */}
         <div className="flex items-center gap-2 md:gap-4">
           <div className="flex items-center gap-1 text-on-surface-variant">
-            <button className="p-2 rounded-full hover:bg-black/5 transition-colors flex items-center justify-center" title="Voice Search (Mock)">
+            <button
+              onClick={() => setVoiceOpen(true)}
+              className="p-2 rounded-full hover:bg-black/5 transition-colors flex items-center justify-center"
+              title="Voice Search"
+            >
               <span className="material-symbols-outlined text-[22px]">mic</span>
             </button>
-            <button className="p-2 rounded-full hover:bg-black/5 transition-colors flex items-center justify-center" title="Scan QR Code (Mock)">
+            <button
+              onClick={() => setScannerOpen(true)}
+              className="p-2 rounded-full hover:bg-black/5 transition-colors flex items-center justify-center"
+              title="Scan QR Code"
+            >
               <span className="material-symbols-outlined text-[22px]">qr_code_scanner</span>
             </button>
 
@@ -259,6 +271,9 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
           </div>
         </div>
       </div>
+
+      <VoiceSearchModal isOpen={voiceOpen} onClose={() => setVoiceOpen(false)} />
+      <QRScannerModal isOpen={scannerOpen} onClose={() => setScannerOpen(false)} />
     </header>
   );
 };
