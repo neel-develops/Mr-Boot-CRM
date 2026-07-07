@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { OrderStatus } from "@prisma/client";
 import { GlassCard } from "@/components/ui/glass-card";
+import { buildWaUrl } from "@/lib/whatsapp";
 
 interface OrdersPageProps {
   searchParams: {
@@ -258,7 +259,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
               .replace("{{customer_first_name}}", order.customer.firstName)
               .replace("{{invoice_pdf_or_track_link}}", trackingLink);
 
-            const waBillUrl = `https://wa.me/${order.customer.phone.replace(/[^0-9]/g, "")}?text=${encodeURIComponent(formattedBillMsg)}`;
+            const waBillUrl = buildWaUrl(order.customer.phone, formattedBillMsg);
 
             return (
               <GlassCard key={order.id} className="relative overflow-hidden p-4 md:p-6 hover:translate-y-[-2px] transition-all">

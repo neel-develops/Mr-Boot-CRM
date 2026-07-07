@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { buildWaUrl, buildReadyMessage } from '@/lib/whatsapp';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -25,7 +26,13 @@ export async function GET() {
       phone: order.customer.phone || '',
       serviceType: order.serviceType,
       itemType: order.itemType,
-      price: order.price.toString()
+      price: order.price.toString(),
+      waUrl: order.customer.phone
+        ? buildWaUrl(
+            order.customer.phone,
+            buildReadyMessage(order.customer.firstName, order.itemType)
+          )
+        : ''
     }));
 
     return NextResponse.json(

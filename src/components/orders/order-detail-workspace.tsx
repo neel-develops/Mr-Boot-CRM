@@ -5,6 +5,7 @@ import { OrderStatus } from "@prisma/client";
 import { GlassCard } from "@/components/ui/glass-card";
 import { updateOrderStatus, assignArtisan, uploadProofPhoto, logReviewRequest, createInvoiceForOrder, deleteOrder, revertOrderToPending, updatePorterService, updateOrderDetails, addAddonToOrder, removeAddonFromOrder } from "@/app/actions/orders";
 import { uploadImage } from "@/lib/upload";
+import { normalizeIndianPhone } from "@/lib/whatsapp";
 import Link from "next/link";
 import { AddonsManager } from "@/components/invoices/addons-manager";
 
@@ -81,7 +82,7 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
   };
 
   const customerName = order.customer.firstName;
-  const phone = order.customer.phone.replace(/[^0-9]/g, "");
+  const phone = normalizeIndianPhone(order.customer.phone);
 
   // Generate WhatsApp links safely without throwing ReferenceError on server-side pre-rendering
   const appUrl = typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || "https://mr-boot-crm.vercel.app");
@@ -118,6 +119,14 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
     setUpdatingStatus(false);
     if (res.success) {
       setStatus(newStatus);
+      // Auto-offer the WhatsApp "ready" blast the moment an order goes READY
+      if (
+        newStatus === OrderStatus.READY &&
+        phone &&
+        confirm(`Order marked READY ✅\nSend WhatsApp pickup message to ${customerName}?`)
+      ) {
+        window.open(waReadyUrl, "_blank");
+      }
       // Reload order data to update log
       window.location.reload();
     } else {

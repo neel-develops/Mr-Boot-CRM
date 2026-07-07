@@ -4,4 +4,15 @@
     <string name="title_activity_main">Mr. Boot</string>
     <string name="package_name">com.mrboot.crm</string>
     <string name="custom_url_scheme">com.mrboot.crm</string>
+
+    <!-- Launcher shortcuts -->
+    <string name="shortcut_new_order">New Order</string>
+    <string name="shortcut_new_order_long">Create a new order</string>
+    <string name="shortcut_customers">Customers</string>
+    <string name="shortcut_customers_long">Open customer list</string>
+    <string name="shortcut_orders">Orders</string>
+    <string name="shortcut_orders_long">View all orders</string>
+
+    <!-- Quick Settings tile -->
+    <string name="tile_new_order">New Order</string>
 </resources>

@@ -109,6 +109,18 @@
         </LinearLayout>
 
         <ImageButton
+            android:id="@+id/btn_wa_1"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="6dp"
+            android:background="@drawable/wa_button_background"
+            android:src="@android:drawable/sym_action_chat"
+            android:tint="#FFFFFF"
+            android:scaleType="centerInside"
+            android:contentDescription="WhatsApp customer"
+            android:visibility="gone" />
+
+        <ImageButton
             android:id="@+id/btn_call_1"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -161,6 +173,18 @@
         </LinearLayout>
 
         <ImageButton
+            android:id="@+id/btn_wa_2"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="6dp"
+            android:background="@drawable/wa_button_background"
+            android:src="@android:drawable/sym_action_chat"
+            android:tint="#FFFFFF"
+            android:scaleType="centerInside"
+            android:contentDescription="WhatsApp customer"
+            android:visibility="gone" />
+
+        <ImageButton
             android:id="@+id/btn_call_2"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -211,6 +235,18 @@
                 android:maxLines="1"
                 android:ellipsize="end" />
         </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btn_wa_3"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginRight="6dp"
+            android:background="@drawable/wa_button_background"
+            android:src="@android:drawable/sym_action_chat"
+            android:tint="#FFFFFF"
+            android:scaleType="centerInside"
+            android:contentDescription="WhatsApp customer"
+            android:visibility="gone" />
 
         <ImageButton
             android:id="@+id/btn_call_3"

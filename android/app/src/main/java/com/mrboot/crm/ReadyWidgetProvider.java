@@ -35,6 +35,7 @@ public class ReadyWidgetProvider extends AppWidgetProvider {
     private static final int[] NAME_IDS = {R.id.txt_ready_name_1, R.id.txt_ready_name_2, R.id.txt_ready_name_3};
     private static final int[] DESC_IDS = {R.id.txt_ready_desc_1, R.id.txt_ready_desc_2, R.id.txt_ready_desc_3};
     private static final int[] CALL_IDS = {R.id.btn_call_1, R.id.btn_call_2, R.id.btn_call_3};
+    private static final int[] WA_IDS = {R.id.btn_wa_1, R.id.btn_wa_2, R.id.btn_wa_3};
 
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
@@ -154,6 +155,23 @@ public class ReadyWidgetProvider extends AppWidgetProvider {
                         views.setOnClickPendingIntent(CALL_IDS[i], dialPendingIntent);
                     } else {
                         views.setViewVisibility(CALL_IDS[i], View.GONE);
+                    }
+
+                    // WhatsApp: opens a pre-filled "your order is ready" chat.
+                    String waUrl = order.optString("waUrl", "");
+                    if (!waUrl.isEmpty()) {
+                        views.setViewVisibility(WA_IDS[i], View.VISIBLE);
+                        Intent waIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(waUrl));
+                        waIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        PendingIntent waPendingIntent = PendingIntent.getActivity(
+                                context,
+                                120 + i,
+                                waIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+                        );
+                        views.setOnClickPendingIntent(WA_IDS[i], waPendingIntent);
+                    } else {
+                        views.setViewVisibility(WA_IDS[i], View.GONE);
                     }
 
                     // Row tap: deep link into the order inside the app.

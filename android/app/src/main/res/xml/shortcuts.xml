@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <shortcut
+        android:shortcutId="new_order"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_new_order"
+        android:shortcutShortLabel="@string/shortcut_new_order"
+        android:shortcutLongLabel="@string/shortcut_new_order_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.mrboot.crm"
+            android:targetClass="com.mrboot.crm.MainActivity"
+            android:data="https://mr-boot-crm.vercel.app/orders/new" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="customers"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_customers"
+        android:shortcutShortLabel="@string/shortcut_customers"
+        android:shortcutLongLabel="@string/shortcut_customers_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.mrboot.crm"
+            android:targetClass="com.mrboot.crm.MainActivity"
+            android:data="https://mr-boot-crm.vercel.app/customers" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="orders"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_orders"
+        android:shortcutShortLabel="@string/shortcut_orders"
+        android:shortcutLongLabel="@string/shortcut_orders_long">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.mrboot.crm"
+            android:targetClass="com.mrboot.crm.MainActivity"
+            android:data="https://mr-boot-crm.vercel.app/orders" />
+    </shortcut>
+
+</shortcuts>
