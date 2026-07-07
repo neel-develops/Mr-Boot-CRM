@@ -83,9 +83,9 @@ export function EditCustomerButton({ customer, mini }: EditCustomerButtonProps) 
       )}
 
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[4px]">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 backdrop-blur-[4px] flex justify-center p-4">
           <div 
-            className="w-full max-w-[500px] max-h-[90vh] overflow-y-auto m-4 bg-white/95 dark:bg-primary/95 border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.15)] rounded-2xl p-6 relative flex flex-col justify-between"
+            className="w-full max-w-[500px] my-auto bg-white/95 dark:bg-primary/95 border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.15)] rounded-2xl p-6 relative flex flex-col justify-between"
             onClick={(e) => e.stopPropagation()}
           >
             <button
