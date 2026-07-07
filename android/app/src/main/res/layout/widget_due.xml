@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_background"
+    android:padding="14dp">
+
+    <!-- Header -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/btn_refresh_due">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="⏰  DUE ORDERS"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="#6D5D55"
+                android:letterSpacing="0.05" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginTop="2dp">
+
+                <TextView
+                    android:id="@+id/txt_overdue_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 OVERDUE"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    android:textColor="#C0392B"
+                    android:includeFontPadding="false" />
+
+                <TextView
+                    android:id="@+id/txt_due_today_count"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="  •  0 due today"
+                    android:textSize="13sp"
+                    android:textColor="#361F1A" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btn_refresh_due"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_rotate"
+            android:contentDescription="Refresh"
+            android:tint="#361F1A" />
+    </RelativeLayout>
+
+    <!-- Row 1 -->
+    <LinearLayout
+        android:id="@+id/row_due_1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/card_background"
+        android:padding="10dp"
+        android:layout_marginBottom="6dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginRight="8dp">
+
+            <TextView
+                android:id="@+id/txt_due_name_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Customer"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#361F1A"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/txt_due_desc_1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Item • Service"
+                android:textSize="11sp"
+                android:textColor="#6D5D55"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txt_due_label_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Today 5 PM"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#361F1A" />
+    </LinearLayout>
+
+    <!-- Row 2 -->
+    <LinearLayout
+        android:id="@+id/row_due_2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/card_background"
+        android:padding="10dp"
+        android:layout_marginBottom="6dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginRight="8dp">
+
+            <TextView
+                android:id="@+id/txt_due_name_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Customer"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#361F1A"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/txt_due_desc_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Item • Service"
+                android:textSize="11sp"
+                android:textColor="#6D5D55"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txt_due_label_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Today 5 PM"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#361F1A" />
+    </LinearLayout>
+
+    <!-- Row 3 -->
+    <LinearLayout
+        android:id="@+id/row_due_3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:background="@drawable/card_background"
+        android:padding="10dp"
+        android:layout_marginBottom="6dp"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginRight="8dp">
+
+            <TextView
+                android:id="@+id/txt_due_name_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Customer"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#361F1A"
+                android:maxLines="1"
+                android:ellipsize="end" />
+
+            <TextView
+                android:id="@+id/txt_due_desc_3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Item • Service"
+                android:textSize="11sp"
+                android:textColor="#6D5D55"
+                android:maxLines="1"
+                android:ellipsize="end" />
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/txt_due_label_3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Today 5 PM"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#361F1A" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_due_empty"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="All clear. Nothing due. 🎉"
+        android:textSize="12sp"
+        android:textColor="#7D6B63"
+        android:visibility="visible" />
+
+</LinearLayout>

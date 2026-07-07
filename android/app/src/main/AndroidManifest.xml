@@ -35,6 +35,30 @@
             </intent-filter>
             <meta-data android:name="android.appwidget.provider" android:resource="@xml/workspace_widget_info" />
         </receiver>
+
+        <receiver android:name=".ReadyWidgetProvider" android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.mrboot.crm.ACTION_REFRESH_READY" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_ready_info" />
+        </receiver>
+
+        <receiver android:name=".DueWidgetProvider" android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.mrboot.crm.ACTION_REFRESH_DUE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_due_info" />
+        </receiver>
+
+        <receiver android:name=".BriefingWidgetProvider" android:exported="false">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="com.mrboot.crm.ACTION_REFRESH_BRIEFING" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_briefing_info" />
+        </receiver>
     </application>
 
     <!-- Permissions -->

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/briefing_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/widget_dark_background"
+    android:padding="16dp">
+
+    <!-- Header -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/btn_refresh_briefing">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="☀️  DAILY BRIEFING"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="#D9C7B8"
+                android:letterSpacing="0.1" />
+
+            <TextView
+                android:id="@+id/txt_briefing_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Today"
+                android:textSize="10sp"
+                android:textColor="#A78F80"
+                android:layout_marginTop="1dp" />
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/btn_refresh_briefing"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerInParent="true"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@android:drawable/ic_menu_rotate"
+            android:contentDescription="Refresh"
+            android:tint="#F8F6F2" />
+    </RelativeLayout>
+
+    <!-- The AI one-liner -->
+    <TextView
+        android:id="@+id/txt_briefing"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Warming up the workshop brain…"
+        android:textSize="15sp"
+        android:textColor="#F8F6F2"
+        android:lineSpacingExtra="3dp"
+        android:maxLines="5"
+        android:ellipsize="end"
+        android:gravity="center_vertical" />
+
+    <!-- Stat chips -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp">
+
+        <TextView
+            android:id="@+id/txt_chip_due"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/chip_dark_background"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="🔥 0 due"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textColor="#F8F6F2"
+            android:layout_marginRight="6dp" />
+
+        <TextView
+            android:id="@+id/txt_chip_ready"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/chip_dark_background"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="✅ 0 ready"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textColor="#F8F6F2"
+            android:layout_marginRight="6dp" />
+
+        <TextView
+            android:id="@+id/txt_chip_stock"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/chip_dark_background"
+            android:paddingLeft="10dp"
+            android:paddingRight="10dp"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp"
+            android:text="📦 0 low"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textColor="#F8F6F2" />
+    </LinearLayout>
+
+</LinearLayout>
