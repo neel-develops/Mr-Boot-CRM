@@ -15,9 +15,10 @@ interface CustomerData {
 
 interface EditCustomerButtonProps {
   customer: CustomerData;
+  mini?: boolean;
 }
 
-export function EditCustomerButton({ customer }: EditCustomerButtonProps) {
+export function EditCustomerButton({ customer, mini }: EditCustomerButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState("");
@@ -63,13 +64,23 @@ export function EditCustomerButton({ customer }: EditCustomerButtonProps) {
 
   return (
     <>
-      <button
-        onClick={() => setIsOpen(true)}
-        className="flex-1 md:flex-none border border-black/10 bg-white/50 dark:bg-primary/20 dark:border-white/10 hover:bg-white/75 dark:hover:bg-primary/30 px-6 py-2.5 rounded-lg font-label-sm text-label-sm font-semibold hover:-translate-y-0.5 hover:shadow-md transition-all duration-250 flex items-center justify-center gap-2 text-center"
-      >
-        <span className="material-symbols-outlined text-[18px]">edit</span>
-        Edit Profile
-      </button>
+      {mini ? (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="p-2 rounded-full border border-black/10 bg-white/50 dark:bg-primary/20 dark:border-white/10 hover:bg-white/75 dark:hover:bg-primary/30 text-on-surface-variant flex items-center justify-center transition-all hover:scale-105 shadow-sm"
+          title="Edit Profile"
+        >
+          <span className="material-symbols-outlined text-[16px]">edit</span>
+        </button>
+      ) : (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="flex-1 md:flex-none border border-black/10 bg-white/50 dark:bg-primary/20 dark:border-white/10 hover:bg-white/75 dark:hover:bg-primary/30 px-6 py-2.5 rounded-lg font-label-sm text-label-sm font-semibold hover:-translate-y-0.5 hover:shadow-md transition-all duration-250 flex items-center justify-center gap-2 text-center"
+        >
+          <span className="material-symbols-outlined text-[18px]">edit</span>
+          Edit Profile
+        </button>
+      )}
 
       {isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-[4px]">

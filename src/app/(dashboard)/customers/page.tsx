@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { GlassCard } from "@/components/ui/glass-card";
+import { EditCustomerButton } from "@/components/customers/edit-customer-button";
 
 interface CustomersPageProps {
   searchParams: {
@@ -105,12 +106,15 @@ export default async function CustomersPage({ searchParams }: CustomersPageProps
                       ₹{totalSpend.toLocaleString("en-IN")} <span className="text-xs text-on-surface-variant font-normal">({pairCount} pairs)</span>
                     </p>
                   </div>
-                  <Link
-                    href={`/customers/${customer.id}`}
-                    className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
-                  >
-                    Profile <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
-                  </Link>
+                  <div className="flex items-center gap-3 relative z-20">
+                    <EditCustomerButton customer={customer} mini />
+                    <Link
+                      href={`/customers/${customer.id}`}
+                      className="text-xs font-semibold text-primary hover:underline flex items-center gap-1"
+                    >
+                      Profile <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                    </Link>
+                  </div>
                 </div>
               </GlassCard>
             );
