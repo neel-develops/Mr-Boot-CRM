@@ -27,6 +27,7 @@ export default function ReadymadeBillingPage() {
   const [totalPrice, setTotalPrice] = useState(12500);
   const [adjustment, setAdjustment] = useState(0);
   const paymentMade = totalPrice - adjustment;
+  const [paymentMode, setPaymentMode] = useState("UPI");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fallbackShoeImg = "https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=150&auto=format&fit=crop&q=60";
 
@@ -148,7 +149,7 @@ export default function ReadymadeBillingPage() {
       ],
       payment: {
         advancePaid: paymentMade,
-        paymentMode: "UPI",
+        paymentMode: paymentMode,
       },
     };
 
@@ -342,6 +343,26 @@ export default function ReadymadeBillingPage() {
                   readOnly
                   className="w-full bg-zinc-50 border border-black/10 rounded-xl py-3 px-4 font-bold text-zinc-400 text-lg focus:outline-none cursor-not-allowed"
                 />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-zinc-500 uppercase mb-2">Payment Mode</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {["CASH", "UPI", "CARD"].map((mode) => (
+                    <button
+                      key={mode}
+                      type="button"
+                      onClick={() => setPaymentMode(mode)}
+                      className={`py-2.5 rounded-xl text-center text-xs font-bold border transition-all ${
+                        paymentMode === mode
+                          ? "bg-[#361f1a] text-white border-[#361f1a] shadow-sm"
+                          : "bg-white border-black/10 text-zinc-600 hover:bg-black/5"
+                      }`}
+                    >
+                      {mode}
+                    </button>
+                  ))}
+                </div>
               </div>
 
               <div className="pt-4 space-y-2 border-t border-black/5 text-sm text-zinc-500">

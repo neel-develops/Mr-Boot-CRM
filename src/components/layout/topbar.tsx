@@ -240,11 +240,9 @@ export const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar }) => {
               onClick={() => setProfileOpen(!profileOpen)}
               className="flex items-center gap-2 focus:outline-none"
             >
-              <img
-                alt="Manager Avatar"
-                className="w-8 h-8 md:w-9 md:h-9 rounded-full object-cover border-2 border-white shadow-sm hover:scale-105 transition-transform"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAaMhlLoZVT9pyylupgHlp6NjqRGvFSsOsypIK1HEVtfvfdAIfboMw7ReIRVNCgM509RlKqdUGPn1jGhJAPGBgFSErzcTosfFaFd7I-WbZSMdnJ3XKc3ax0ev2IGDZMfBiVGl_4KElx--d5-RCEQgUE_3JxN4IyBs-_gAhxQZe8g4dgTU5s-Pa3yVgDWRSsUavWb5dOD56R9r5m1WKrdpg3jkgB_rpeIYsKJNmMiQRUpvszpyrEOVTOdog8nyb7-5CWhSvcYiK22mk"
-              />
+              <div className="w-8 h-8 md:w-9 md:h-9 rounded-full bg-[#361f1a]/10 hover:bg-[#361f1a]/20 border border-black/10 flex items-center justify-center text-[#361f1a] hover:scale-105 transition-transform shadow-sm">
+                <span className="material-symbols-outlined text-[20px]">account_circle</span>
+              </div>
             </button>
 
             {profileOpen && (

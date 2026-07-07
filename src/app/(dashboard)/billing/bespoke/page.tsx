@@ -27,7 +27,7 @@ function BespokeBillingContent() {
 
   // Specifications
   const [shoeType, setShoeType] = useState("Formal (Standard)");
-  const [selectedLeather, setSelectedLeather] = useState("Brown Calf");
+  const [selectedLeather, setSelectedLeather] = useState("Standard Leather");
   const [customLeather, setCustomLeather] = useState("");
 
   // Logistics
@@ -42,9 +42,16 @@ function BespokeBillingContent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Financial calculations
-  const workshopFee = 3500;
-  const subtotal = Number(baseQuotation) + workshopFee;
+  const workshopFee = 0;
+  const subtotal = Number(baseQuotation);
   const totalPayable = subtotal;
+
+  const [paymentMode, setPaymentMode] = useState("UPI");
+  const [advancePaid, setAdvancePaid] = useState(12500);
+
+  useEffect(() => {
+    setAdvancePaid(Math.round(totalPayable * 0.5));
+  }, [totalPayable]);
 
   const leathers = [
     {
@@ -116,8 +123,8 @@ function BespokeBillingContent() {
         },
       ],
       payment: {
-        advancePaid: Math.round(totalPayable * 0.5), // 50% advance by default for bespoke commissions
-        paymentMode: "UPI",
+        advancePaid: Number(advancePaid),
+        paymentMode: paymentMode,
       },
     };
 
@@ -238,59 +245,6 @@ function BespokeBillingContent() {
               </div>
             </div>
 
-            {/* Leather Selection */}
-            <div>
-              <label className="block text-xs font-semibold text-zinc-500 uppercase mb-3">Primary Leather Selection</label>
-              <div className="flex flex-wrap items-center gap-3">
-                {leathers.map((l) => (
-                  <button
-                    key={l.name}
-                    type="button"
-                    onClick={() => {
-                      setSelectedLeather(l.name);
-                      setCustomLeather("");
-                    }}
-                    className={`relative w-24 h-24 rounded-xl overflow-hidden border-2 transition-all flex flex-col items-center justify-between p-2 ${
-                      selectedLeather === l.name
-                        ? "border-[#361f1a] ring-2 ring-[#361f1a]/20"
-                        : "border-black/5 hover:border-black/10"
-                    }`}
-                  >
-                    <img src={l.img} alt={l.name} className="w-full h-12 object-cover rounded-lg" />
-                    <span className="text-[10px] font-bold text-zinc-800 text-center truncate w-full">{l.name}</span>
-                  </button>
-                ))}
-                
-                {/* Other option */}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedLeather("Other");
-                  }}
-                  className={`w-24 h-24 rounded-xl border-2 transition-all flex flex-col items-center justify-center gap-1 border-dashed ${
-                    selectedLeather === "Other"
-                      ? "border-[#361f1a] bg-[#361f1a]/5 text-[#361f1a]"
-                      : "border-black/20 hover:border-black/35 text-zinc-500"
-                  }`}
-                >
-                  <span className="material-symbols-outlined text-[20px]">add</span>
-                  <span className="text-[10px] font-bold">Other</span>
-                </button>
-              </div>
-
-              {selectedLeather === "Other" && (
-                <div className="mt-4">
-                  <label className="block text-xs font-semibold text-zinc-500 uppercase mb-2">Specify Custom Leather</label>
-                  <input
-                    type="text"
-                    value={customLeather}
-                    onChange={(e) => setCustomLeather(e.target.value)}
-                    placeholder="e.g. Shell Cordovan, Ostrich Leather"
-                    className="w-full bg-white/50 border border-black/5 rounded-xl py-3 px-4 font-body-md text-sm focus:outline-none"
-                  />
-                </div>
-              )}
-            </div>
           </section>
 
           {/* Workshop Logistics */}
@@ -380,12 +334,40 @@ function BespokeBillingContent() {
                 <span className="text-zinc-800">₹{baseQuotation.toLocaleString("en-IN")}.00</span>
               </div>
               <div className="flex justify-between">
-                <span>Premium Calfskin</span>
+                <span>Premium Leather</span>
                 <span className="text-emerald-600 font-bold">Included</span>
               </div>
-              <div className="flex justify-between">
-                <span>Artisan Workshop Fee</span>
-                <span className="text-zinc-800">₹{workshopFee.toLocaleString("en-IN")}.00</span>
+
+              <div className="pt-4 border-t border-black/5 space-y-4 text-zinc-800">
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-500 uppercase mb-2">Advance Paid (₹)</label>
+                  <input
+                    type="number"
+                    value={advancePaid}
+                    onChange={(e) => setAdvancePaid(Number(e.target.value))}
+                    className="w-full bg-white border border-black/10 rounded-xl py-3 px-4 font-bold text-zinc-800 text-lg focus:outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-zinc-500 uppercase mb-2">Payment Mode</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {["CASH", "UPI", "CARD"].map((mode) => (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() => setPaymentMode(mode)}
+                        className={`py-2 rounded-lg text-center text-xs font-bold border transition-all ${
+                          paymentMode === mode
+                            ? "bg-[#361f1a] text-white border-[#361f1a] shadow-sm"
+                            : "bg-white border-black/10 text-zinc-600 hover:bg-black/5"
+                        }`}
+                      >
+                        {mode}
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
               <div className="h-px bg-black/5 my-4"></div>
