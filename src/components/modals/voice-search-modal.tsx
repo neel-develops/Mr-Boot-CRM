@@ -263,8 +263,11 @@ export const VoiceSearchModal: React.FC<VoiceSearchModalProps> = ({ isOpen, onCl
         return;
       } catch (err) {
         console.error("Voice parse error:", err);
-        // Fallback: just open new order page with raw transcript as search prefill
-        router.push(`/orders/new?name=${encodeURIComponent(cleanText)}`);
+        // Clean command words to leave just the customer name fallback
+        const cleanName = cleanText
+          .replace(/^(create order of|create order for|new order for|create bill for|create invoice for|add order for|make order for|place order for|order for|bill for|invoice for|intake for|create|new|bill|order|intake|of|for)\b/gi, "")
+          .trim();
+        router.push(`/orders/new?name=${encodeURIComponent(cleanName)}`);
         onClose();
         return;
       }

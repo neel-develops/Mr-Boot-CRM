@@ -57,7 +57,7 @@ Return ONLY a JSON object (JSON mode) with the following structure:
     const words = transcript.split(/\s+/);
     let firstName = "";
     let lastName = "";
-    const nameKeywords = ["for", "customer", "name", "client"];
+    const nameKeywords = ["for", "customer", "name", "client", "of"];
     for (let i = 0; i < words.length - 1; i++) {
       if (nameKeywords.includes(words[i].toLowerCase())) {
         firstName = words[i + 1].charAt(0).toUpperCase() + words[i + 1].slice(1);

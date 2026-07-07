@@ -144,7 +144,8 @@ export default function NewOrderPage() {
 
   // Listen for voice-parse prefill query parameters
   useEffect(() => {
-    const prefillStr = new URLSearchParams(window.location.search).get("prefill");
+    const searchParams = new URLSearchParams(window.location.search);
+    const prefillStr = searchParams.get("prefill");
     if (prefillStr) {
       try {
         const data = JSON.parse(decodeURIComponent(prefillStr));
@@ -169,6 +170,41 @@ export default function NewOrderPage() {
         });
       } catch (e) {
         console.error("Failed to parse prefill data", e);
+      }
+    } else {
+      // Fallback: direct simple params
+      const name = searchParams.get("name");
+      const phone = searchParams.get("phone");
+      const price = searchParams.get("price");
+      const item = searchParams.get("item");
+
+      if (name || phone || price || item) {
+        setShowAddCustomer(true);
+        if (name) {
+          const parts = name.trim().split(/\s+/);
+          setNewCustomer((prev) => ({
+            ...prev,
+            firstName: parts[0] || "",
+            lastName: parts.slice(1).join(" ") || "",
+          }));
+        }
+        if (phone) {
+          setNewCustomer((prev) => ({ ...prev, phone }));
+        }
+        if (price || item) {
+          setItems((prev) => {
+            const newItems = [...prev];
+            if (newItems[0]) {
+              newItems[0] = {
+                ...newItems[0],
+                model: item || newItems[0].model,
+                price: price ? Number(price) : newItems[0].price,
+                category: "Formal Shoe",
+              };
+            }
+            return newItems;
+          });
+        }
       }
     }
   }, []);
