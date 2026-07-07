@@ -7,8 +7,31 @@ import { OrderStatus, Role } from "@prisma/client";
 import { nanoid } from "nanoid";
 
 async function generateSequentialInvoiceNumber() {
-  const count = await prisma.invoice.count();
-  return `MB-${String(count + 1).padStart(3, '0')}`;
+  const latestInvoice = await prisma.invoice.findFirst({
+    orderBy: { createdAt: "desc" },
+    select: { invoiceNumber: true },
+  });
+
+  let nextNum = 1;
+  if (latestInvoice) {
+    const match = latestInvoice.invoiceNumber.match(/^MB-(\d+)$/i);
+    if (match) {
+      nextNum = parseInt(match[1], 10) + 1;
+    }
+  }
+
+  // Safety loop: verify candidate doesn't exist (in case of manual changes or deletion gaps)
+  while (true) {
+    const candidate = `MB-${String(nextNum).padStart(3, "0")}`;
+    const existing = await prisma.invoice.findUnique({
+      where: { invoiceNumber: candidate },
+      select: { id: true },
+    });
+    if (!existing) {
+      return candidate;
+    }
+    nextNum++;
+  }
 }
 
 export async function createOrder(formData: {
