@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { OrderStatus } from "@prisma/client";
 import { GlassCard } from "@/components/ui/glass-card";
-import { updateOrderStatus, assignArtisan, uploadProofPhoto, logReviewRequest, createInvoiceForOrder, deleteOrder, revertOrderToPending, updatePorterService, updateOrderDetails, addAddonToOrder, removeAddonFromOrder } from "@/app/actions/orders";
+import { updateOrderStatus, assignArtisan, uploadProofPhoto, uploadMultipleProofPhotos, logReviewRequest, createInvoiceForOrder, deleteOrder, revertOrderToPending, updatePorterService, updateOrderDetails, addAddonToOrder, removeAddonFromOrder } from "@/app/actions/orders";
 import { uploadImage } from "@/lib/upload";
 import { normalizeIndianPhone } from "@/lib/whatsapp";
 import Link from "next/link";
@@ -148,20 +148,22 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
 
   // Handle after photo upload (proof of completion)
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
     setUploading(true);
     try {
-      const publicUrl = await uploadImage(file, "after-images");
+      const uploadPromises = Array.from(files).map((file) => uploadImage(file, "after-images"));
+      const publicUrls = await Promise.all(uploadPromises);
+      
       // Update item #1 photoUrl (or matching item)
       const itemId = order.items[0]?.id;
       if (itemId) {
-        const res = await uploadProofPhoto(itemId, publicUrl, order.id);
+        const res = await uploadMultipleProofPhotos(itemId, publicUrls, order.id);
         if (res.success) {
           window.location.reload();
         } else {
-          alert("Error saving proof photo: " + res.error);
+          alert("Error saving proof photos: " + res.error);
         }
       }
     } catch (err: any) {
@@ -467,13 +469,14 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
             <div className="mb-8">
               <div className="flex items-center justify-between mb-3">
                 <label className="font-label-sm text-label-sm text-on-surface font-semibold flex items-center gap-1.5">
-                  Proof Photo (After Completion) <span className="text-error">*</span>
+                  Proof Photos (After Completion) <span className="text-error">*</span>
                 </label>
               </div>
               <label className="w-full h-40 border-2 border-dashed border-black/10 rounded-xl bg-white/30 hover:bg-white/50 transition-colors flex flex-col items-center justify-center gap-3 cursor-pointer group relative overflow-hidden">
                 <input
                   type="file"
                   accept="image/*"
+                  multiple
                   onChange={handlePhotoUpload}
                   className="sr-only"
                   disabled={uploading}
@@ -485,7 +488,7 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
                 </div>
                 <div className="text-center">
                   <p className="text-sm font-medium text-on-surface">
-                    {uploading ? "Uploading..." : "Click to upload proof photo"}
+                    {uploading ? "Uploading..." : "Click to upload after photos (multiple allowed)"}
                   </p>
                   <p className="text-xs text-on-surface-variant mt-1">JPEG, PNG up to 5MB</p>
                 </div>

@@ -281,6 +281,61 @@ export async function uploadProofPhoto(orderItemId: string, photoUrl: string, or
   }
 }
 
+export async function uploadMultipleProofPhotos(orderItemId: string, photoUrls: string[], orderId: string, actorEmail: string = "arthur@mrboot.com") {
+  try {
+    if (photoUrls.length === 0) {
+      throw new Error("No photo URLs provided");
+    }
+
+    // Fetch the current item to preserve the intake photo in additionalPhotos
+    const item = await prisma.orderItem.findUnique({
+      where: { id: orderItemId },
+      select: { photoUrl: true, additionalPhotos: true },
+    });
+
+    const currentAdditional = item?.additionalPhotos || [];
+    const newAdditionalPhotos = [...currentAdditional];
+
+    // Push current main photo to gallery if not already there
+    if (item?.photoUrl && !newAdditionalPhotos.includes(item.photoUrl)) {
+      newAdditionalPhotos.push(item.photoUrl);
+    }
+
+    // First photo is the new main photo
+    const newMainPhoto = photoUrls[0];
+
+    // Remaining photos are added to gallery
+    for (let i = 1; i < photoUrls.length; i++) {
+      if (!newAdditionalPhotos.includes(photoUrls[i])) {
+        newAdditionalPhotos.push(photoUrls[i]);
+      }
+    }
+
+    await prisma.orderItem.update({
+      where: { id: orderItemId },
+      data: {
+        photoUrl: newMainPhoto,
+        additionalPhotos: newAdditionalPhotos,
+      },
+    });
+
+    // Log Activity
+    await prisma.activityLog.create({
+      data: {
+        orderId,
+        event: "After Photo uploaded as completion proof",
+        actor: actorEmail,
+      },
+    });
+
+    revalidatePath(`/orders/${orderId}`);
+    return { success: true };
+  } catch (error: any) {
+    console.error("Failed to upload proof photos:", error);
+    return { success: false, error: error.message };
+  }
+}
+
 export async function logReviewRequest(orderId: string, actorEmail: string = "sarah@mrboot.com") {
   try {
     await prisma.activityLog.create({
