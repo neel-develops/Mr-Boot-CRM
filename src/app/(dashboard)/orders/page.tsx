@@ -8,12 +8,14 @@ interface OrdersPageProps {
   searchParams: {
     search?: string;
     status?: string;
+    category?: string;
   };
 }
 
 export default async function OrdersPage({ searchParams }: OrdersPageProps) {
   const search = searchParams.search || "";
   const statusFilter = searchParams.status || "ALL";
+  const categoryFilter = searchParams.category || "ALL";
 
   // 1. Fetch settings to read the templates and WhatsApp business number
   let settings = await prisma.settings.findUnique({
@@ -35,11 +37,29 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
     };
   }
 
-  // 2. Query orders from Neon Postgres based on search queries and status filters
+  // Construct category-specific database filter
+  const categoryWhere = categoryFilter === "SHOE_MAKING"
+    ? {
+        OR: [
+          { serviceType: { contains: "Bespoke", mode: "insensitive" as const } },
+          { serviceType: { contains: "Readymade", mode: "insensitive" as const } },
+        ],
+      }
+    : categoryFilter === "RESTORATION"
+    ? {
+        AND: [
+          { NOT: { serviceType: { contains: "Bespoke", mode: "insensitive" as const } } },
+          { NOT: { serviceType: { contains: "Readymade", mode: "insensitive" as const } } },
+        ],
+      }
+    : {};
+
+  // 2. Query orders from Neon Postgres based on search queries, status filters, and category filters
   const orders = await prisma.order.findMany({
     where: {
       AND: [
         statusFilter !== "ALL" ? { status: statusFilter as OrderStatus } : {},
+        categoryWhere,
         search
           ? {
               OR: [
@@ -62,22 +82,52 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
     orderBy: { createdAt: "desc" },
   });
 
-  // Calculate totals for badges
-  const totalCount = await prisma.order.count();
+  // Calculate status counts (scoped to category)
+  const totalCount = await prisma.order.count({
+    where: categoryWhere,
+  });
   const pendingCount = await prisma.order.count({
-    where: { status: { in: [OrderStatus.RECEIVED, OrderStatus.IN_PROGRESS] } },
+    where: {
+      ...categoryWhere,
+      status: { in: [OrderStatus.RECEIVED, OrderStatus.IN_PROGRESS] },
+    },
   });
   const readyCount = await prisma.order.count({
-    where: { status: OrderStatus.READY },
+    where: {
+      ...categoryWhere,
+      status: OrderStatus.READY,
+    },
   });
   const completedCount = await prisma.order.count({
-    where: { status: OrderStatus.DELIVERED },
+    where: {
+      ...categoryWhere,
+      status: OrderStatus.DELIVERED,
+    },
+  });
+
+  // Calculate total counts for category selector buttons
+  const allOrdersCount = await prisma.order.count();
+  const shoeMakingCount = await prisma.order.count({
+    where: {
+      OR: [
+        { serviceType: { contains: "Bespoke", mode: "insensitive" } },
+        { serviceType: { contains: "Readymade", mode: "insensitive" } },
+      ],
+    },
+  });
+  const restorationCount = await prisma.order.count({
+    where: {
+      AND: [
+        { NOT: { serviceType: { contains: "Bespoke", mode: "insensitive" } } },
+        { NOT: { serviceType: { contains: "Readymade", mode: "insensitive" } } },
+      ],
+    },
   });
 
   return (
     <div className="w-full max-w-[1200px] px-4 md:px-gutter mx-auto py-4">
       {/* Header */}
-      <div className="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-6">
+      <div className="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-6">
         <div>
           <h2 className="text-headline-lg font-headline-lg text-primary dark:text-primary-fixed mb-2">Orders Workspace</h2>
           <p className="text-on-surface-variant font-body-md text-body-md">Manage and track premium service requests.</p>
@@ -96,26 +146,63 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
             placeholder="Search customer, phone, or items..."
           />
           {statusFilter !== "ALL" && <input type="hidden" name="status" value={statusFilter} />}
+          {categoryFilter !== "ALL" && <input type="hidden" name="category" value={categoryFilter} />}
           <button type="submit" className="absolute inset-y-0 right-0 pr-4 flex items-center text-outline hover:text-primary">
             <span className="material-symbols-outlined">tune</span>
           </button>
         </form>
       </div>
 
-      {/* Tabs Filter Bar */}
+      {/* Category Tabs Selector Row */}
+      <div className="flex overflow-x-auto pb-2 mb-4 gap-2 border-b border-black/5 snap-x scrollbar-hide hide-scrollbar">
+        <Link
+          href={`/orders?category=ALL${statusFilter !== "ALL" ? `&status=${statusFilter}` : ""}${search ? `&search=${search}` : ""}`}
+          className={`snap-start whitespace-nowrap px-4 py-2 rounded-lg font-semibold text-xs transition-all ${
+            categoryFilter === "ALL"
+              ? "bg-[#361f1a] text-white shadow-md"
+              : "bg-white/60 text-zinc-600 border border-black/5 hover:bg-black/5"
+          }`}
+        >
+          All Types ({allOrdersCount})
+        </Link>
+        <Link
+          href={`/orders?category=SHOE_MAKING${statusFilter !== "ALL" ? `&status=${statusFilter}` : ""}${search ? `&search=${search}` : ""}`}
+          className={`snap-start whitespace-nowrap px-4 py-2 rounded-lg font-semibold text-xs transition-all flex items-center gap-1.5 ${
+            categoryFilter === "SHOE_MAKING"
+              ? "bg-[#361f1a] text-white shadow-md"
+              : "bg-white/60 text-zinc-600 border border-black/5 hover:bg-black/5"
+          }`}
+        >
+          <span className="material-symbols-outlined text-[14px]">handyman</span>
+          Shoe Making ({shoeMakingCount})
+        </Link>
+        <Link
+          href={`/orders?category=RESTORATION${statusFilter !== "ALL" ? `&status=${statusFilter}` : ""}${search ? `&search=${search}` : ""}`}
+          className={`snap-start whitespace-nowrap px-4 py-2 rounded-lg font-semibold text-xs transition-all flex items-center gap-1.5 ${
+            categoryFilter === "RESTORATION"
+              ? "bg-[#361f1a] text-white shadow-md"
+              : "bg-white/60 text-zinc-600 border border-black/5 hover:bg-black/5"
+          }`}
+        >
+          <span className="material-symbols-outlined text-[14px]">cleaning_services</span>
+          Restoration & Care ({restorationCount})
+        </Link>
+      </div>
+
+      {/* Tabs Filter Bar (Status) */}
       <div className="flex overflow-x-auto pb-4 mb-4 gap-3 snap-x scrollbar-hide hide-scrollbar">
         <Link
-          href={`/orders?status=ALL${search ? `&search=${search}` : ""}`}
+          href={`/orders?status=ALL${categoryFilter !== "ALL" ? `&category=${categoryFilter}` : ""}${search ? `&search=${search}` : ""}`}
           className={`snap-start whitespace-nowrap px-5 py-2 rounded-full font-label-sm text-label-sm transition-all ${
             statusFilter === "ALL"
               ? "bg-primary text-on-primary shadow-md"
               : "glass-card text-on-surface-variant hover:text-primary"
           }`}
         >
-          All Orders <span className="ml-2 opacity-70">{totalCount}</span>
+          All Statuses <span className="ml-2 opacity-70">{totalCount}</span>
         </Link>
         <Link
-          href={`/orders?status=IN_PROGRESS${search ? `&search=${search}` : ""}`}
+          href={`/orders?status=IN_PROGRESS${categoryFilter !== "ALL" ? `&category=${categoryFilter}` : ""}${search ? `&search=${search}` : ""}`}
           className={`snap-start whitespace-nowrap px-5 py-2 rounded-full font-label-sm text-label-sm transition-all ${
             statusFilter === "IN_PROGRESS"
               ? "bg-primary text-on-primary shadow-md"
@@ -125,7 +212,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           In Progress <span className="ml-2 bg-surface-variant text-on-surface px-2 py-0.5 rounded-full text-[11px]">{pendingCount}</span>
         </Link>
         <Link
-          href={`/orders?status=READY${search ? `&search=${search}` : ""}`}
+          href={`/orders?status=READY${categoryFilter !== "ALL" ? `&category=${categoryFilter}` : ""}${search ? `&search=${search}` : ""}`}
           className={`snap-start whitespace-nowrap px-5 py-2 rounded-full font-label-sm text-label-sm transition-all flex items-center gap-2 ${
             statusFilter === "READY"
               ? "bg-primary text-on-primary shadow-md"
@@ -136,7 +223,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           <span className="ml-1 bg-surface-variant text-on-surface px-2 py-0.5 rounded-full text-[11px]">{readyCount}</span>
         </Link>
         <Link
-          href={`/orders?status=DELIVERED${search ? `&search=${search}` : ""}`}
+          href={`/orders?status=DELIVERED${categoryFilter !== "ALL" ? `&category=${categoryFilter}` : ""}${search ? `&search=${search}` : ""}`}
           className={`snap-start whitespace-nowrap px-5 py-2 rounded-full font-label-sm text-label-sm transition-all ${
             statusFilter === "DELIVERED"
               ? "bg-primary text-on-primary shadow-md"

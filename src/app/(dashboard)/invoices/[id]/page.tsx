@@ -33,6 +33,9 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
   const token = order.publicOrderLinks[0]?.token || "";
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://mr-boot-crm.vercel.app";
   const trackingUrl = `${appUrl}/track/${token}`;
+  
+  // Check if this is a readymade shoe sale
+  const isReadymade = order.serviceType.toLowerCase().includes("readymade");
 
   // 2. Generate QR code server-side
   let qrCodeDataUrl = "";
@@ -65,11 +68,6 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
     .replace("{{invoice_pdf_or_track_link}}", trackingUrl);
   const waShareUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
-  // Find first photo to display in the main top container
-  const mainPhotoUrl = order.items.find(item => item.photoUrl)?.photoUrl;
-
-  const fallbackShoeImg = "https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=150&auto=format&fit=crop&q=60"; // Classic premium brown shoe
-
   // Extract Created By
   let createdBy = "Staff";
   if (order.notes) {
@@ -80,127 +78,95 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
   }
 
   return (
-    <div className="w-full min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      {/* Container holding controls and the printable/savable invoice box */}
-      <div className="w-full max-w-2xl flex flex-col gap-4">
+    <div className="w-full min-h-screen bg-background flex items-center justify-center py-6 px-4">
+      {/* Container holding controls and the printable/savable invoice box (constrained to standard mobile/tablet width) */}
+      <div className="w-full max-w-md flex flex-col gap-4">
         {/* Interactive Actions: Print + WhatsApp (Client Component) */}
         <Suspense fallback={null}>
           <InvoiceActions waShareUrl={waShareUrl} invoiceNumber={invoice.invoiceNumber} />
         </Suspense>
 
-        {/* Invoice Box */}
-        <div id="invoice-box" className="w-full rounded-[1.5rem] overflow-hidden relative border border-black/5 bg-white text-zinc-900 shadow-xl relative">
+        {/* Invoice Box: width locked to standard 400px maximum for crisp, non-blurry PNG rendering */}
+        <div 
+          id="invoice-box" 
+          className="w-full mx-auto rounded-[1.5rem] overflow-hidden border border-black/5 bg-white text-zinc-900 shadow-lg relative"
+          style={{ maxWidth: "420px", width: "100%" }}
+        >
           {/* Top Accent Line */}
-          <div className="h-2.5 w-full bg-[#361f1a]"></div>
+          <div className="h-2 w-full bg-[#361f1a]"></div>
           
-          <div className="p-8 md:p-12">
+          <div className="p-6">
             {/* Header Row */}
-            <div className="flex justify-between items-start gap-6 mb-8">
-              <div className="flex items-center gap-4">
+            <div className="flex justify-between items-start gap-4 mb-5 pb-4 border-b border-zinc-100">
+              <div className="flex items-center gap-3">
                 <img
                   src="/logo.png"
                   alt="Mr. Boot Logo"
                   crossOrigin="anonymous"
-                  className="w-16 h-16 rounded-full object-cover border border-black/5"
+                  className="w-12 h-12 rounded-full object-cover border border-black/5"
                 />
                 <div>
-                  <h1 className="text-2xl font-bold text-[#361f1a] tracking-tight">Mr. Boot</h1>
-                  <p className="text-xs text-[#cb9e3f] font-bold tracking-widest uppercase mt-0.5">PREMIUM CARE</p>
+                  <h1 className="text-xl font-bold text-[#361f1a] tracking-tight">Mr. Boot</h1>
+                  <p className="text-[9px] text-[#cb9e3f] font-bold tracking-wider uppercase">PREMIUM CARE</p>
                 </div>
               </div>
 
               <div className="text-right">
-                <h2 className="text-xl font-bold text-[#361f1a] tracking-wider uppercase mb-1">RECEIPT</h2>
-                <p className="text-xs text-zinc-500">Order: <span className="font-semibold text-[#361f1a]">#{invoice.invoiceNumber}</span></p>
-                <p className="text-xs text-zinc-500">Date: {invoiceDate}</p>
-                <p className="text-xs text-zinc-500">Created By: <span className="font-semibold text-[#361f1a]">{createdBy}</span></p>
+                <h2 className="text-sm font-bold text-[#361f1a] tracking-wider uppercase">RECEIPT</h2>
+                <p className="text-[11px] text-zinc-500">Order: <span className="font-semibold text-[#361f1a]">#{invoice.invoiceNumber}</span></p>
+                <p className="text-[11px] text-zinc-500">{invoiceDate}</p>
+                <p className="text-[10px] text-zinc-400">By: {createdBy}</p>
               </div>
             </div>
 
-            {/* Main Item Intake / Preview Box */}
-            <div className="mb-6 w-full bg-zinc-50 rounded-2xl p-4 flex items-center justify-center border border-zinc-100 min-h-[180px]">
-              {mainPhotoUrl ? (
-                <img
-                  src={mainPhotoUrl}
-                  alt="Item intake"
-                  crossOrigin="anonymous"
-                  className="max-h-64 object-contain rounded-xl shadow-md border border-white"
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center text-zinc-400">
-                  <span className="material-symbols-outlined text-[48px] text-[#cb9e3f] mb-2">dry_cleaning</span>
-                  <p className="text-sm font-semibold text-zinc-600">Premium Care Intake</p>
-                  <p className="text-xs text-zinc-400">No photos uploaded for this order</p>
+            {/* Billed To Customer Info */}
+            <div className="mb-5 bg-zinc-50 rounded-xl p-4 border border-zinc-100 flex flex-col gap-3">
+              <div>
+                <span className="text-[9px] text-zinc-400 uppercase tracking-widest font-bold block mb-1">Customer Details</span>
+                <p className="text-base font-bold text-[#361f1a]">{order.customer.firstName} {order.customer.lastName}</p>
+                <p className="text-xs text-zinc-600 font-medium">{order.customer.phone}</p>
+              </div>
+              
+              {/* Porter/Delivery Info (only show if not a standard ready-made sale, or format compactly) */}
+              {!isReadymade && (
+                <div className="border-t border-zinc-200/60 pt-2.5 mt-1">
+                  {(() => {
+                    const pickup = order.pickupByPorter || false;
+                    const drop = order.dropByPorter || false;
+                    let label = "Self Pickup & Self Drop";
+                    if (pickup && drop) label = "Porter Pickup & Drop";
+                    else if (pickup) label = "Porter Pickup / Self Drop";
+                    else if (drop) label = "Self Pickup / Porter Drop";
+                    const hasPorter = pickup || drop;
+                    return (
+                      <div className="flex items-center justify-between text-xs text-zinc-700 font-medium">
+                        <span className="text-zinc-400 font-semibold text-[9px] uppercase">Delivery:</span>
+                        <span>{label}</span>
+                      </div>
+                    );
+                  })()}
                 </div>
               )}
             </div>
 
-            {/* Billed To Customer Info */}
-            <div className="mb-8 bg-zinc-50 rounded-xl p-5 border border-zinc-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-              <div>
-                <span className="text-[10px] text-zinc-400 uppercase tracking-widest mb-1.5 font-bold">Billed To</span>
-                <p className="text-lg font-bold text-[#361f1a]">{order.customer.firstName} {order.customer.lastName}</p>
-                <p className="text-xs text-zinc-500 mt-0.5">{order.customer.phone}</p>
-              </div>
-              {/* Porter/Delivery Info */}
-              <div className="flex flex-col gap-1 bg-white border border-zinc-200/80 rounded-lg py-2 px-3 self-start sm:self-auto min-w-[200px] shadow-sm">
-                {(() => {
-                  const pickup = order.pickupByPorter || false;
-                  const drop = order.dropByPorter || false;
-                  let label = "Self Pickup & Self Drop";
-                  if (pickup && drop) label = "Porter Pickup & Drop";
-                  else if (pickup) label = "Porter Pickup / Self Drop";
-                  else if (drop) label = "Self Pickup / Porter Drop";
-                  const hasPorter = pickup || drop;
-                  return (
-                    <>
-                      <div className="flex items-center gap-2 text-xs font-semibold text-zinc-700">
-                        <input
-                          type="checkbox"
-                          checked={hasPorter}
-                          readOnly
-                          className="rounded border-zinc-300 text-zinc-800 focus:ring-zinc-800 w-4 h-4 pointer-events-none"
-                        />
-                        <span>Delivery Mode</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-[10px] text-zinc-500 pl-6">
-                        <span className="font-semibold">{label}</span>
-                      </div>
-                    </>
-                  );
-                })()}
-              </div>
-            </div>
-
             {/* Items Section */}
-            <div className="mb-8">
-              <div className="flex justify-between items-center border-b border-zinc-200 pb-2 mb-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+            <div className="mb-5">
+              <div className="flex justify-between items-center border-b border-zinc-200 pb-1.5 mb-3 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
                 <span>SERVICE DESCRIPTION</span>
                 <span className="text-right">AMOUNT</span>
               </div>
 
               {order.items.map((item) => (
-                <div key={item.id} className="flex justify-between items-start border-b border-dashed border-zinc-200 pb-4 mb-4">
-                  <div className="flex items-center gap-4 flex-1 pr-4">
-                    {/* Shoe card preview */}
-                    <div className="w-20 h-20 bg-zinc-50 rounded-xl border border-zinc-100 overflow-hidden flex-shrink-0 flex items-center justify-center">
-                      <img
-                        src={item.photoUrl || fallbackShoeImg}
-                        alt={`${item.category} thumbnail`}
-                        crossOrigin="anonymous"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <div>
-                      <p className="text-base font-bold text-[#361f1a] mb-1">
-                        {item.brand ? `${item.brand} ${item.model || item.category}` : item.category}
-                      </p>
-                      <p className="text-xs text-zinc-500 leading-relaxed">
-                        {item.services.join(", ")} {item.description && `— ${item.description}`}
-                      </p>
-                    </div>
+                <div key={item.id} className="flex justify-between items-start border-b border-dashed border-zinc-200 pb-3 mb-3 last:border-0 last:pb-0 last:mb-0">
+                  <div className="flex-1 pr-4">
+                    <p className="text-sm font-bold text-[#361f1a] mb-0.5">
+                      {item.brand ? `${item.brand} ${item.model || item.category}` : item.category}
+                    </p>
+                    <p className="text-[11px] text-zinc-500 leading-normal">
+                      {item.services.join(", ")} {item.description && `— ${item.description}`}
+                    </p>
                   </div>
-                  <p className="font-bold text-[#361f1a] text-lg whitespace-nowrap">
+                  <p className="font-bold text-[#361f1a] text-sm whitespace-nowrap">
                     ₹{Number(order.price).toLocaleString("en-IN")}.00
                   </p>
                 </div>
@@ -209,18 +175,18 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
 
             {/* Addons Section */}
             {(order.addons || []).length > 0 && (
-              <div className="mb-8">
-                <div className="flex justify-between items-center border-b border-zinc-200 pb-2 mb-4 text-[10px] font-bold text-zinc-400 uppercase tracking-widest">
+              <div className="mb-5">
+                <div className="flex justify-between items-center border-b border-zinc-200 pb-1.5 mb-3 text-[9px] font-bold text-zinc-400 uppercase tracking-widest">
                   <span>ADD-ONS & EXTRAS</span>
                   <span className="text-right">AMOUNT</span>
                 </div>
                 {(order.addons as any[]).map((addon) => (
-                  <div key={addon.id} className="flex justify-between items-center border-b border-dashed border-zinc-200 pb-3 mb-3">
+                  <div key={addon.id} className="flex justify-between items-center border-b border-dashed border-zinc-200 pb-2 mb-2 last:border-0 last:pb-0 last:mb-0">
                     <div>
-                      <p className="text-sm font-semibold text-[#361f1a]">{addon.itemName}</p>
-                      <p className="text-xs text-zinc-400">{addon.qty} × ₹{Number(addon.unitCost).toLocaleString("en-IN")}</p>
+                      <p className="text-xs font-semibold text-[#361f1a]">{addon.itemName}</p>
+                      <p className="text-[10px] text-zinc-400">{addon.qty} × ₹{Number(addon.unitCost).toLocaleString("en-IN")}</p>
                     </div>
-                    <p className="font-bold text-[#361f1a]">
+                    <p className="font-bold text-xs text-[#361f1a]">
                       ₹{Number(addon.totalCost).toLocaleString("en-IN")}.00
                     </p>
                   </div>
@@ -229,20 +195,20 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
             )}
 
             {/* Totals & QR Tracker Section */}
-            <div className="flex flex-col sm:flex-row justify-between items-end gap-6 mb-4 pt-4 relative">
-              {/* QR Code */}
-              {qrCodeDataUrl && (
-                <div className="flex items-center gap-4 w-full sm:w-auto relative border border-zinc-100 p-3 rounded-xl bg-white shadow-sm">
-                  <img src={qrCodeDataUrl} alt="Track status QR code" className="w-16 h-16 rounded flex-shrink-0" />
+            <div className="flex flex-col gap-4 pt-3 border-t border-zinc-100 relative">
+              {/* QR Code (Hidden for Ready-Made, shown for Bespoke/Services) */}
+              {qrCodeDataUrl && !isReadymade && (
+                <div className="flex items-center gap-3 border border-zinc-100 p-2.5 rounded-xl bg-white shadow-sm w-full">
+                  <img src={qrCodeDataUrl} alt="Track status QR code" className="w-12 h-12 rounded flex-shrink-0" />
                   <div>
-                    <p className="text-xs font-bold text-[#361f1a] mb-0.5">Track Order Status</p>
-                    <p className="text-[11px] text-zinc-400 leading-tight">Scan to view live restoration progress</p>
+                    <p className="text-[11px] font-bold text-[#361f1a] mb-0.5">Track Order Status</p>
+                    <p className="text-[9px] text-zinc-400 leading-tight">Scan to view live restoration progress</p>
                   </div>
                 </div>
               )}
 
               {/* Price breakdown */}
-              <div className="w-full sm:w-64 space-y-2 text-sm text-zinc-500">
+              <div className="w-full space-y-1.5 text-xs text-zinc-500">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
                   <span>₹{Number(order.price).toLocaleString("en-IN")}.00</span>
@@ -258,28 +224,28 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
                     ₹{Number(invoice.balanceDue).toLocaleString("en-IN")}.00
                   </span>
                 </div>
-                <div className="flex justify-between text-xs font-semibold text-zinc-500">
+                <div className="flex justify-between text-[11px] font-semibold text-zinc-500">
                   <span>Payment Mode</span>
                   <span className="uppercase text-[#361f1a]">{invoice.paymentMode}</span>
                 </div>
-                <div className="h-px bg-zinc-200 my-2"></div>
+                <div className="h-px bg-zinc-200 my-1.5"></div>
                 <div className="flex justify-between items-end">
                   <span className="font-bold text-[#361f1a]">Total</span>
-                  <span className="text-2xl font-bold text-[#361f1a]">₹{Number(invoice.amount).toLocaleString("en-IN")}.00</span>
+                  <span className="text-xl font-bold text-[#361f1a]">₹{Number(invoice.amount).toLocaleString("en-IN")}.00</span>
                 </div>
               </div>
 
               {/* PAID / UNPAID stamp */}
               {Number(invoice.balanceDue) === 0 ? (
-                <div className="absolute right-8 bottom-[160px] transform -rotate-12 pointer-events-none select-none">
-                  <div className="border-[3px] border-emerald-600 text-emerald-600 font-black text-3xl px-8 py-2 rounded-lg uppercase tracking-[0.3em] opacity-75"
+                <div className="absolute right-4 top-1 transform -rotate-12 pointer-events-none select-none">
+                  <div className="border-2 border-emerald-600 text-emerald-600 font-black text-xl px-4 py-1 rounded uppercase tracking-[0.25em] opacity-65"
                     style={{ fontFamily: "serif", textShadow: "0 0 1px #16a34a" }}>
                     PAID
                   </div>
                 </div>
               ) : (
-                <div className="absolute right-8 bottom-[160px] transform -rotate-12 pointer-events-none select-none">
-                  <div className="border-[3px] border-red-600 text-red-600 font-black text-3xl px-6 py-2 rounded-lg uppercase tracking-[0.25em] opacity-70"
+                <div className="absolute right-4 top-1 transform -rotate-12 pointer-events-none select-none">
+                  <div className="border-2 border-red-600 text-red-600 font-black text-xl px-3 py-1 rounded uppercase tracking-[0.2em] opacity-60"
                     style={{ fontFamily: "serif", textShadow: "0 0 1px #dc2626" }}>
                     UNPAID
                   </div>
@@ -289,8 +255,8 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
             </div>
 
             {/* Signature Footer */}
-            <div className="text-center mt-12 pt-6 border-t border-zinc-100">
-              <p className="text-xs text-zinc-400 italic max-w-md mx-auto">
+            <div className="text-center mt-8 pt-4 border-t border-zinc-100">
+              <p className="text-[10px] text-zinc-400 italic max-w-xs mx-auto">
                 &ldquo;True craftsmanship takes time. Thank you for trusting Mr. Boot with your prized footwear. Wear them in good health.&rdquo;
               </p>
             </div>
