@@ -68,6 +68,9 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
     .replace("{{invoice_pdf_or_track_link}}", trackingUrl);
   const waShareUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
+  // Find first photo to display in the main top container
+  const mainPhotoUrl = order.items.find(item => item.photoUrl)?.photoUrl;
+
   // Extract Created By
   let createdBy = "Staff";
   if (order.notes) {
@@ -118,6 +121,18 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
                 <p className="text-[10px] text-zinc-400">By: {createdBy}</p>
               </div>
             </div>
+
+            {/* Main Item Intake / Preview Box (auto aspect-ratio landscape vs. vertical) */}
+            {mainPhotoUrl && (
+              <div className="mb-5 w-full flex items-center justify-center rounded-2xl overflow-hidden bg-zinc-50 border border-zinc-100 p-2">
+                <img
+                  src={mainPhotoUrl}
+                  alt="Item intake"
+                  crossOrigin="anonymous"
+                  className="w-full h-auto max-h-72 object-contain rounded-xl shadow-sm border border-white"
+                />
+              </div>
+            )}
 
             {/* Billed To Customer Info */}
             <div className="mb-5 bg-zinc-50 rounded-xl p-4 border border-zinc-100 flex flex-col gap-3">
