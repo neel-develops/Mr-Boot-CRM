@@ -142,6 +142,57 @@ export default function NewOrderPage() {
       .catch((err) => console.error("Error loading staff:", err));
   }, []);
 
+  // Listen for voice-parse prefill query parameters
+  useEffect(() => {
+    const prefillStr = new URLSearchParams(window.location.search).get("prefill");
+    if (prefillStr) {
+      try {
+        const data = JSON.parse(decodeURIComponent(prefillStr));
+        setShowAddCustomer(true);
+        setNewCustomer((prev) => ({
+          ...prev,
+          firstName: data.firstName || prev.firstName,
+          lastName: data.lastName || prev.lastName,
+          phone: data.phone || prev.phone,
+        }));
+        setItems((prev) => {
+          const newItems = [...prev];
+          if (newItems[0]) {
+            newItems[0] = {
+              ...newItems[0],
+              model: data.itemType || newItems[0].model,
+              price: data.price ? Number(data.price) : newItems[0].price,
+              category: "Formal Shoe",
+            };
+          }
+          return newItems;
+        });
+      } catch (e) {
+        console.error("Failed to parse prefill data", e);
+      }
+    }
+  }, []);
+
+  // Listen for QR scan prefill events
+  useEffect(() => {
+    const handleQrPrefill = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (typeof detail === "string") {
+        const digits = detail.replace(/\D/g, "");
+        if (digits.length >= 10) {
+          const last10 = digits.slice(-10);
+          setCustomerSearch(last10);
+          setShowAddCustomer(true);
+          setNewCustomer((prev) => ({ ...prev, phone: last10 }));
+        } else {
+          setCustomerSearch(detail);
+        }
+      }
+    };
+    window.addEventListener("qr-prefill", handleQrPrefill);
+    return () => window.removeEventListener("qr-prefill", handleQrPrefill);
+  }, []);
+
   // Customer search
   useEffect(() => {
     if (customerSearch.trim().length > 1) {

@@ -29,6 +29,7 @@ export async function createOrder(formData: {
     artisanId?: string;
     pickupByPorter?: boolean;
     dropByPorter?: boolean;
+    status?: OrderStatus;
   };
   items: Array<{
     category: string;
@@ -68,7 +69,7 @@ export async function createOrder(formData: {
     // 2. Create the Order
     const order = await prisma.order.create({
       data: {
-        status: OrderStatus.RECEIVED,
+        status: formData.order.status || OrderStatus.RECEIVED,
         serviceType: formData.order.serviceType,
         itemType: formData.order.itemType,
         material: formData.order.material || null,

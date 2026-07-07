@@ -225,6 +225,51 @@ export const VoiceSearchModal: React.FC<VoiceSearchModalProps> = ({ isOpen, onCl
       return;
     }
 
+    // Check if user wants to create a new order/bill
+    const isCreateIntent = (t: string) => {
+      const lower = t.toLowerCase();
+      return (
+        lower.includes("create") ||
+        lower.includes("new order") ||
+        lower.includes("new bill") ||
+        lower.includes("add order") ||
+        lower.includes("make order") ||
+        lower.includes("place order") ||
+        lower.includes("order for") ||
+        lower.includes("bill for") ||
+        lower.includes("invoice for") ||
+        lower.includes("intake") ||
+        lower.includes("ready made") ||
+        lower.includes("readymade") ||
+        lower.includes("buy shoe")
+      );
+    };
+
+    if (isCreateIntent(cleanText)) {
+      setMode("transcribing");
+      try {
+        const response = await fetch("/api/orders/voice-parse", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ transcript: cleanText }),
+        });
+        if (!response.ok) throw new Error("Failed to parse voice command");
+        const data = await response.json();
+        
+        // Determine target route based on isReadymade
+        const targetPage = data.isReadymade ? "/billing/readymade" : "/orders/new";
+        router.push(`${targetPage}?prefill=${encodeURIComponent(JSON.stringify(data))}`);
+        onClose();
+        return;
+      } catch (err) {
+        console.error("Voice parse error:", err);
+        // Fallback: just open new order page with raw transcript as search prefill
+        router.push(`/orders/new?name=${encodeURIComponent(cleanText)}`);
+        onClose();
+        return;
+      }
+    }
+
     // Try relative date parsing
     const dateStr = parseRelativeDate(cleanText);
     if (dateStr) {

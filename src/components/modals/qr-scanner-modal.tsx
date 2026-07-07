@@ -101,6 +101,15 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({ isOpen, onClose 
     setStatus("checking");
     setErrorMessage("");
 
+    // If on an order/bill creation page, prefill the form directly instead of looking up an old order
+    const pathname = window.location.pathname;
+    const isCreationPage = pathname.includes("/orders/new") || pathname.includes("/billing/readymade");
+    if (isCreationPage) {
+      window.dispatchEvent(new CustomEvent("qr-prefill", { detail: decodedText }));
+      onClose();
+      return;
+    }
+
     try {
       const response = await fetch(`/api/orders/lookup?query=${encodeURIComponent(decodedText)}`);
       

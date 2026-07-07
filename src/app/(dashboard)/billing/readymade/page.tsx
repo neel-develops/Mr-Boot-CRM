@@ -44,6 +44,49 @@ export default function ReadymadeBillingPage() {
     }
   }, [isHandmade, router]);
 
+  // Listen for voice-parse prefill query parameters
+  useEffect(() => {
+    const prefillStr = new URLSearchParams(window.location.search).get("prefill");
+    if (prefillStr) {
+      try {
+        const data = JSON.parse(decodeURIComponent(prefillStr));
+        if (data.firstName || data.lastName) {
+          setCustomerName(`${data.firstName || ""} ${data.lastName || ""}`.trim());
+        }
+        if (data.phone) {
+          setContactNumber(data.phone);
+        }
+        if (data.itemType) {
+          setShoeName(data.itemType);
+        }
+        if (data.price) {
+          setTotalPrice(Number(data.price));
+        }
+      } catch (e) {
+        console.error("Failed to parse prefill data", e);
+      }
+    }
+  }, []);
+
+  // Listen for QR scan prefill events
+  useEffect(() => {
+    const handleQrPrefill = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (typeof detail === "string") {
+        const digits = detail.replace(/\D/g, "");
+        if (digits.length >= 10) {
+          setContactNumber(digits.slice(-10));
+        } else if (detail.length < 20) {
+          setCustomerName(detail);
+        } else {
+          setShoeName(detail);
+        }
+      }
+    };
+    window.addEventListener("qr-prefill", handleQrPrefill);
+    return () => window.removeEventListener("qr-prefill", handleQrPrefill);
+  }, []);
+
   const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -88,7 +131,8 @@ export default function ReadymadeBillingPage() {
         serviceType: `Readymade Shoe (${freeServicePeriod} free service)`,
         itemType: shoeName,
         price: totalPrice - adjustment,
-        dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // Default due date 1 week out
+        dueDate: new Date(),
+        status: "DELIVERED" as any,
         notes: `Shoe size: ${shoeSize}. Free service period: ${freeServicePeriod}.`,
       },
       items: [
