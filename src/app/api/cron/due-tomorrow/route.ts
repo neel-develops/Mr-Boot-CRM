@@ -3,18 +3,18 @@ import { prisma } from "@/lib/prisma";
 import webpush from "web-push";
 
 webpush.setVapidDetails(
-  "mailto:example@yourdomain.org",
+  "mailto:mrbootshoelaundrynrepair@gmail.com",
   process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "",
   process.env.VAPID_PRIVATE_KEY || ""
 );
 
 export async function GET(request: Request) {
   try {
-    // 1. Verify Vercel Cron security header if CRON_SECRET is configured
+    // OWASP A01: CRON_SECRET is now mandatory — always require it
     const cronSecret = process.env.CRON_SECRET;
     const authHeader = request.headers.get("authorization");
 
-    if (cronSecret && authHeader !== `Bearer ${cronSecret}`) {
+    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
       return new Response("Unauthorized", { status: 401 });
     }
 

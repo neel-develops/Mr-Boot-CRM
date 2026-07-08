@@ -20,6 +20,16 @@ export async function GET(request: NextRequest) {
     const month = parseInt(dateParts[1]) - 1; // 0-indexed month
     const day = parseInt(dateParts[2]);
 
+    // OWASP A03: Validate date ranges strictly before using in DB query
+    if (
+      isNaN(year) || isNaN(month) || isNaN(day) ||
+      year < 2000 || year > 2100 ||
+      month < 0 || month > 11 ||
+      day < 1 || day > 31
+    ) {
+      return NextResponse.json({ error: "Date values are out of range" }, { status: 400 });
+    }
+
     // Query range in local time (Asia/Kolkata timezone - UTC+5:30)
     // To handle timezone correctly, let's build the UTC timestamps matching the IST day
     // IST start of day (00:00:00) is (UTC - 5h 30m) of that calendar day
@@ -73,7 +83,8 @@ export async function GET(request: NextRequest) {
       deliveries: deliveryOrders.map(mapOrder),
     });
   } catch (error: any) {
+    // OWASP A09: Do not expose internal error details to clients
     console.error("Error in /api/orders/by-date:", error);
-    return NextResponse.json({ error: error.message || "Failed to fetch orders by date" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch orders for the requested date" }, { status: 500 });
   }
 }
