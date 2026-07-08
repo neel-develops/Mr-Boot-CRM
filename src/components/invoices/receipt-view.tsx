@@ -194,17 +194,28 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
             {/* ── BILLING SUMMARY & QR ── */}
             <div className="px-6 mb-4 relative z-0">
               <div className="flex justify-between items-end gap-4 relative pb-2">
-                {/* Distressed Authentic PAID Stamp overlapping */}
-                {paymentStatus === "Paid" && (
+                {/* Distressed Authentic Stamps overlapping */}
+                {paymentStatus === "Paid" ? (
                   <div 
-                    className="absolute left-[135px] bottom-[28px] rotate-[-15deg] border-[3px] border-double border-emerald-600 rounded px-3 py-1 font-black text-emerald-600 tracking-widest text-[13px] uppercase z-10 pointer-events-none bg-white/95 shadow-md"
+                    className="absolute left-[135px] bottom-[28px] rotate-[-15deg] border-[3px] border-double border-emerald-600 rounded px-3 py-1 font-black text-emerald-600 tracking-widest text-[13px] uppercase z-10 pointer-events-none bg-white/95 shadow-md animate-fade-in"
                     style={{
                       boxShadow: "0 0 0 3px rgba(16, 185, 129, 0.15)",
                     }}
                   >
                     PAID
                   </div>
-                )}
+                ) : Number(invoice.advancePaid) > 0 && balanceDue > 0 ? (
+                  <div 
+                    className="absolute left-[120px] bottom-[28px] rotate-[-15deg] border-[3px] border-double border-red-600 rounded px-3 py-1 font-black text-red-650 tracking-wider text-[11px] uppercase z-10 pointer-events-none bg-white/95 shadow-md"
+                    style={{
+                      boxShadow: "0 0 0 3px rgba(220, 38, 38, 0.15)",
+                      color: "#dc2626",
+                      borderColor: "#dc2626",
+                    }}
+                  >
+                    ADVANCE PAID
+                  </div>
+                ) : null}
 
                 {/* Left: QR Code info */}
                 <div className="flex items-center gap-2 flex-1">

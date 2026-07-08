@@ -27,8 +27,8 @@ export const InvoiceActions: React.FC<InvoiceActionsProps> = ({ waShareUrl, invo
       for (let i = 0; i < pages.length; i++) {
         const pageEl = pages[i] as HTMLElement;
         
-        // Calculate the scale to generate exactly 2160px width (with 2368px height via aspect ratio)
-        const targetWidth = 2160;
+        // Calculate the scale to generate exactly 3240px width (for ultra-high print-ready resolution)
+        const targetWidth = 3240;
         const currentWidth = pageEl.offsetWidth || 430;
         const customScale = targetWidth / currentWidth;
 
