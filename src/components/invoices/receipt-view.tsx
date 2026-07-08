@@ -91,7 +91,7 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
 
   // Determine dynamic height based on aspect ratio
   const getImageContainerClass = () => {
-    if (count > 5) return "h-14 w-full"; // keep it small if there are many items
+    if (count > 3) return "hidden"; // hide large hero container completely if > 3 items
     switch (imageAspect) {
       case "portrait":
         return "h-44 w-full";
@@ -175,7 +175,7 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
             </div>
 
             {/* ── HERO IMAGE ── */}
-            {mainPhotoUrl && (
+            {mainPhotoUrl && count <= 3 && (
               <div className="px-5 mb-2">
                 <div className={`bg-zinc-100/85 rounded-xl flex items-center justify-center p-2 w-full overflow-hidden transition-all duration-300 ${getImageContainerClass()}`}>
                   <img
@@ -213,18 +213,28 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
                 {allServices.map((item, idx) => (
                   <div key={idx} className={`border-b border-dashed border-zinc-100 last:border-b-0 ${tableRowPadding}`}>
                     <div className="flex justify-between items-start gap-4">
-                      <h4 className={`${itemTitleClass} font-bold text-zinc-800 leading-tight`}>{item.title}</h4>
+                      <div className="flex gap-2 items-center">
+                        {item.photoUrl && count > 3 && (
+                          <img
+                            src={item.photoUrl}
+                            alt="Shoe thumbnail"
+                            crossOrigin="anonymous"
+                            className="w-7 h-7 rounded object-cover border border-zinc-200 flex-shrink-0"
+                          />
+                        )}
+                        <h4 className={`${itemTitleClass} font-bold text-zinc-800 leading-tight`}>{item.title}</h4>
+                      </div>
                       <span className={`${itemTitleClass} font-bold text-zinc-800`}>
                         ₹{item.price.toFixed(2)}
                       </span>
                     </div>
                     {item.services && item.services.length > 0 && (
-                      <p className={`${itemDescClass} text-zinc-500 mt-0.5 leading-none font-medium`}>
+                      <p className={`${itemDescClass} text-zinc-500 mt-0.5 leading-none font-medium ${count > 3 ? "pl-9" : ""}`}>
                         {item.services.join(", ")}
                       </p>
                     )}
                     {item.description && (
-                      <p className={`${itemDescClass} text-zinc-400 mt-0.5 leading-none`}>
+                      <p className={`${itemDescClass} text-zinc-400 mt-0.5 leading-none ${count > 3 ? "pl-9" : ""}`}>
                         {item.description}
                       </p>
                     )}

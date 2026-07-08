@@ -16,6 +16,7 @@ interface ServiceItem {
   price: number;
   description?: string;
   services?: string[];
+  photoUrl?: string;
 }
 
 export default async function InvoicePage({ params }: InvoicePageProps) {
@@ -88,19 +89,34 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
   }
 
   // Group items and addons into a single list of service rows
-  const itemsList: ServiceItem[] = order.items.map((item) => {
-    // Order stores total price. We divide total price equally among items.
-    const itemPrice = Number(order.price) / (order.items.length || 1);
-    return {
-      type: "item" as const,
-      title: item.brand
-        ? `${item.brand} ${item.model || item.category}`
-        : item.model || item.category,
-      price: itemPrice,
-      description: item.description || undefined,
-      services: item.services,
-    };
-  });
+  let itemsList: ServiceItem[] = [];
+  if (order.items && order.items.length > 0) {
+    itemsList = order.items.map((item) => {
+      // Order stores total price. We divide total price equally among items.
+      const itemPrice = Number(order.price) / (order.items.length || 1);
+      return {
+        type: "item" as const,
+        title: item.brand
+          ? `${item.brand} ${item.model || item.category}`
+          : item.model || item.category,
+        price: itemPrice,
+        description: item.description || undefined,
+        services: item.services,
+        photoUrl: item.photoUrl || undefined,
+      };
+    });
+  } else {
+    // Fallback for older orders or orders without items relation (so items are never missing!)
+    itemsList = [
+      {
+        type: "item" as const,
+        title: order.itemType || "Shoe Service",
+        price: Number(order.price),
+        services: [order.serviceType || "Premium Care"],
+        description: order.material ? `Material: ${order.material}` : undefined,
+      },
+    ];
+  }
 
   const addonsList: ServiceItem[] = addons.map((addon) => ({
     type: "addon" as const,
