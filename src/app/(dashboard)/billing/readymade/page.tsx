@@ -26,7 +26,7 @@ export default function ReadymadeBillingPage() {
   // Financials
   const [totalPrice, setTotalPrice] = useState(12500);
   const [adjustment, setAdjustment] = useState(0);
-  const paymentMade = totalPrice - adjustment;
+  const [advancePaid, setAdvancePaid] = useState(0);
   const [paymentMode, setPaymentMode] = useState("UPI");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const fallbackShoeImg = "https://images.unsplash.com/photo-1533867617858-e7b97e060509?w=150&auto=format&fit=crop&q=60";
@@ -110,10 +110,6 @@ export default function ReadymadeBillingPage() {
       alert("Customer Name and Contact Number are required.");
       return;
     }
-    if (!photoUrl) {
-      alert("Please upload the shoe image (compulsory).");
-      return;
-    }
 
     setIsSubmitting(true);
 
@@ -144,11 +140,11 @@ export default function ReadymadeBillingPage() {
           description: `Size: ${shoeSize}. Free service period: ${freeServicePeriod}.`,
           services: [`Free Service (${freeServicePeriod})`],
           price: totalPrice - adjustment,
-          photoUrl: photoUrl,
+          photoUrl: photoUrl || undefined,
         },
       ],
       payment: {
-        advancePaid: paymentMade,
+        advancePaid: advancePaid,
         paymentMode: paymentMode,
       },
     };
@@ -167,7 +163,7 @@ export default function ReadymadeBillingPage() {
     }
   };
 
-  const balanceDue = Math.max(0, totalPrice - adjustment - paymentMade);
+  const balanceDue = Math.max(0, (totalPrice - adjustment) - advancePaid);
 
   return (
     <div className="w-full max-w-6xl mx-auto py-6 px-4">
@@ -335,13 +331,28 @@ export default function ReadymadeBillingPage() {
                 />
               </div>
 
+              <div className="flex justify-between items-center">
+                <label className="text-xs font-semibold text-zinc-500 uppercase">Adjustment / Discount</label>
+                <div className="relative w-28">
+                  <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-zinc-400 font-semibold text-xs">- ₹</span>
+                  <input
+                    type="number"
+                    value={adjustment || ""}
+                    onChange={(e) => setAdjustment(Number(e.target.value))}
+                    className="w-full bg-white/65 border border-black/5 rounded-lg py-1 pl-7 pr-2 text-right text-xs focus:outline-none"
+                    placeholder="0"
+                  />
+                </div>
+              </div>
+
               <div>
-                <label className="block text-xs font-semibold text-zinc-500 uppercase mb-2">Payment Made (₹)</label>
+                <label className="block text-xs font-semibold text-zinc-500 uppercase mb-2">Advance Paid (₹)</label>
                 <input
                   type="number"
-                  value={paymentMade}
-                  readOnly
-                  className="w-full bg-zinc-50 border border-black/10 rounded-xl py-3 px-4 font-bold text-zinc-400 text-lg focus:outline-none cursor-not-allowed"
+                  value={advancePaid}
+                  onChange={(e) => setAdvancePaid(Number(e.target.value))}
+                  className="w-full bg-white border border-black/10 rounded-xl py-3 px-4 font-bold text-zinc-800 text-lg focus:outline-none"
+                  placeholder="0"
                 />
               </div>
 

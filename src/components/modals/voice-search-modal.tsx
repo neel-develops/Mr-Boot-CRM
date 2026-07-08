@@ -236,6 +236,7 @@ export const VoiceSearchModal: React.FC<VoiceSearchModalProps> = ({ isOpen, onCl
         lower.includes("make order") ||
         lower.includes("place order") ||
         lower.includes("order for") ||
+        lower.includes("order of") ||
         lower.includes("bill for") ||
         lower.includes("invoice for") ||
         lower.includes("intake") ||
@@ -263,9 +264,9 @@ export const VoiceSearchModal: React.FC<VoiceSearchModalProps> = ({ isOpen, onCl
         return;
       } catch (err) {
         console.error("Voice parse error:", err);
-        // Clean command words to leave just the customer name fallback
+        // Strip command prefix words and extract customer name
         const cleanName = cleanText
-          .replace(/^(create order of|create order for|new order for|create bill for|create invoice for|add order for|make order for|place order for|order for|bill for|invoice for|intake for|create|new|bill|order|intake|of|for)\b/gi, "")
+          .replace(/^(create\s+order\s+of|create\s+order\s+for|new\s+order\s+for|create\s+bill\s+for|create\s+invoice\s+for|add\s+order\s+for|make\s+order\s+for|place\s+order\s+for|order\s+for|bill\s+for|invoice\s+for|intake\s+for|create|new|bill|order|intake)\s+/gi, "")
           .trim();
         router.push(`/orders/new?name=${encodeURIComponent(cleanName)}`);
         onClose();
