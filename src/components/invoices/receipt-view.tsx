@@ -15,14 +15,12 @@ interface ReceiptViewProps {
   subtotal: number;
   total: number;
   qrCodeDataUrl: string;
-  totalPages: number;
-  pages: any[][];
+  allServices: any[];
 }
 
 export const ReceiptView: React.FC<ReceiptViewProps> = ({
   order,
   invoice,
-  trackingUrl,
   waShareUrl,
   mainPhotoUrl,
   formattedOrderDate,
@@ -31,8 +29,7 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
   subtotal,
   total,
   qrCodeDataUrl,
-  totalPages,
-  pages,
+  allServices,
 }) => {
   // State to track the uploaded shoe image aspect ratio dynamically
   const [imageAspect, setImageAspect] = useState<"portrait" | "landscape" | "square">("landscape");
@@ -49,16 +46,60 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
     }
   };
 
+  const count = allServices.length;
+
+  // Space budget calculations based on number of items to fit 2160x2368 ratio perfectly
+  let heroHeightClass = "h-36";
+  let customerPaddingClass = "p-4";
+  let customerTextClass = "text-base";
+  let tableRowPadding = "py-2";
+  let itemTitleClass = "text-sm";
+  let itemDescClass = "text-xs";
+  let totalsSpacingClass = "mb-1";
+  let totalTextClass = "text-lg";
+  let footerPaddingClass = "pt-4 pb-6";
+  let iconSizeClass = "text-[18px]";
+  let headerPaddingClass = "px-6 pt-6 pb-4";
+  let serviceHeaderClass = "text-[9px] mb-2";
+
+  if (count >= 3 && count <= 5) {
+    heroHeightClass = "h-24";
+    customerPaddingClass = "p-3";
+    customerTextClass = "text-sm";
+    tableRowPadding = "py-1.5";
+    itemTitleClass = "text-xs";
+    itemDescClass = "text-[10px]";
+    totalsSpacingClass = "mb-0.5";
+    totalTextClass = "text-base";
+    footerPaddingClass = "pt-2 pb-4";
+    headerPaddingClass = "px-6 pt-4 pb-3";
+    serviceHeaderClass = "text-[8px] mb-1.5";
+  } else if (count > 5) {
+    heroHeightClass = "h-14"; // Highly compact image container for 6-10 items
+    customerPaddingClass = "p-2";
+    customerTextClass = "text-xs";
+    tableRowPadding = "py-0.5";
+    itemTitleClass = "text-[11px]";
+    itemDescClass = "text-[9px]";
+    totalsSpacingClass = "mb-0";
+    totalTextClass = "text-sm";
+    footerPaddingClass = "pt-1 pb-2";
+    iconSizeClass = "text-[14px]";
+    headerPaddingClass = "px-5 pt-3 pb-2";
+    serviceHeaderClass = "text-[8px] mb-1";
+  }
+
   // Determine dynamic height based on aspect ratio
   const getImageContainerClass = () => {
+    if (count > 5) return "h-14 w-full"; // keep it small if there are many items
     switch (imageAspect) {
       case "portrait":
-        return "h-80 w-full";
+        return "h-44 w-full";
       case "square":
-        return "h-64 w-full";
+        return "h-36 w-full";
       case "landscape":
       default:
-        return "h-48 w-full";
+        return "h-28 w-full";
     }
   };
 
@@ -79,11 +120,9 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
                 border: none !important;
                 border-radius: 0 !important;
                 margin: 0 !important;
-                page-break-after: always;
-                break-after: page;
                 width: 100% !important;
                 max-width: 100% !important;
-                height: auto !important;
+                aspect-ratio: 2160/2368 !important;
               }
             }
           `,
@@ -91,211 +130,192 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
       />
 
       {/* Action buttons (hidden in print) */}
-      <div className="w-full max-w-[430px] mb-4 print:hidden">
+      <div className="w-full max-w-[430px] md:max-w-[480px] mb-2 print:hidden">
         <InvoiceActions waShareUrl={waShareUrl} invoiceNumber={invoice.invoiceNumber} />
       </div>
 
-      {/* Render all paginated receipt cards */}
-      <div className="w-full flex flex-col items-center gap-6 print:gap-0">
-        {pages.map((pageItems, p) => {
-          const isFirstPage = p === 0;
-          const isLastPage = p === totalPages - 1;
+      {/* Render Single Bill Card with strict 2160x2368 aspect ratio */}
+      <div className="w-full flex flex-col items-center">
+        <div
+          id="invoice-box"
+          className="invoice-page w-full max-w-[430px] md:max-w-[480px] bg-white shadow-xl rounded-3xl border border-zinc-100 flex flex-col justify-between overflow-hidden relative print:shadow-none print:border-none print:rounded-none"
+          style={{
+            aspectRatio: "2160/2368", // Strict target ratio, prevents any cutting or overflow
+            fontFamily: "system-ui, -apple-system, sans-serif",
+          }}
+        >
+          {/* Header brown line */}
+          <div className="w-full h-1.5 bg-[#361f1a] flex-shrink-0"></div>
 
-          return (
-            <div
-              key={p}
-              className="invoice-page w-full max-w-[430px] bg-white shadow-xl rounded-3xl border border-zinc-100 flex flex-col justify-between overflow-hidden relative print:shadow-none print:border-none print:rounded-none"
-              style={{
-                minHeight: "fit-content", // Allow dynamic expansion, no cutting/cropping
-                fontFamily: "system-ui, -apple-system, sans-serif",
-              }}
-            >
-              {/* Header brown line */}
-              <div className="w-full h-1.5 bg-[#361f1a] flex-shrink-0"></div>
-
-              {/* Page Content */}
-              <div className="flex-1 flex flex-col justify-start">
-                {/* ── HEADER ── */}
-                <div className="flex justify-between items-start px-6 pt-6 pb-4">
-                  <div className="flex items-center gap-3">
-                    <img
-                      src="/logo.png"
-                      alt="Mr. Boot Logo"
-                      crossOrigin="anonymous"
-                      className="w-12 h-12 rounded-full border border-zinc-200 flex-shrink-0 object-cover"
-                    />
-                    <div>
-                      <h1 className="text-lg font-black text-[#361f1a] leading-none">Mr. Boot</h1>
-                      <p className="text-[9px] font-bold text-[#b38e5d] tracking-widest uppercase mt-0.5">
-                        Premium Care
-                      </p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <h2 className="text-xl font-black tracking-wide text-zinc-950 leading-none">RECEIPT</h2>
-                    <p className="text-[11px] text-zinc-800 font-medium mt-1">
-                      Order: <span className="font-bold">#{invoice.invoiceNumber}</span>
-                    </p>
-                    <p className="text-[9px] text-zinc-500 mt-0.5">{formattedOrderDate}</p>
-                  </div>
-                </div>
-
-                {/* ── HERO IMAGE (Page 1 Only) ── */}
-                {isFirstPage && mainPhotoUrl && (
-                  <div className="px-6 mb-4">
-                    <div className={`bg-zinc-100/85 rounded-2xl flex items-center justify-center p-3 w-full overflow-hidden transition-all duration-300 ${getImageContainerClass()}`}>
-                      <img
-                        src={mainPhotoUrl}
-                        alt="Hero Shoe Image"
-                        crossOrigin="anonymous"
-                        onLoad={handleImageLoad}
-                        className="max-h-full max-w-full object-contain rounded-lg shadow-sm"
-                      />
-                    </div>
-                  </div>
-                )}
-
-                {/* ── CUSTOMER CARD (Page 1 Only) ── */}
-                {isFirstPage && (
-                  <div className="px-6 mb-4">
-                    <div className="bg-zinc-100/70 border border-zinc-100/80 rounded-2xl p-4">
-                      <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">
-                        Billed To
-                      </span>
-                      <h3 className="text-base font-bold text-zinc-800 mt-0.5 leading-tight">
-                        {order.customer.firstName} {order.customer.lastName}
-                      </h3>
-                      <p className="text-xs text-zinc-500 mt-0.5">{order.customer.phone}</p>
-                    </div>
-                  </div>
-                )}
-
-                {/* ── SERVICE DESCRIPTION TABLE ── */}
-                <div className="px-6 mb-4 flex-1 flex flex-col justify-start">
-                  <div className="flex justify-between items-center text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
-                    <span>Service Description</span>
-                    <span>Amount</span>
-                  </div>
-                  <div className="border-t border-dashed border-zinc-200 mb-2"></div>
-                  <div className="space-y-3">
-                    {pageItems.map((item, idx) => (
-                      <div key={idx}>
-                        <div className="flex justify-between items-start gap-4">
-                          <h4 className="text-sm font-bold text-zinc-800 leading-snug">{item.title}</h4>
-                          <span className="text-sm font-bold text-zinc-800">
-                            ₹{item.price.toFixed(2)}
-                          </span>
-                        </div>
-                        {item.services && item.services.length > 0 && (
-                          <p className="text-[10px] text-zinc-500 mt-0.5 leading-relaxed font-medium">
-                            {item.services.join(", ")}
-                          </p>
-                        )}
-                        {item.description && (
-                          <p className="text-[10px] text-zinc-400 mt-0.5 leading-relaxed">
-                            {item.description}
-                          </p>
-                        )}
-                        <div className="border-t border-dashed border-zinc-200 mt-3"></div>
-                      </div>
-                    ))}
-                  </div>
+          {/* Page Content */}
+          <div className="flex-1 flex flex-col justify-start overflow-hidden">
+            {/* ── HEADER ── */}
+            <div className={`flex justify-between items-start ${headerPaddingClass}`}>
+              <div className="flex items-center gap-3">
+                <img
+                  src="/logo.png"
+                  alt="Mr. Boot Logo"
+                  crossOrigin="anonymous"
+                  className="w-10 h-10 rounded-full border border-zinc-200 flex-shrink-0 object-cover"
+                />
+                <div>
+                  <h1 className="text-base font-black text-[#361f1a] leading-none">Mr. Boot</h1>
+                  <p className="text-[8px] font-bold text-[#b38e5d] tracking-widest uppercase mt-0.5">
+                    Premium Care
+                  </p>
                 </div>
               </div>
+              <div className="text-right">
+                <h2 className="text-lg font-black tracking-wide text-zinc-950 leading-none">RECEIPT</h2>
+                <p className="text-[10px] text-zinc-800 font-medium mt-1">
+                  Order: <span className="font-bold">#{invoice.invoiceNumber}</span>
+                </p>
+                <p className="text-[8px] text-zinc-500 mt-0.5">{formattedOrderDate}</p>
+              </div>
+            </div>
 
-              {/* Bottom Sticky Layout */}
-              <div className="flex-shrink-0 flex flex-col justify-end">
-                {/* ── BILLING SUMMARY & QR (Last Page Only) ── */}
-                {isLastPage && (
-                  <div className="px-6 mb-4 relative z-0">
-                    <div className="flex justify-between items-end gap-4 relative pb-4">
-                      {/* Distressed Authentic PAID Stamp overlapping */}
-                      {paymentStatus === "Paid" && (
-                        <div 
-                          className="absolute left-[135px] bottom-[20px] rotate-[-15deg] border-[3px] border-double border-emerald-600 rounded px-3 py-1 font-black text-emerald-600 tracking-widest text-[14px] uppercase z-10 pointer-events-none bg-white/95 shadow-md"
-                          style={{
-                            boxShadow: "0 0 0 3px rgba(16, 185, 129, 0.15)",
-                          }}
-                        >
-                          PAID
-                        </div>
-                      )}
+            {/* ── HERO IMAGE ── */}
+            {mainPhotoUrl && (
+              <div className="px-5 mb-2">
+                <div className={`bg-zinc-100/85 rounded-xl flex items-center justify-center p-2 w-full overflow-hidden transition-all duration-300 ${getImageContainerClass()}`}>
+                  <img
+                    src={mainPhotoUrl}
+                    alt="Hero Shoe Image"
+                    crossOrigin="anonymous"
+                    onLoad={handleImageLoad}
+                    className="max-h-full max-w-full object-contain rounded-lg shadow-sm"
+                  />
+                </div>
+              </div>
+            )}
 
-                      {/* Left: QR Code info */}
-                      <div className="flex items-center gap-2 flex-1">
-                        <div className="w-[68px] h-[68px] bg-white border border-zinc-200 rounded-xl p-1 flex items-center justify-center flex-shrink-0 shadow-sm">
-                          {qrCodeDataUrl ? (
-                            <img
-                              src={qrCodeDataUrl}
-                              alt="Tracking QR Code"
-                              crossOrigin="anonymous"
-                              className="w-full h-full object-contain"
-                            />
-                          ) : (
-                            <div className="w-full h-full bg-zinc-100 rounded-lg flex items-center justify-center text-[8px] text-zinc-400 text-center font-bold">
-                              QR
-                            </div>
-                          )}
-                        </div>
-                        <div>
-                          <h5 className="text-[10px] font-bold text-zinc-800 leading-tight">
-                            Track Order Status
-                          </h5>
-                          <p className="text-[8px] text-zinc-400 leading-tight mt-0.5 max-w-[110px]">
-                            Scan to view restoration progress
-                          </p>
-                        </div>
-                      </div>
+            {/* ── CUSTOMER CARD ── */}
+            <div className="px-5 mb-2">
+              <div className={`bg-zinc-100/70 border border-zinc-100/80 rounded-xl ${customerPaddingClass}`}>
+                <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-wider block">
+                  Billed To
+                </span>
+                <h3 className={`${customerTextClass} font-bold text-zinc-800 mt-0.5 leading-none`}>
+                  {order.customer.firstName} {order.customer.lastName}
+                </h3>
+                <p className="text-[10px] text-zinc-500 mt-0.5 leading-none">{order.customer.phone}</p>
+              </div>
+            </div>
 
-                      {/* Right: Totals */}
-                      <div className="w-[160px] text-right">
-                        <div className="flex justify-between items-center text-xs text-zinc-500 mb-1">
-                          <span>Subtotal</span>
-                          <span>₹{subtotal.toFixed(2)}</span>
-                        </div>
-                        {Number(invoice.advancePaid) > 0 && (
-                          <div className="flex justify-between items-center text-xs text-zinc-500 mb-1">
-                            <span>Advance</span>
-                            <span>₹{Number(invoice.advancePaid).toFixed(2)}</span>
-                          </div>
-                        )}
-                        {balanceDue > 0 && (
-                          <div className="flex justify-between items-center text-xs text-zinc-500 mb-1">
-                            <span>Balance</span>
-                            <span className="text-red-500 font-bold">₹{balanceDue.toFixed(2)}</span>
-                          </div>
-                        )}
-                        <div className="border-t border-zinc-200 my-1.5"></div>
-                        <div className="flex justify-between items-baseline">
-                          <span className="text-xs font-bold text-zinc-800">Total</span>
-                          <span className="text-lg font-black text-zinc-950">₹{total.toFixed(2)}</span>
-                        </div>
-                      </div>
+            {/* ── SERVICE DESCRIPTION TABLE ── */}
+            <div className="px-5 mb-2 flex-1 flex flex-col justify-start overflow-hidden">
+              <div className={`flex justify-between items-center font-bold text-zinc-400 uppercase tracking-wider ${serviceHeaderClass}`}>
+                <span>Service Description</span>
+                <span>Amount</span>
+              </div>
+              <div className="border-t border-dashed border-zinc-200 mb-1.5"></div>
+              <div className="space-y-1.5 overflow-y-auto pr-1">
+                {allServices.map((item, idx) => (
+                  <div key={idx} className={`border-b border-dashed border-zinc-100 last:border-b-0 ${tableRowPadding}`}>
+                    <div className="flex justify-between items-start gap-4">
+                      <h4 className={`${itemTitleClass} font-bold text-zinc-800 leading-tight`}>{item.title}</h4>
+                      <span className={`${itemTitleClass} font-bold text-zinc-800`}>
+                        ₹{item.price.toFixed(2)}
+                      </span>
                     </div>
+                    {item.services && item.services.length > 0 && (
+                      <p className={`${itemDescClass} text-zinc-500 mt-0.5 leading-none font-medium`}>
+                        {item.services.join(", ")}
+                      </p>
+                    )}
+                    {item.description && (
+                      <p className={`${itemDescClass} text-zinc-400 mt-0.5 leading-none`}>
+                        {item.description}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Bottom Sticky Layout */}
+          <div className="flex-shrink-0 flex flex-col justify-end bg-white">
+            {/* ── BILLING SUMMARY & QR ── */}
+            <div className="px-5 mb-2 relative z-0">
+              <div className="flex justify-between items-end gap-4 relative pb-2">
+                {/* Distressed Authentic PAID Stamp overlapping */}
+                {paymentStatus === "Paid" && (
+                  <div 
+                    className="absolute left-[135px] bottom-[22px] rotate-[-15deg] border-[3px] border-double border-emerald-600 rounded px-2.5 py-0.5 font-black text-emerald-600 tracking-widest text-[12px] uppercase z-10 pointer-events-none bg-white/95 shadow-md"
+                    style={{
+                      boxShadow: "0 0 0 3px rgba(16, 185, 129, 0.15)",
+                    }}
+                  >
+                    PAID
                   </div>
                 )}
 
-                {/* ── FOOTER ── */}
-                <div className="border-t border-zinc-100 mx-6 pt-4 pb-6 flex flex-col items-center">
-                  <span className="material-symbols-outlined text-[18px] text-[#b38e5d] mb-1 font-normal">
-                    construction
-                  </span>
-                  <p className="text-[9px] text-zinc-400 text-center italic max-w-[280px] leading-relaxed">
-                    &quot;True craftsmanship takes time. Thank you for trusting Mr. Boot with your prized
-                    footwear. Wear them in good health.&quot;
-                  </p>
+                {/* Left: QR Code info */}
+                <div className="flex items-center gap-2 flex-1">
+                  <div className="w-[56px] h-[56px] bg-white border border-zinc-200 rounded-lg p-1 flex items-center justify-center flex-shrink-0 shadow-sm">
+                    {qrCodeDataUrl ? (
+                      <img
+                        src={qrCodeDataUrl}
+                        alt="Tracking QR Code"
+                        crossOrigin="anonymous"
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-zinc-100 rounded flex items-center justify-center text-[8px] text-zinc-400 text-center font-bold">
+                        QR
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <h5 className="text-[9px] font-bold text-zinc-800 leading-tight">
+                      Track Order Status
+                    </h5>
+                    <p className="text-[7px] text-zinc-400 leading-tight mt-0.5 max-w-[95px]">
+                      Scan to view restoration progress
+                    </p>
+                  </div>
+                </div>
 
-                  {/* Page indicator */}
-                  {totalPages > 1 && (
-                    <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-widest mt-3">
-                      Page {p + 1} of {totalPages}
-                    </span>
+                {/* Right: Totals */}
+                <div className="w-[140px] text-right">
+                  <div className={`flex justify-between items-center text-[10px] text-zinc-500 ${totalsSpacingClass}`}>
+                    <span>Subtotal</span>
+                    <span>₹{subtotal.toFixed(2)}</span>
+                  </div>
+                  {Number(invoice.advancePaid) > 0 && (
+                    <div className={`flex justify-between items-center text-[10px] text-zinc-500 ${totalsSpacingClass}`}>
+                      <span>Advance</span>
+                      <span>₹{Number(invoice.advancePaid).toFixed(2)}</span>
+                    </div>
                   )}
+                  {balanceDue > 0 && (
+                    <div className={`flex justify-between items-center text-[10px] text-zinc-500 ${totalsSpacingClass}`}>
+                      <span>Balance</span>
+                      <span className="text-red-500 font-bold">₹{balanceDue.toFixed(2)}</span>
+                    </div>
+                  )}
+                  <div className="border-t border-zinc-200 my-1"></div>
+                  <div className="flex justify-between items-baseline">
+                    <span className="text-[10px] font-bold text-zinc-800">Total</span>
+                    <span className={`${totalTextClass} font-black text-zinc-950`}>₹{total.toFixed(2)}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          );
-        })}
+
+            {/* ── FOOTER ── */}
+            <div className={`border-t border-zinc-100 mx-5 ${footerPaddingClass} flex flex-col items-center`}>
+              <span className={`material-symbols-outlined ${iconSizeClass} text-[#b38e5d] mb-0.5 font-normal`}>
+                construction
+              </span>
+              <p className="text-[8px] text-zinc-400 text-center italic max-w-[260px] leading-tight">
+                &quot;True craftsmanship takes time. Thank you for trusting Mr. Boot with your prized
+                footwear. Wear them in good health.&quot;
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* WhatsApp Button moved OUTSIDE of the bill card so it is not printed or captured in PNG */}

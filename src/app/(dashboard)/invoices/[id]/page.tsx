@@ -87,7 +87,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
     qrCodeDataUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(trackingUrl)}`;
   }
 
-  // Group items and addons into a single list of service rows for pagination
+  // Group items and addons into a single list of service rows
   const itemsList: ServiceItem[] = order.items.map((item) => {
     // Order stores total price. We divide total price equally among items.
     const itemPrice = Number(order.price) / (order.items.length || 1);
@@ -111,31 +111,6 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
 
   const allServices = [...itemsList, ...addonsList];
 
-  // Dynamic pagination logic
-  const pages: ServiceItem[][] = [];
-  const hasHero = !!mainPhotoUrl;
-
-  if (allServices.length === 1) {
-    pages.push(allServices);
-  } else {
-    // Page 1 holds fewer items because it has the Hero image and Customer Card
-    const page1Limit = hasHero ? 1 : 2;
-    pages.push(allServices.slice(0, page1Limit));
-
-    let remaining = allServices.slice(page1Limit);
-    while (remaining.length > 0) {
-      if (remaining.length <= 2) {
-        pages.push(remaining);
-        remaining = [];
-      } else {
-        pages.push(remaining.slice(0, 3));
-        remaining = remaining.slice(3);
-      }
-    }
-  }
-
-  const totalPages = pages.length;
-
   // Pricing calculations
   const subtotal = allServices.reduce((sum, item) => sum + item.price, 0);
   const total = Number(invoice.amount);
@@ -154,8 +129,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
         subtotal={subtotal}
         total={total}
         qrCodeDataUrl={qrCodeDataUrl}
-        totalPages={totalPages}
-        pages={pages}
+        allServices={allServices}
       />
     </div>
   );
