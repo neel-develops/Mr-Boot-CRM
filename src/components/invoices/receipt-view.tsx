@@ -46,60 +46,16 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
     }
   };
 
-  const count = allServices.length;
-
-  // Space budget calculations based on number of items to fit 2160x2368 ratio perfectly
-  let heroHeightClass = "h-36";
-  let customerPaddingClass = "p-4";
-  let customerTextClass = "text-base";
-  let tableRowPadding = "py-2";
-  let itemTitleClass = "text-sm";
-  let itemDescClass = "text-xs";
-  let totalsSpacingClass = "mb-1";
-  let totalTextClass = "text-lg";
-  let footerPaddingClass = "pt-4 pb-6";
-  let iconSizeClass = "text-[18px]";
-  let headerPaddingClass = "px-6 pt-6 pb-4";
-  let serviceHeaderClass = "text-[9px] mb-2";
-
-  if (count >= 3 && count <= 5) {
-    heroHeightClass = "h-24";
-    customerPaddingClass = "p-3";
-    customerTextClass = "text-sm";
-    tableRowPadding = "py-1.5";
-    itemTitleClass = "text-xs";
-    itemDescClass = "text-[10px]";
-    totalsSpacingClass = "mb-0.5";
-    totalTextClass = "text-base";
-    footerPaddingClass = "pt-2 pb-4";
-    headerPaddingClass = "px-6 pt-4 pb-3";
-    serviceHeaderClass = "text-[8px] mb-1.5";
-  } else if (count > 5) {
-    heroHeightClass = "h-14"; // Highly compact image container for 6-10 items
-    customerPaddingClass = "p-2";
-    customerTextClass = "text-xs";
-    tableRowPadding = "py-0.5";
-    itemTitleClass = "text-[11px]";
-    itemDescClass = "text-[9px]";
-    totalsSpacingClass = "mb-0";
-    totalTextClass = "text-sm";
-    footerPaddingClass = "pt-1 pb-2";
-    iconSizeClass = "text-[14px]";
-    headerPaddingClass = "px-5 pt-3 pb-2";
-    serviceHeaderClass = "text-[8px] mb-1";
-  }
-
   // Determine dynamic height based on aspect ratio
   const getImageContainerClass = () => {
-    if (count > 3) return "hidden"; // hide large hero container completely if > 3 items
     switch (imageAspect) {
       case "portrait":
-        return "h-44 w-full";
+        return "h-80 w-full";
       case "square":
-        return "h-36 w-full";
+        return "h-64 w-full";
       case "landscape":
       default:
-        return "h-28 w-full";
+        return "h-48 w-full";
     }
   };
 
@@ -122,7 +78,7 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
                 margin: 0 !important;
                 width: 100% !important;
                 max-width: 100% !important;
-                aspect-ratio: 2160/2368 !important;
+                height: auto !important;
               }
             }
           `,
@@ -134,13 +90,12 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
         <InvoiceActions waShareUrl={waShareUrl} invoiceNumber={invoice.invoiceNumber} />
       </div>
 
-      {/* Render Single Bill Card with strict 2160x2368 aspect ratio */}
+      {/* Render Single Bill Card — height grows dynamically (h-auto) based on number of shoes */}
       <div className="w-full flex flex-col items-center">
         <div
           id="invoice-box"
-          className="invoice-page w-full max-w-[430px] md:max-w-[480px] bg-white shadow-xl rounded-3xl border border-zinc-100 flex flex-col justify-between overflow-hidden relative print:shadow-none print:border-none print:rounded-none"
+          className="invoice-page w-full max-w-[430px] md:max-w-[480px] bg-white shadow-xl rounded-3xl border border-zinc-100 flex flex-col justify-between relative print:shadow-none print:border-none print:rounded-none h-auto pb-6"
           style={{
-            aspectRatio: "2160/2368", // Strict target ratio, prevents any cutting or overflow
             fontFamily: "system-ui, -apple-system, sans-serif",
           }}
         >
@@ -148,36 +103,36 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
           <div className="w-full h-1.5 bg-[#361f1a] flex-shrink-0"></div>
 
           {/* Page Content */}
-          <div className="flex-1 flex flex-col justify-start overflow-hidden">
+          <div className="flex-grow flex flex-col justify-start">
             {/* ── HEADER ── */}
-            <div className={`flex justify-between items-start ${headerPaddingClass}`}>
+            <div className="flex justify-between items-start px-6 pt-6 pb-4">
               <div className="flex items-center gap-3">
                 <img
                   src="/logo.png"
                   alt="Mr. Boot Logo"
                   crossOrigin="anonymous"
-                  className="w-10 h-10 rounded-full border border-zinc-200 flex-shrink-0 object-cover"
+                  className="w-12 h-12 rounded-full border border-zinc-200 flex-shrink-0 object-cover"
                 />
                 <div>
-                  <h1 className="text-base font-black text-[#361f1a] leading-none">Mr. Boot</h1>
-                  <p className="text-[8px] font-bold text-[#b38e5d] tracking-widest uppercase mt-0.5">
+                  <h1 className="text-lg font-black text-[#361f1a] leading-none">Mr. Boot</h1>
+                  <p className="text-[9px] font-bold text-[#b38e5d] tracking-widest uppercase mt-0.5">
                     Premium Care
                   </p>
                 </div>
               </div>
               <div className="text-right">
-                <h2 className="text-lg font-black tracking-wide text-zinc-950 leading-none">RECEIPT</h2>
-                <p className="text-[10px] text-zinc-800 font-medium mt-1">
+                <h2 className="text-xl font-black tracking-wide text-zinc-950 leading-none">RECEIPT</h2>
+                <p className="text-[11px] text-zinc-800 font-medium mt-1">
                   Order: <span className="font-bold">#{invoice.invoiceNumber}</span>
                 </p>
-                <p className="text-[8px] text-zinc-500 mt-0.5">{formattedOrderDate}</p>
+                <p className="text-[9px] text-zinc-500 mt-0.5">{formattedOrderDate}</p>
               </div>
             </div>
 
-            {/* ── HERO IMAGE ── */}
-            {mainPhotoUrl && count <= 3 && (
-              <div className="px-5 mb-2">
-                <div className={`bg-zinc-100/85 rounded-xl flex items-center justify-center p-2 w-full overflow-hidden transition-all duration-300 ${getImageContainerClass()}`}>
+            {/* ── HERO IMAGE (Always Visible) ── */}
+            {mainPhotoUrl && (
+              <div className="px-6 mb-4">
+                <div className={`bg-zinc-100/85 rounded-2xl flex items-center justify-center p-3 w-full overflow-hidden transition-all duration-300 ${getImageContainerClass()}`}>
                   <img
                     src={mainPhotoUrl}
                     alt="Hero Shoe Image"
@@ -190,51 +145,41 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
             )}
 
             {/* ── CUSTOMER CARD ── */}
-            <div className="px-5 mb-2">
-              <div className={`bg-zinc-100/70 border border-zinc-100/80 rounded-xl ${customerPaddingClass}`}>
-                <span className="text-[8px] font-bold text-zinc-400 uppercase tracking-wider block">
+            <div className="px-6 mb-4">
+              <div className="bg-zinc-100/70 border border-zinc-100/80 rounded-2xl p-4">
+                <span className="text-[9px] font-bold text-zinc-400 uppercase tracking-wider block">
                   Billed To
                 </span>
-                <h3 className={`${customerTextClass} font-bold text-zinc-800 mt-0.5 leading-none`}>
+                <h3 className="text-base font-bold text-zinc-800 mt-0.5 leading-none">
                   {order.customer.firstName} {order.customer.lastName}
                 </h3>
-                <p className="text-[10px] text-zinc-500 mt-0.5 leading-none">{order.customer.phone}</p>
+                <p className="text-xs text-zinc-500 mt-1 leading-none">{order.customer.phone}</p>
               </div>
             </div>
 
             {/* ── SERVICE DESCRIPTION TABLE ── */}
-            <div className="px-5 mb-2 flex-1 flex flex-col justify-start overflow-hidden">
-              <div className={`flex justify-between items-center font-bold text-zinc-400 uppercase tracking-wider ${serviceHeaderClass}`}>
+            <div className="px-6 mb-6">
+              <div className="flex justify-between items-center text-[9px] font-bold text-zinc-400 uppercase tracking-wider mb-2">
                 <span>Service Description</span>
                 <span>Amount</span>
               </div>
-              <div className="border-t border-dashed border-zinc-200 mb-1.5"></div>
-              <div className="space-y-1.5 overflow-y-auto pr-1">
+              <div className="border-t border-dashed border-zinc-200 mb-2"></div>
+              <div className="space-y-3">
                 {allServices.map((item, idx) => (
-                  <div key={idx} className={`border-b border-dashed border-zinc-100 last:border-b-0 ${tableRowPadding}`}>
+                  <div key={idx} className="border-b border-dashed border-zinc-100 last:border-b-0 pb-3 last:pb-0">
                     <div className="flex justify-between items-start gap-4">
-                      <div className="flex gap-2 items-center">
-                        {item.photoUrl && count > 3 && (
-                          <img
-                            src={item.photoUrl}
-                            alt="Shoe thumbnail"
-                            crossOrigin="anonymous"
-                            className="w-7 h-7 rounded object-cover border border-zinc-200 flex-shrink-0"
-                          />
-                        )}
-                        <h4 className={`${itemTitleClass} font-bold text-zinc-800 leading-tight`}>{item.title}</h4>
-                      </div>
-                      <span className={`${itemTitleClass} font-bold text-zinc-800`}>
+                      <h4 className="text-sm font-bold text-zinc-800 leading-snug">{item.title}</h4>
+                      <span className="text-sm font-bold text-zinc-800">
                         ₹{item.price.toFixed(2)}
                       </span>
                     </div>
                     {item.services && item.services.length > 0 && (
-                      <p className={`${itemDescClass} text-zinc-500 mt-0.5 leading-none font-medium ${count > 3 ? "pl-9" : ""}`}>
+                      <p className="text-[10px] text-zinc-500 mt-1 leading-relaxed font-medium">
                         {item.services.join(", ")}
                       </p>
                     )}
                     {item.description && (
-                      <p className={`${itemDescClass} text-zinc-400 mt-0.5 leading-none ${count > 3 ? "pl-9" : ""}`}>
+                      <p className="text-[10px] text-zinc-400 mt-0.5 leading-relaxed">
                         {item.description}
                       </p>
                     )}
@@ -247,12 +192,12 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
           {/* Bottom Sticky Layout */}
           <div className="flex-shrink-0 flex flex-col justify-end bg-white">
             {/* ── BILLING SUMMARY & QR ── */}
-            <div className="px-5 mb-2 relative z-0">
+            <div className="px-6 mb-4 relative z-0">
               <div className="flex justify-between items-end gap-4 relative pb-2">
                 {/* Distressed Authentic PAID Stamp overlapping */}
                 {paymentStatus === "Paid" && (
                   <div 
-                    className="absolute left-[135px] bottom-[22px] rotate-[-15deg] border-[3px] border-double border-emerald-600 rounded px-2.5 py-0.5 font-black text-emerald-600 tracking-widest text-[12px] uppercase z-10 pointer-events-none bg-white/95 shadow-md"
+                    className="absolute left-[135px] bottom-[28px] rotate-[-15deg] border-[3px] border-double border-emerald-600 rounded px-3 py-1 font-black text-emerald-600 tracking-widest text-[13px] uppercase z-10 pointer-events-none bg-white/95 shadow-md"
                     style={{
                       boxShadow: "0 0 0 3px rgba(16, 185, 129, 0.15)",
                     }}
@@ -263,7 +208,7 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
 
                 {/* Left: QR Code info */}
                 <div className="flex items-center gap-2 flex-1">
-                  <div className="w-[56px] h-[56px] bg-white border border-zinc-200 rounded-lg p-1 flex items-center justify-center flex-shrink-0 shadow-sm">
+                  <div className="w-[56px] h-[56px] bg-white border border-zinc-200 rounded-xl p-1 flex items-center justify-center flex-shrink-0 shadow-sm">
                     {qrCodeDataUrl ? (
                       <img
                         src={qrCodeDataUrl}
@@ -289,37 +234,37 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
 
                 {/* Right: Totals */}
                 <div className="w-[140px] text-right">
-                  <div className={`flex justify-between items-center text-[10px] text-zinc-500 ${totalsSpacingClass}`}>
+                  <div className="flex justify-between items-center text-xs text-zinc-500 mb-1">
                     <span>Subtotal</span>
                     <span>₹{subtotal.toFixed(2)}</span>
                   </div>
                   {Number(invoice.advancePaid) > 0 && (
-                    <div className={`flex justify-between items-center text-[10px] text-zinc-500 ${totalsSpacingClass}`}>
+                    <div className="flex justify-between items-center text-xs text-zinc-500 mb-1">
                       <span>Advance</span>
                       <span>₹{Number(invoice.advancePaid).toFixed(2)}</span>
                     </div>
                   )}
                   {balanceDue > 0 && (
-                    <div className={`flex justify-between items-center text-[10px] text-zinc-500 ${totalsSpacingClass}`}>
+                    <div className="flex justify-between items-center text-xs text-zinc-500 mb-1">
                       <span>Balance</span>
                       <span className="text-red-500 font-bold">₹{balanceDue.toFixed(2)}</span>
                     </div>
                   )}
-                  <div className="border-t border-zinc-200 my-1"></div>
+                  <div className="border-t border-zinc-200 my-1.5"></div>
                   <div className="flex justify-between items-baseline">
-                    <span className="text-[10px] font-bold text-zinc-800">Total</span>
-                    <span className={`${totalTextClass} font-black text-zinc-950`}>₹{total.toFixed(2)}</span>
+                    <span className="text-xs font-bold text-zinc-800">Total</span>
+                    <span className="text-lg font-black text-zinc-950">₹{total.toFixed(2)}</span>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* ── FOOTER ── */}
-            <div className={`border-t border-zinc-100 mx-5 ${footerPaddingClass} flex flex-col items-center`}>
-              <span className={`material-symbols-outlined ${iconSizeClass} text-[#b38e5d] mb-0.5 font-normal`}>
+            <div className="border-t border-zinc-100 mx-6 pt-4 pb-4 flex flex-col items-center">
+              <span className="material-symbols-outlined text-[18px] text-[#b38e5d] mb-1 font-normal">
                 construction
               </span>
-              <p className="text-[8px] text-zinc-400 text-center italic max-w-[260px] leading-tight">
+              <p className="text-[9px] text-zinc-400 text-center italic max-w-[260px] leading-relaxed">
                 &quot;True craftsmanship takes time. Thank you for trusting Mr. Boot with your prized
                 footwear. Wear them in good health.&quot;
               </p>
