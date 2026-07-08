@@ -23,8 +23,11 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
     },
   });
 
+  // Both guards must succeed before we reference anything
   if (!order || order.invoices.length === 0) {
     notFound();
+    // Unreachable but satisfies TS narrowing
+    return null;
   }
 
   const invoice = order.invoices[0];
@@ -45,7 +48,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
   const waShareUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
 
   // Main photo from first item that has one
-  const mainPhotoUrl = order.items.find((item) => item.photoUrl)?.photoUrl;
+  const mainPhotoUrl = order.items.find((item) => item.photoUrl)?.photoUrl ?? null;
 
   const now = new Date();
   const currentDateTime = now.toLocaleString("en-IN", {
@@ -66,9 +69,14 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
   const balanceDue = Number(invoice.balanceDue);
   const paymentStatus = balanceDue <= 0 ? "Paid" : "Pending";
 
-  // Build line items — each order item as one row, price spread evenly
-  const itemCount = order.items.length || 1;
-  const pricePerItem = Number(order.price) / itemCount;
+  // Addons typed properly
+  const addons = order.addons as Array<{
+    id: string;
+    itemName: string;
+    qty: number;
+    unitCost: number | string;
+    totalCost: number | string;
+  }>;
 
   return (
     <div className="w-full min-h-screen bg-gray-100 flex flex-col items-center justify-start py-8 px-4">
@@ -79,29 +87,35 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
         </Suspense>
       </div>
 
-      {/* Invoice Box — matches the screenshot size exactly */}
+      {/* ═══════════════════════════════════════════════════════════
+          Invoice Box — matches the user's screenshot design exactly
+          Max-width 900px, white, clean, A4-style bill
+      ═══════════════════════════════════════════════════════════ */}
       <div
         id="invoice-box"
         className="w-full bg-white shadow-md text-zinc-900"
-        style={{ maxWidth: "900px", fontFamily: "Arial, sans-serif", fontSize: "14px" }}
+        style={{ maxWidth: "900px", fontFamily: "Arial, Helvetica, sans-serif", fontSize: "14px" }}
       >
+
         {/* ── HEADER ── */}
         <div className="flex justify-between items-start px-8 pt-8 pb-4">
           <div>
-            <h1 className="text-2xl font-bold text-zinc-900">Mr Boot Shoe Laundry &amp; Repair</h1>
-            <p className="text-zinc-600 mt-0.5">Service Invoice</p>
-            <p className="font-bold mt-2">Order number: #{invoice.invoiceNumber}</p>
+            <h1 className="text-2xl font-bold text-zinc-900 leading-tight">
+              Mr Boot Shoe Laundry &amp; Repair
+            </h1>
+            <p className="text-zinc-500 mt-1 text-sm">Service Invoice</p>
+            <p className="font-bold mt-2 text-sm">Order number: #{invoice.invoiceNumber}</p>
           </div>
           <img
             src="/logo.png"
             alt="Mr. Boot Logo"
             crossOrigin="anonymous"
-            className="w-16 h-16 rounded-full object-cover border border-zinc-200"
+            className="w-16 h-16 rounded-full object-cover border border-zinc-200 flex-shrink-0"
           />
         </div>
 
         {/* ── 3-COLUMN INFO BAR ── */}
-        <div className="mx-8 mb-5 grid grid-cols-3 border border-zinc-200 rounded-sm overflow-hidden text-center text-sm">
+        <div className="mx-8 mb-5 grid grid-cols-3 border border-zinc-200 text-center text-sm">
           <div className="py-3 px-4 border-r border-zinc-200 bg-zinc-50">
             <p className="text-zinc-500 text-xs">Due Date:</p>
             <p className="font-bold mt-0.5">{dueDate}</p>
@@ -121,9 +135,9 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
           </div>
         </div>
 
-        {/* ── ITEM PHOTO ── */}
+        {/* ── ITEM PHOTO (only shown if a photo was uploaded) ── */}
         {mainPhotoUrl && (
-          <div className="mx-8 mb-5 flex items-center justify-center bg-zinc-50 border border-zinc-200 rounded-sm py-4 px-6">
+          <div className="mx-8 mb-5 flex items-center justify-center bg-zinc-50 border border-zinc-200 py-4 px-6">
             <img
               src={mainPhotoUrl}
               alt="Item photo"
@@ -138,7 +152,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
           {/* Table Header */}
           <div
             className="grid text-sm font-bold text-zinc-700 border-b border-zinc-300 pb-2 mb-1"
-            style={{ gridTemplateColumns: "1fr 80px 100px 100px" }}
+            style={{ gridTemplateColumns: "1fr 90px 90px 110px" }}
           >
             <span>Item / Service Description</span>
             <span className="text-center">Rate</span>
@@ -146,54 +160,58 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
             <span className="text-right">Amount</span>
           </div>
 
-          {/* Items */}
-          {order.items.map((item, idx) => {
-            const rowPrice = order.items.length > 1 ? pricePerItem : Number(order.price);
+          {/* Order Items — use each item's own price field */}
+          {order.items.map((item) => {
+            const itemPrice = Number(item.price ?? 0);
             return (
-              <div
-                key={item.id}
-                className="py-3 border-b border-zinc-100"
-                style={{ gridTemplateColumns: "1fr 80px 100px 100px" }}
-              >
-                <div className="grid" style={{ gridTemplateColumns: "1fr 80px 100px 100px" }}>
+              <div key={item.id} className="py-3 border-b border-zinc-100">
+                <div
+                  className="grid items-start"
+                  style={{ gridTemplateColumns: "1fr 90px 90px 110px" }}
+                >
                   <div>
-                    <p className="font-bold text-zinc-900">
+                    <p className="font-bold text-zinc-900 text-sm">
                       {item.brand
                         ? `${item.brand} ${item.model || item.category}`
                         : item.model || item.category}
                     </p>
-                    <p className="text-zinc-500 text-xs italic mt-0.5">
-                      {item.services.join(", ")}
-                    </p>
+                    {item.services.length > 0 && (
+                      <p className="text-zinc-500 text-xs italic mt-0.5">
+                        {item.services.join(", ")}
+                      </p>
+                    )}
                     {item.description && (
                       <p className="text-zinc-400 text-xs mt-0.5">{item.description}</p>
                     )}
                   </div>
-                  <span className="text-center text-sm self-start pt-0.5">
-                    ₹{rowPrice.toLocaleString("en-IN")}
+                  <span className="text-center text-sm">
+                    ₹{itemPrice.toLocaleString("en-IN")}
                   </span>
-                  <span className="text-center text-sm self-start pt-0.5">1</span>
-                  <span className="text-right font-bold text-sm self-start pt-0.5">
-                    ₹{rowPrice.toLocaleString("en-IN")}
+                  <span className="text-center text-sm">1</span>
+                  <span className="text-right font-bold text-sm">
+                    ₹{itemPrice.toLocaleString("en-IN")}
                   </span>
                 </div>
               </div>
             );
           })}
 
-          {/* Addons */}
-          {(order.addons as any[]).map((addon) => (
+          {/* Add-on items */}
+          {addons.map((addon) => (
             <div key={addon.id} className="py-3 border-b border-zinc-100">
-              <div className="grid" style={{ gridTemplateColumns: "1fr 80px 100px 100px" }}>
+              <div
+                className="grid items-start"
+                style={{ gridTemplateColumns: "1fr 90px 90px 110px" }}
+              >
                 <div>
-                  <p className="font-bold text-zinc-900">{addon.itemName}</p>
+                  <p className="font-bold text-zinc-900 text-sm">{addon.itemName}</p>
                   <p className="text-zinc-400 text-xs italic">Add-on</p>
                 </div>
-                <span className="text-center text-sm self-start pt-0.5">
+                <span className="text-center text-sm">
                   ₹{Number(addon.unitCost).toLocaleString("en-IN")}
                 </span>
-                <span className="text-center text-sm self-start pt-0.5">{addon.qty}</span>
-                <span className="text-right font-bold text-sm self-start pt-0.5">
+                <span className="text-center text-sm">{addon.qty}</span>
+                <span className="text-right font-bold text-sm">
                   ₹{Number(addon.totalCost).toLocaleString("en-IN")}
                 </span>
               </div>
@@ -201,46 +219,48 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
           ))}
         </div>
 
-        {/* ── BILLING SUMMARY BOX — right-aligned, matches screenshot ── */}
+        {/* ── BILLING SUMMARY BOX — bottom-right, red border (matches screenshot) ── */}
         <div className="mx-8 mb-6 flex justify-end">
           <div
-            className="border rounded-sm p-4 text-sm"
+            className="p-4 text-sm"
             style={{
               width: "280px",
-              borderColor: "#dc2626",
-              borderWidth: "1.5px",
+              border: "1.5px solid #dc2626",
+              borderRadius: "4px",
             }}
           >
-            <p className="font-bold text-zinc-900 mb-2">Billing Summary:</p>
+            <p className="font-bold text-zinc-900 mb-3">Billing Summary:</p>
 
-            <div className="flex justify-between mb-1">
+            <div className="flex justify-between mb-1.5">
               <span className="text-zinc-600">Services:</span>
               <span>₹{Number(order.price).toLocaleString("en-IN")}</span>
             </div>
 
-            {(order.addons as any[]).length > 0 && (
-              <div className="flex justify-between mb-1">
+            {addons.length > 0 && (
+              <div className="flex justify-between mb-1.5">
                 <span className="text-zinc-600">Add-ons:</span>
                 <span>
-                  ₹{(order.addons as any[]).reduce((s: number, a: any) => s + Number(a.totalCost), 0).toLocaleString("en-IN")}
+                  ₹{addons
+                    .reduce((sum, a) => sum + Number(a.totalCost), 0)
+                    .toLocaleString("en-IN")}
                 </span>
               </div>
             )}
 
             <div className="border-t border-zinc-200 my-2" />
 
-            <div className="flex justify-between mb-1">
+            <div className="flex justify-between mb-1.5">
               <span className="text-zinc-600">Subtotal:</span>
               <span>₹{Number(invoice.amount).toLocaleString("en-IN")}</span>
             </div>
 
-            <div className="flex justify-between mb-1">
+            <div className="flex justify-between mb-1.5">
               <span className="text-zinc-600">Advance Paid:</span>
               <span>₹{Number(invoice.advancePaid).toLocaleString("en-IN")}</span>
             </div>
 
             <div className="flex justify-between mb-2 font-semibold">
-              <span>Balance Amount:</span>
+              <span className="text-zinc-700">Balance Amount:</span>
               <span style={{ color: balanceDue > 0 ? "#dc2626" : "#16a34a", fontWeight: "bold" }}>
                 ₹{balanceDue.toLocaleString("en-IN")}
               </span>
@@ -251,7 +271,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
               <span>₹{Number(invoice.amount).toLocaleString("en-IN")}</span>
             </div>
 
-            <p className="text-right text-zinc-400 text-xs mt-1">
+            <p className="text-right text-zinc-400 text-xs mt-1.5">
               Payment Mode: {invoice.paymentMode}
             </p>
           </div>
@@ -266,7 +286,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
           <p className="text-zinc-700 font-medium mt-3 text-sm">
             Thank you for choosing Mr Boot Shoe Laundry &amp; Repair!
           </p>
-          <p className="text-green-600 font-bold mt-1 text-sm">
+          <p className="font-bold mt-1 text-sm" style={{ color: "#16a34a" }}>
             Contact: +91 {orgPhone}
           </p>
         </div>

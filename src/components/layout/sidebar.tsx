@@ -141,14 +141,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ isOpen, onClose }) => {
 
         {/* Footer info/helpers */}
         <div className="pt-4 flex flex-col gap-1">
-          <Link
-            href="/settings"
-            onClick={onClose}
+          <a
+            href="https://wa.me/919028983659?text=Support%20request%20from%20Mr.%20Boot%20CRM"
+            target="_blank"
+            rel="noopener noreferrer"
             className="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant dark:text-outline-variant hover:text-primary hover:bg-white/10 transition-all duration-250 ease-out"
           >
             <span className="material-symbols-outlined text-[20px]">help</span>
             <span className="text-label-sm font-label-sm">Support</span>
-          </Link>
+          </a>
           <button
             onClick={async () => {
               await supabase.auth.signOut();
