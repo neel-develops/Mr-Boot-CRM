@@ -194,10 +194,10 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
             {/* ── BILLING SUMMARY & QR ── */}
             <div className="px-6 mb-4 relative z-0">
               <div className="flex justify-between items-end gap-4 relative pb-2">
-                {/* Distressed Authentic Stamps overlapping */}
+                {/* Distressed Authentic Stamps overlapping — centered dynamically to prevent price overlap */}
                 {paymentStatus === "Paid" ? (
                   <div 
-                    className="absolute left-[135px] bottom-[28px] rotate-[-15deg] border-[3px] border-double border-emerald-600 rounded px-3 py-1 font-black text-emerald-600 tracking-widest text-[13px] uppercase z-10 pointer-events-none bg-white/95 shadow-md animate-fade-in"
+                    className="absolute left-1/2 -translate-x-1/2 bottom-[24px] rotate-[-15deg] border-[3px] border-double border-emerald-600 rounded px-3 py-1 font-black text-emerald-600 tracking-widest text-[13px] uppercase z-10 pointer-events-none bg-white/95 shadow-md animate-fade-in"
                     style={{
                       boxShadow: "0 0 0 3px rgba(16, 185, 129, 0.15)",
                     }}
@@ -206,7 +206,7 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
                   </div>
                 ) : Number(invoice.advancePaid) > 0 && balanceDue > 0 ? (
                   <div 
-                    className="absolute left-[120px] bottom-[28px] rotate-[-15deg] border-[3px] border-double border-red-600 rounded px-3 py-1 font-black text-red-650 tracking-wider text-[11px] uppercase z-10 pointer-events-none bg-white/95 shadow-md"
+                    className="absolute left-1/2 -translate-x-1/2 bottom-[24px] rotate-[-15deg] border-[3px] border-double border-red-600 rounded px-2.5 py-0.5 font-black text-red-600 tracking-wider text-[11px] uppercase z-10 pointer-events-none bg-white/95 shadow-md"
                     style={{
                       boxShadow: "0 0 0 3px rgba(220, 38, 38, 0.15)",
                       color: "#dc2626",
@@ -266,6 +266,9 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
                     <span className="text-xs font-bold text-zinc-800">Total</span>
                     <span className="text-lg font-black text-zinc-950">₹{total.toFixed(2)}</span>
                   </div>
+                  <p className="text-[9px] text-zinc-400 font-bold uppercase tracking-widest mt-1">
+                    Payment Mode: {invoice.paymentMode}
+                  </p>
                 </div>
               </div>
             </div>
