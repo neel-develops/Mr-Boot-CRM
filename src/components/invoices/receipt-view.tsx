@@ -51,12 +51,16 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
   // null = still measuring the photo; the export waits for this.
   const [shape, setShape] = useState<PhotoShape | null>(mainPhotoUrl ? null : "landscape");
   const [photoFailed, setPhotoFailed] = useState(false);
+  const [photoRatio, setPhotoRatio] = useState(16 / 9); // width / height of the actual photo
 
   useEffect(() => {
     if (!mainPhotoUrl) return;
     const img = new Image();
     img.crossOrigin = "anonymous";
-    img.onload = () => setShape(shapeFor(img.naturalWidth, img.naturalHeight));
+    img.onload = () => {
+      setPhotoRatio(img.naturalWidth / img.naturalHeight);
+      setShape(shapeFor(img.naturalWidth, img.naturalHeight));
+    };
     img.onerror = () => {
       setPhotoFailed(true);
       setShape("landscape");
@@ -68,22 +72,32 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
   const sideBySide = showPhoto && (shape === "portrait" || shape === "square");
   const advancePaid = Number(invoice.advancePaid);
 
-  // Rendered as a background so the PNG/JPEG export keeps the photo's proportions
-  // (the export library ignores object-fit and would stretch an <img>).
+  // Fit the photo inside the frame ourselves (like object-fit: contain) and draw it as a real
+  // <img>: the export then uses the full-resolution photo. A CSS background was re-sampled at
+  // low resolution by the exporter, which made the shoes blurry.
+  const frameRatio = shape === "portrait" ? 9 / 16 : shape === "square" ? 1 : 16 / 9;
+  const fitW = photoRatio >= frameRatio ? 100 : (photoRatio / frameRatio) * 100;
+  const fitH = photoRatio >= frameRatio ? (frameRatio / photoRatio) * 100 : 100;
   const photo = showPhoto ? (
     <div
-      className={`rounded-2xl bg-zinc-100 border border-zinc-100 overflow-hidden ${
+      className={`relative rounded-2xl bg-zinc-100 border border-zinc-100 overflow-hidden ${
         shape === "portrait" ? "aspect-[9/16]" : shape === "square" ? "aspect-square" : "aspect-[16/9]"
       } w-full`}
-      style={{
-        backgroundImage: `url("${mainPhotoUrl}")`,
-        backgroundSize: "contain",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-      role="img"
-      aria-label="Shoe photo"
-    />
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={mainPhotoUrl!}
+        alt="Shoe photo"
+        crossOrigin="anonymous"
+        className="absolute rounded-2xl"
+        style={{
+          width: `${fitW}%`,
+          height: `${fitH}%`,
+          left: `${(100 - fitW) / 2}%`,
+          top: `${(100 - fitH) / 2}%`,
+        }}
+      />
+    </div>
   ) : null;
 
   const customerCard = (
@@ -248,7 +262,9 @@ export const ReceiptView: React.FC<ReceiptViewProps> = ({
                   <span className="text-xs font-bold text-zinc-800">Total</span>
                   <span className="text-lg font-black text-zinc-950">{money(total)}</span>
                 </div>
-                <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-1">Paid via {invoice.paymentMode}</p>
+                <p className="text-[10px] text-zinc-400 font-bold uppercase tracking-wider mt-1">
+                  {advancePaid > 0 ? `Paid via ${invoice.paymentMode}` : "Payment pending"}
+                </p>
               </div>
             </div>
           </div>
