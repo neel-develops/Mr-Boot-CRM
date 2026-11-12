@@ -57,9 +57,11 @@ export async function GET() {
       try {
         const groq = new Groq({ apiKey });
         const response = await groq.chat.completions.create({
-          model: 'llama-3.3-70b-versatile',
+          // Llama models were retired by Groq; gpt-oss is the current general model.
+          model: 'openai/gpt-oss-120b',
+          reasoning_effort: 'low',
           temperature: 0.7,
-          max_tokens: 90,
+          max_tokens: 400,
           messages: [
             {
               role: 'system',

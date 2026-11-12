@@ -79,7 +79,8 @@ Provide clear, formatted Markdown answers. Keep suggestions actionable.
 
     // 4. Send chat completion request
     const response = await groq.chat.completions.create({
-      model: "llama-3.3-70b-versatile",
+      model: "openai/gpt-oss-120b",
+      reasoning_effort: "low",
       messages: [
         { role: "system", content: systemPrompt },
         ...chatHistory.map((msg) => ({
@@ -88,7 +89,7 @@ Provide clear, formatted Markdown answers. Keep suggestions actionable.
         })),
       ],
       temperature: 0.2,
-      max_tokens: 1024,
+      max_tokens: 2048,
     });
 
     const reply = response.choices[0]?.message?.content || "I am sorry, I couldn't compute a response.";

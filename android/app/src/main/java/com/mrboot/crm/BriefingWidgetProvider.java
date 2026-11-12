@@ -115,12 +115,12 @@ public class BriefingWidgetProvider extends AppWidgetProvider {
                             }
                         });
                     } else {
-                        showError(context, appWidgetManager, appWidgetId);
+                        showError(context, appWidgetManager, appWidgetId, WidgetError.forStatus(statusCode));
                     }
                     urlConnection.disconnect();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    showError(context, appWidgetManager, appWidgetId);
+                    showError(context, appWidgetManager, appWidgetId, WidgetError.forException(e));
                 }
             }
         }).start();
@@ -153,15 +153,15 @@ public class BriefingWidgetProvider extends AppWidgetProvider {
             appWidgetManager.updateAppWidget(appWidgetId, views);
         } catch (Exception e) {
             e.printStackTrace();
-            showError(context, appWidgetManager, appWidgetId);
+            showError(context, appWidgetManager, appWidgetId, "Unexpected data from server. Tap refresh.");
         }
     }
 
-    private void showError(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+    private void showError(Context context, AppWidgetManager appWidgetManager, int appWidgetId, String reason) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_briefing);
         attachIntents(context, views);
         views.setTextViewText(R.id.txt_briefing_date, formatToday());
-        views.setTextViewText(R.id.txt_briefing, "Couldn't reach the workshop brain. Tap refresh to retry.");
+        views.setTextViewText(R.id.txt_briefing, reason);
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 

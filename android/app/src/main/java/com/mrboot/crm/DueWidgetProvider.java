@@ -110,12 +110,12 @@ public class DueWidgetProvider extends AppWidgetProvider {
                             }
                         });
                     } else {
-                        showError(context, appWidgetManager, appWidgetId);
+                        showError(context, appWidgetManager, appWidgetId, WidgetError.forStatus(statusCode));
                     }
                     urlConnection.disconnect();
                 } catch (Exception e) {
                     e.printStackTrace();
-                    showError(context, appWidgetManager, appWidgetId);
+                    showError(context, appWidgetManager, appWidgetId, WidgetError.forException(e));
                 }
             }
         }).start();
@@ -188,11 +188,11 @@ public class DueWidgetProvider extends AppWidgetProvider {
             appWidgetManager.updateAppWidget(appWidgetId, views);
         } catch (Exception e) {
             e.printStackTrace();
-            showError(context, appWidgetManager, appWidgetId);
+            showError(context, appWidgetManager, appWidgetId, "Unexpected data from server. Tap refresh.");
         }
     }
 
-    private void showError(Context context, AppWidgetManager appWidgetManager, int appWidgetId) {
+    private void showError(Context context, AppWidgetManager appWidgetManager, int appWidgetId, String reason) {
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_due);
         attachRefreshIntent(context, views);
         views.setViewVisibility(R.id.txt_overdue_count, View.GONE);
@@ -201,7 +201,7 @@ public class DueWidgetProvider extends AppWidgetProvider {
             views.setViewVisibility(rowId, View.GONE);
         }
         views.setViewVisibility(R.id.txt_due_empty, View.VISIBLE);
-        views.setTextViewText(R.id.txt_due_empty, "Connection error.");
+        views.setTextViewText(R.id.txt_due_empty, reason);
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
 }
