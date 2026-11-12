@@ -1,24 +1,19 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 import { supabase } from "@/lib/supabase";
 
 export default function LoginPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
-  // Redirect to dashboard if session already exists
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        router.push("/");
-      }
-    });
-  }, [router]);
+  // Where to go after signing in (set by middleware). Only allow same-site paths.
+  const getNextPath = () => {
+    const next = new URLSearchParams(window.location.search).get("next") || "/";
+    return next.startsWith("/") && !next.startsWith("//") ? next : "/";
+  };
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -31,15 +26,16 @@ export default function LoginPage() {
         password,
       });
 
-      if (error) {
-        setErrorMessage(error.message);
-      } else if (data.session) {
-        router.push("/");
+      if (error || !data.session) {
+        setErrorMessage(error?.message || "Sign-in failed. Please try again.");
+        setLoading(false);
+        return;
       }
+      // Full page load so the server sees the new session cookie (keep the spinner up).
+      window.location.assign(getNextPath());
     } catch (err: any) {
       setErrorMessage("An unexpected error occurred. Please try again.");
       console.error(err);
-    } finally {
       setLoading(false);
     }
   };

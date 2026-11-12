@@ -63,7 +63,8 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
   });
 
   // Attach inventory items to order object for workspace
-  const orderWithExtras = { ...order, inventoryItems };
+  // Plain JSON only: Prisma Decimal/Date objects can't be passed to client components.
+  const orderWithExtras = JSON.parse(JSON.stringify({ ...order, inventoryItems }));
 
   return (
     <div className="w-full max-w-[1200px] px-4 md:px-gutter mx-auto py-4">
@@ -76,7 +77,7 @@ export default async function OrderDetailPage({ params }: OrderDetailPageProps) 
       </header>
 
       {/* Interactive detail workspace */}
-      <OrderDetailWorkspace order={orderWithExtras} staff={staff} settings={settings} />
+      <OrderDetailWorkspace order={orderWithExtras} staff={JSON.parse(JSON.stringify(staff))} settings={JSON.parse(JSON.stringify(settings))} />
     </div>
   );
 }

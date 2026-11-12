@@ -61,6 +61,7 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
     month: "short",
     day: "numeric",
     year: "numeric",
+    timeZone: "Asia/Kolkata",
   });
 
   const balanceDue = Number(invoice.balanceDue);
@@ -91,20 +92,40 @@ export default async function InvoicePage({ params }: InvoicePageProps) {
   // Group items and addons into a single list of service rows
   let itemsList: ServiceItem[] = [];
   if (order.items && order.items.length > 0) {
+    const orderPrice = Number(order.price);
+    // Use each item's own price when it was recorded. Older orders (no item prices)
+    // fall back to splitting the order price evenly.
+    const hasItemPrices = order.items.every((item) => item.price !== null);
     itemsList = order.items.map((item) => {
-      // Order stores total price. We divide total price equally among items.
-      const itemPrice = Number(order.price) / (order.items.length || 1);
+      const qty = item.quantity || 1;
+      const itemPrice = hasItemPrices
+        ? Number(item.price) * qty
+        : order.items.length === 1
+        ? orderPrice
+        : orderPrice / order.items.length;
+      const name = item.brand ? `${item.brand} ${item.model || item.category}` : item.model || item.category;
+      const each = hasItemPrices && qty > 1 ? `₹${Number(item.price).toLocaleString("en-IN")} each` : "";
       return {
         type: "item" as const,
-        title: item.brand
-          ? `${item.brand} ${item.model || item.category}`
-          : item.model || item.category,
+        title: qty > 1 ? `${name} × ${qty}` : name,
         price: itemPrice,
-        description: item.description || undefined,
+        description: [each, item.description].filter(Boolean).join(" · ") || undefined,
         services: item.services,
         photoUrl: item.photoUrl || undefined,
       };
     });
+    // If the order price was edited after intake, show the difference so the lines add up.
+    if (hasItemPrices) {
+      const diff = Math.round((orderPrice - itemsList.reduce((s, i) => s + i.price, 0)) * 100) / 100;
+      if (diff !== 0) {
+        itemsList.push({
+          type: "item" as const,
+          title: diff < 0 ? "Discount" : "Price Adjustment",
+          price: diff,
+          services: [],
+        });
+      }
+    }
   } else {
     // Fallback for older orders or orders without items relation (so items are never missing!)
     itemsList = [

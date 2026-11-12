@@ -3,6 +3,7 @@ import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { GlassCard } from "@/components/ui/glass-card";
 import { AnalyticsClient } from "@/components/analytics/analytics-client";
+import { istYmd } from "@/lib/dates";
 
 export default async function AnalyticsPage() {
   // 1. Fetch all customers with their orders and invoices
@@ -89,23 +90,22 @@ export default async function AnalyticsPage() {
     .slice(0, 5);
 
   // Generate monthly growth data (last 6 months)
-  const monthlyMap = new Map<string, number>();
+  // Keyed by YYYY-MM (India time) so last year's same month isn't mixed in.
+  const monthlyMap = new Map<string, { label: string; count: number }>();
+  const [curY, curM] = istYmd().split("-").map(Number);
   for (let i = 5; i >= 0; i--) {
-    const d = new Date();
-    d.setMonth(d.getMonth() - i);
-    const label = d.toLocaleDateString("en-US", { month: "short" });
-    monthlyMap.set(label, 0);
+    const d = new Date(Date.UTC(curY, curM - 1 - i, 1));
+    const key = `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
+    monthlyMap.set(key, { label: d.toLocaleDateString("en-US", { month: "short", timeZone: "UTC" }), count: 0 });
   }
 
   customers.forEach((c) => {
-    const label = new Date(c.createdAt).toLocaleDateString("en-US", { month: "short" });
-    if (monthlyMap.has(label)) {
-      monthlyMap.set(label, (monthlyMap.get(label) || 0) + 1);
-    }
+    const bucket = monthlyMap.get(istYmd(c.createdAt).slice(0, 7));
+    if (bucket) bucket.count++;
   });
 
-  const monthlyGrowthData = Array.from(monthlyMap.entries()).map(([month, count]) => ({
-    month,
+  const monthlyGrowthData = Array.from(monthlyMap.values()).map(({ label, count }) => ({
+    month: label,
     count,
   }));
 

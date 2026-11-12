@@ -5,13 +5,15 @@ export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
   try {
-    const { transcript } = await request.json();
+    const body = await request.json();
+    const transcript = typeof body?.transcript === "string" ? body.transcript.slice(0, 1000) : "";
     if (!transcript) {
       return NextResponse.json({ error: "Transcript is required" }, { status: 400 });
     }
 
     const groqApiKey = process.env.GROQ_API_KEY || "";
     if (groqApiKey) {
+     try {
       const groq = new Groq({ apiKey: groqApiKey });
 
       const prompt = `You are a structured parser for Mr. Boot CRM that extracts order details from spoken voice search or voice orders.
@@ -35,7 +37,7 @@ Return ONLY a JSON object (JSON mode) with the following structure:
           { role: "system", content: "You are a precise JSON extractor. Output valid JSON only." },
           { role: "user", content: prompt }
         ],
-        model: "llama3-8b-8192",
+        model: "llama-3.1-8b-instant",
         response_format: { type: "json_object" }
       });
 
@@ -44,13 +46,22 @@ Return ONLY a JSON object (JSON mode) with the following structure:
         const parsed = JSON.parse(parsedContent);
         return NextResponse.json(parsed);
       }
+     } catch (err) {
+      // Fall through to the regex parser below instead of failing the whole command.
+      console.error("Groq voice parse failed, using fallback:", err);
+     }
     }
 
     // Fallback: Regex parsing if Groq is not configured or fails
     const phoneMatch = transcript.match(/\b\d{10}\b/) || transcript.match(/\b\d{5}\s?\d{5}\b/);
     const phone = phoneMatch ? phoneMatch[0].replace(/\s/g, "") : "";
 
-    const priceMatch = transcript.match(/(?:rs\.?|rupees|inr|price|cost|amount)?\s?(\d{3,5})/i);
+    // Remove the phone number first so its digits aren't read as the price.
+    const withoutPhone = phone ? transcript.replace(phoneMatch![0], " ") : transcript;
+    const priceMatch =
+      withoutPhone.match(/(?:rs\.?|₹|rupees|inr|price|cost|amount)\s*(\d{2,6})\b/i) ||
+      withoutPhone.match(/\b(\d{2,6})\s*(?:rs|rupees|inr)\b/i) ||
+      withoutPhone.match(/\b(\d{3,5})\b/);
     const price = priceMatch ? parseInt(priceMatch[1], 10) : null;
 
     // Detect names using simple capitalized word matching
@@ -74,7 +85,7 @@ Return ONLY a JSON object (JSON mode) with the following structure:
       firstName,
       lastName,
       phone,
-      itemType: "Chelsea Boot",
+      itemType: "",
       price,
       isReadymade
     });

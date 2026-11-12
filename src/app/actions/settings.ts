@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/lib/auth";
 
 export async function updateSettings(data: {
   orgName: string;
@@ -14,6 +15,7 @@ export async function updateSettings(data: {
   darkMode: boolean;
 }) {
   try {
+    await requireUser();
     const settings = await prisma.settings.upsert({
       where: { id: "singleton" },
       update: {
@@ -50,6 +52,7 @@ export async function updateSettings(data: {
 
 export async function updateDarkMode(darkMode: boolean) {
   try {
+    await requireUser();
     const settings = await prisma.settings.upsert({
       where: { id: "singleton" },
       update: { darkMode },

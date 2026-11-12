@@ -22,10 +22,18 @@ interface SyncPayload {
 }
 
 export async function syncToSheet({ table, data }: SyncPayload): Promise<void> {
-  // Non-blocking fire-and-forget wrapper
-  syncProcess({ table, data }).catch((error) => {
+  // Never throws. Callers should await it: on Vercel, work left running after the
+  // response is sent can be frozen, which silently dropped sheet rows before.
+  const timeout = new Promise<void>((resolve) =>
+    setTimeout(() => {
+      console.error(`[Google Sheets Sync Timeout] Table: ${table}, Record ID: ${data.id || 'N/A'}`);
+      resolve();
+    }, 8000)
+  );
+  const work = syncProcess({ table, data }).catch((error) => {
     console.error(`[Google Sheets Sync Failed] Table: ${table}, Record ID: ${data.id || 'N/A'}. Error:`, error);
   });
+  await Promise.race([work, timeout]);
 }
 
 async function syncProcess({ table, data }: SyncPayload): Promise<void> {
@@ -42,6 +50,11 @@ async function syncProcess({ table, data }: SyncPayload): Promise<void> {
   for (const [key, value] of Object.entries(data)) {
     if (value instanceof Date) {
       flattenedData[key] = value.toISOString();
+    } else if (value && typeof value === 'object' && typeof (value as any).toNumber === 'function') {
+      // Prisma Decimal -> real number (JSON.stringify wrote it as quoted text before)
+      flattenedData[key] = (value as any).toNumber();
+    } else if (Array.isArray(value)) {
+      flattenedData[key] = value.join(', ');
     } else if (value && typeof value === 'object') {
       flattenedData[key] = JSON.stringify(value);
     } else if (value !== null && value !== undefined) {

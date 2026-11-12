@@ -3,6 +3,8 @@
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { requireUser } from "@/lib/auth";
+import { deleteFromSheet, syncToSheet } from "@/lib/sheets";
 
 export async function deleteCustomer(formData: FormData) {
   const customerId = formData.get("customerId") as string;
@@ -10,23 +12,27 @@ export async function deleteCustomer(formData: FormData) {
     throw new Error("Customer ID is required");
   }
 
+  await requireUser();
+
   try {
-    // Manually cascade: delete order addons, activity logs, invoices, order items, public links, then orders, then customer
     const orders = await prisma.order.findMany({
       where: { customerId },
-      select: { id: true },
+      select: { id: true, invoices: { select: { id: true } } },
     });
+    const orderIds = orders.map((o) => o.id);
 
-    for (const order of orders) {
-      await prisma.orderAddon.deleteMany({ where: { orderId: order.id } });
-      await prisma.activityLog.deleteMany({ where: { orderId: order.id } });
-      await prisma.invoice.deleteMany({ where: { orderId: order.id } });
-      await prisma.orderItem.deleteMany({ where: { orderId: order.id } });
-      await prisma.publicOrderLink.deleteMany({ where: { orderId: order.id } });
+    // One transaction: orders (and their items, invoices, links, logs, add-ons) cascade from the customer.
+    await prisma.$transaction([
+      prisma.notification.deleteMany({ where: { orderId: { in: orderIds } } }),
+      prisma.customer.delete({ where: { id: customerId } }),
+    ]);
+
+    // Keep the Google Sheet in step (best effort).
+    for (const o of orders) {
+      for (const inv of o.invoices) await deleteFromSheet({ table: "invoices", id: inv.id }).catch(() => {});
+      await deleteFromSheet({ table: "orders", id: o.id }).catch(() => {});
     }
-
-    await prisma.order.deleteMany({ where: { customerId } });
-    await prisma.customer.delete({ where: { id: customerId } });
+    await deleteFromSheet({ table: "customers", id: customerId }).catch(() => {});
   } catch (error: any) {
     console.error("Failed to delete customer:", error);
     throw new Error(error.message || "Failed to delete customer");
@@ -52,6 +58,9 @@ export async function updateCustomer(
   }
 
   try {
+    await requireUser();
+    if (!(data.firstName || "").trim()) throw new Error("First name is required");
+    if ((data.phone || "").replace(/\D/g, "").length < 10) throw new Error("Enter a valid 10-digit phone number");
     const updated = await prisma.customer.update({
       where: { id: customerId },
       data: {
@@ -64,6 +73,7 @@ export async function updateCustomer(
       },
     });
 
+    await syncToSheet({ table: "customers", data: updated });
     revalidatePath(`/customers/${customerId}`);
     revalidatePath("/customers");
     return { success: true, customer: updated };

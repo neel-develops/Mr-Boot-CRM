@@ -100,6 +100,7 @@ public class WorkspaceWidgetProvider extends AppWidgetProvider {
                     urlConnection.setConnectTimeout(8000);
                     urlConnection.setReadTimeout(8000);
                     urlConnection.setRequestProperty("Accept", "application/json");
+                    urlConnection.setRequestProperty("X-Widget-Key", BuildConfig.WIDGET_API_KEY);
 
                     int statusCode = urlConnection.getResponseCode();
                     if (statusCode == 200) {

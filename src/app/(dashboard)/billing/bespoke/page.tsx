@@ -78,7 +78,8 @@ function BespokeBillingContent() {
       const url = await uploadImage(file, "before-images");
       setRefUrl(url);
     } catch {
-      setRefUrl(URL.createObjectURL(file));
+      setRefUrl("");
+      alert("Photo upload failed. Please try again.");
     } finally {
       setUploading(false);
     }

@@ -51,7 +51,7 @@ export const AddonsManager: React.FC<AddonsManagerProps> = ({
     const res = await addAddonToOrder(orderId, itemName, qty, unitCost);
     setAdding(false);
 
-    if (res.success && res.addon) {
+    if (res.success) {
       const newAddon: OrderAddon = {
         id: res.addon.id,
         itemName,
@@ -64,7 +64,7 @@ export const AddonsManager: React.FC<AddonsManagerProps> = ({
       setQty(1);
       setCustomName("");
       setCustomPrice(0);
-    } else {
+    } else if ("error" in res) {
       alert("Error adding addon: " + res.error);
     }
   };

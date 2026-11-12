@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { isOverdue, daysOverdue } from "@/lib/dates";
 
 interface BillingHubClientProps {
   initialInvoices: any[];
@@ -21,8 +22,7 @@ export function BillingHubClient({ initialInvoices }: BillingHubClientProps) {
     if (activeTab === "PAID" && Number(inv.balanceDue) > 0) return false;
     if (activeTab === "OVERDUE") {
       // Overdue if balanceDue > 0 and dueDate passed
-      const isPast = new Date(inv.order.dueDate).getTime() < Date.now();
-      if (Number(inv.balanceDue) <= 0 || !isPast) return false;
+      if (Number(inv.balanceDue) <= 0 || !isOverdue(inv.order.dueDate)) return false;
     }
 
     // Search query filter
@@ -115,13 +115,9 @@ export function BillingHubClient({ initialInvoices }: BillingHubClientProps) {
           </div>
         ) : (
           filteredInvoices.map((inv) => {
-            const isPaid = Number(inv.balanceDue) === 0;
-            const isPast = new Date(inv.order.dueDate).getTime() < Date.now();
-            const isOverdue = !isPaid && isPast;
-
-            // Calculate overdue days
-            const diffTime = Math.abs(Date.now() - new Date(inv.order.dueDate).getTime());
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            const isPaid = Number(inv.balanceDue) <= 0;
+            const isLate = !isPaid && isOverdue(inv.order.dueDate);
+            const diffDays = daysOverdue(inv.order.dueDate);
 
             // Matched details
             const token = inv.order.publicOrderLinks[0]?.token || "";
@@ -166,7 +162,7 @@ export function BillingHubClient({ initialInvoices }: BillingHubClientProps) {
                       <span className="text-xs text-zinc-400 font-bold uppercase tracking-wider">
                         Invoice #{inv.invoiceNumber}
                       </span>
-                      {isOverdue && (
+                      {isLate && (
                         <span className="text-xs text-red-600 font-bold">
                           Overdue by {diffDays} days
                         </span>

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { OrderStatus } from "@prisma/client";
 import { GlassCard } from "@/components/ui/glass-card";
 import Link from "next/link";
+import { istDayBounds } from "@/lib/dates";
 
 export default async function LogisticsPage() {
   // Fetch orders that are READY/DELIVERED OR have any porter service active
@@ -25,7 +26,11 @@ export default async function LogisticsPage() {
   });
 
   const activeDeliveries = logisticsOrders.filter((o) => o.status === OrderStatus.READY).length;
-  const completedToday = logisticsOrders.filter((o) => o.status === OrderStatus.DELIVERED).length;
+  // Delivered today (India time). updatedAt is the closest record of when it was closed.
+  const { start: todayStart } = istDayBounds();
+  const completedToday = logisticsOrders.filter(
+    (o) => o.status === OrderStatus.DELIVERED && o.updatedAt >= todayStart
+  ).length;
 
   const activePorterOrders = logisticsOrders.filter(
     (o) => (o.pickupByPorter || o.dropByPorter) && o.status !== OrderStatus.DELIVERED

@@ -23,10 +23,10 @@ export async function GET() {
     const [overdueCount, dueTodayCount, readyCount, inProgressCount, inventory, revenueToday] =
       await Promise.all([
         prisma.order.count({
-          where: { status: { not: 'DELIVERED' }, dueDate: { lt: now } }
+          where: { status: { not: 'DELIVERED' }, dueDate: { lt: start } }
         }),
         prisma.order.count({
-          where: { status: { not: 'DELIVERED' }, dueDate: { gte: now, lt: end } }
+          where: { status: { not: 'DELIVERED' }, dueDate: { gte: start, lt: end } }
         }),
         prisma.order.count({ where: { status: 'READY' } }),
         prisma.order.count({ where: { status: 'IN_PROGRESS' } }),

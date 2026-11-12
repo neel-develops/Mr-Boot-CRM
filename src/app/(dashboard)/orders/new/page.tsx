@@ -6,8 +6,13 @@ import { createOrder } from "@/app/actions/orders";
 import { uploadImage } from "@/lib/upload";
 
 const categories = [
-  "Boots", "Sneakers", "Formal Shoe", "Heels", "Sandals", "Loafers", "Slippers", "Bags", "Other"
+  "Sneaker", "Sport Shoe", "Formal Shoe", "Boots", "Heels", "Sandals", "Loafers", "Slippers",
+  "Bags", "Handbag", "Backpack", "Jacket", "Leather Jacket", "Suede Shoes", "Canvas Shoes",
+  "Running Shoes", "Trekking Shoes", "Other"
 ];
+
+// Up to this many pairs: one card per pair (with Repeat). Above it: quantity lines.
+const BULK_THRESHOLD = 7;
 
 const availableServices = [
   "Standard Laundry",
@@ -55,8 +60,39 @@ interface OrderItemState {
   description: string;
   services: string[];
   customService?: string; // Textbox input if "Other" is selected
-  price: number; // per-item custom price
+  price: number; // price per pair
+  qty: number; // number of identical pairs on this line (always 1 in single mode)
 }
+
+const blankItem = (): OrderItemState => ({
+  category: "",
+  brand: "",
+  model: "",
+  description: "",
+  services: [],
+  price: 0,
+  qty: 1,
+});
+
+const sameItem = (a: OrderItemState, b: OrderItemState) =>
+  a.category === b.category &&
+  a.brand === b.brand &&
+  a.model === b.model &&
+  a.description === b.description &&
+  a.price === b.price &&
+  (a.customService || "") === (b.customService || "") &&
+  [...a.services].sort().join("|") === [...b.services].sort().join("|");
+
+/** Combine identical pairs into one line with a quantity. */
+const mergeIntoLines = (list: OrderItemState[]): OrderItemState[] => {
+  const out: OrderItemState[] = [];
+  for (const it of list) {
+    const match = out.find((o) => sameItem(o, it));
+    if (match) match.qty += it.qty || 1;
+    else out.push({ ...it, services: [...it.services], qty: it.qty || 1 });
+  }
+  return out;
+};
 
 export default function NewOrderPage() {
   const router = useRouter();
@@ -117,22 +153,60 @@ export default function NewOrderPage() {
   const [additionalPhotos, setAdditionalPhotos] = useState<{ url: string; uploading: boolean }[]>([]);
 
   // Multi-item state
-  const [items, setItems] = useState<OrderItemState[]>([
-    {
-      category: "",
-      brand: "",
-      model: "",
-      description: "",
-      services: [],
-      price: 0,
-    },
-  ]);
+  const [items, setItems] = useState<OrderItemState[]>([blankItem()]);
+  const [bulkMode, setBulkMode] = useState(false);
+  const [bulkNotice, setBulkNotice] = useState(false);
 
   // Dropdown open states per item
   const [openDropdownIdx, setOpenDropdownIdx] = useState<number | null>(null);
 
   // Computed subtotal
-  const subtotal = items.reduce((sum, item) => sum + (item.price || 0), 0);
+  const subtotal = items.reduce((sum, item) => sum + (item.price || 0) * (item.qty || 1), 0);
+  const totalPairs = items.reduce((sum, item) => sum + (item.qty || 1), 0);
+
+  // Set items; switch to quantity lines automatically once the order passes 7 pairs.
+  const applyItems = (next: OrderItemState[]) => {
+    const pairs = next.reduce((sum, i) => sum + (i.qty || 1), 0);
+    if (!bulkMode && pairs > BULK_THRESHOLD) {
+      setBulkMode(true);
+      setBulkNotice(true);
+      setItems(mergeIntoLines(next));
+    } else {
+      setItems(next);
+    }
+  };
+
+  // Single mode: copy a pair (same type, services, price) right below it.
+  const handleRepeatItem = (index: number) => {
+    const copy = { ...items[index], services: [...items[index].services], qty: 1 };
+    applyItems([...items.slice(0, index + 1), copy, ...items.slice(index + 1)]);
+  };
+
+  const handleRemoveItem = (index: number) => {
+    const next = items.filter((_, idx) => idx !== index);
+    setItems(next.length ? next : [blankItem()]);
+  };
+
+  const setLineQty = (index: number, qty: number) => {
+    const q = Math.max(1, Math.min(500, Math.floor(qty) || 1));
+    setItems((prev) => prev.map((it, i) => (i === index ? { ...it, qty: q } : it)));
+  };
+
+  const toggleBulkMode = () => {
+    if (bulkMode) {
+      if (totalPairs > BULK_THRESHOLD) {
+        alert(`Orders with more than ${BULK_THRESHOLD} pairs use quantity lines.`);
+        return;
+      }
+      // Back to one card per pair.
+      setItems(items.flatMap((it) => Array.from({ length: it.qty || 1 }, () => ({ ...it, services: [...it.services], qty: 1 }))));
+      setBulkMode(false);
+      setBulkNotice(false);
+    } else {
+      setItems(mergeIntoLines(items));
+      setBulkMode(true);
+    }
+  };
 
   // Load artisans
   useEffect(() => {
@@ -232,10 +306,16 @@ export default function NewOrderPage() {
   // Customer search
   useEffect(() => {
     if (customerSearch.trim().length > 1) {
+      let cancelled = false;
       fetch(`/api/customers?search=${encodeURIComponent(customerSearch)}`)
         .then((res) => res.json())
-        .then((data) => setSearchResults(data))
+        .then((data) => {
+          if (!cancelled) setSearchResults(Array.isArray(data) ? data : []);
+        })
         .catch((err) => console.error(err));
+      return () => {
+        cancelled = true;
+      };
     } else {
       setSearchResults([]);
     }
@@ -272,17 +352,7 @@ export default function NewOrderPage() {
   };
 
   const handleAddItem = () => {
-    setItems([
-      ...items,
-      {
-        category: "",
-        brand: "",
-        model: "",
-        description: "",
-        services: [],
-        price: 0,
-      },
-    ]);
+    applyItems([...items, blankItem()]);
   };
 
   const handleItemChange = (index: number, field: keyof OrderItemState, value: any) => {
@@ -310,7 +380,8 @@ export default function NewOrderPage() {
       setMainPhotoUrl(url);
     } catch (err) {
       console.error("Main photo upload failed:", err);
-      setMainPhotoUrl(URL.createObjectURL(file));
+      setMainPhotoUrl("");
+      alert("Photo upload failed: " + ((err as any)?.message || "please try again"));
     } finally {
       setMainUploading(false);
     }
@@ -333,12 +404,13 @@ export default function NewOrderPage() {
           }
           return copy;
         });
-      } catch {
+      } catch (err: any) {
         setAdditionalPhotos((prev) => {
           const copy = [...prev];
-          if (copy[photoIdx]) copy[photoIdx].uploading = false;
+          if (copy[photoIdx]) copy[photoIdx] = { ...copy[photoIdx], uploading: false };
           return copy;
         });
+        alert("A photo failed to upload: " + (err?.message || "please try again"));
       }
     }
   };
@@ -360,11 +432,20 @@ export default function NewOrderPage() {
       alert("Please select a category for all items.");
       return;
     }
+    if (mainUploading || additionalPhotos.some((p) => p.uploading)) {
+      alert("Please wait for the photos to finish uploading.");
+      return;
+    }
+    if (advancePaid < 0 || advancePaid > subtotal) {
+      alert("Advance paid must be between ₹0 and the order total.");
+      return;
+    }
 
     setIsSubmitting(true);
 
     const payload = {
       customer: {
+        id: selectedCustomer.id as string | undefined,
         firstName: selectedCustomer.firstName,
         lastName: selectedCustomer.lastName,
         email: selectedCustomer.email || undefined,
@@ -373,12 +454,15 @@ export default function NewOrderPage() {
       },
       order: {
         serviceType: items.length > 0 && items[0].services.length > 0 ? items[0].services[0] : orderType,
-        itemType: items.map((i) => `${i.brand || ""} ${i.model || i.category}`).join(", "),
+        itemType: items
+          .map((i) => `${`${i.brand || ""} ${i.model || i.category}`.trim()}${(i.qty || 1) > 1 ? ` ×${i.qty}` : ""}`)
+          .join(", "),
         price: subtotal,
         dueDate: new Date(dueDate),
         notes: orderNotes,
-        isPorter,
-        porterCharge,
+        pickupByPorter: isPorter,
+        dropByPorter: isPorter,
+        artisanId: artisanId || undefined,
       },
       items: items.map((i, idx) => {
         // Map services list, replacing "Other" with textbox content if populated
@@ -394,6 +478,7 @@ export default function NewOrderPage() {
           description: i.description,
           services: finalServices,
           price: i.price,
+          quantity: i.qty || 1,
           // Single main photo & additional photos are attached to the first item
           photoUrl: idx === 0 ? mainPhotoUrl : undefined,
           additionalPhotos: idx === 0 ? additionalPhotos.filter(p => p.url).map(p => p.url) : [],
@@ -406,13 +491,17 @@ export default function NewOrderPage() {
       createdBy: currentUser,
     };
 
-    const res = await createOrder(payload);
-    setIsSubmitting(false);
-
-    if (res.success) {
-      router.push(`/invoices/${res.orderId}?print=1`);
-    } else {
-      alert("Error creating order: " + res.error);
+    try {
+      const res = await createOrder(payload);
+      if (res.success) {
+        router.push(`/invoices/${res.orderId}?print=1`);
+      } else {
+        alert("Error creating order: " + res.error);
+        setIsSubmitting(false);
+      }
+    } catch (err: any) {
+      alert("Error creating order: " + (err?.message || "network error"));
+      setIsSubmitting(false);
     }
   };
 
@@ -577,7 +666,180 @@ export default function NewOrderPage() {
             )}
           </section>
 
-          {/* Dynamic Items */}
+          {/* Items header: pair count + bulk mode switch */}
+          <div className="flex flex-wrap items-center justify-between gap-3 px-1">
+            <div>
+              <h2 className="text-lg font-bold text-primary dark:text-primary-fixed">
+                Shoes & Items <span className="text-on-surface-variant font-semibold">· {totalPairs} {totalPairs === 1 ? "pair" : "pairs"}</span>
+              </h2>
+              <p className="text-xs text-on-surface-variant">
+                {bulkMode ? "Bulk order — one line per type, set how many pairs." : `Up to ${BULK_THRESHOLD} pairs: one card each. Tap Repeat for an identical pair.`}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={toggleBulkMode}
+              className={`px-3 py-2 rounded-lg text-xs font-semibold border transition-colors ${bulkMode ? "bg-[#361f1a] text-white border-[#361f1a]" : "border-[#361f1a]/30 text-[#361f1a] hover:bg-[#361f1a]/5"}`}
+            >
+              {bulkMode ? "Bulk mode ON" : `Bulk order (${BULK_THRESHOLD + 1}+ pairs)`}
+            </button>
+          </div>
+          {bulkNotice && (
+            <div className="flex items-start gap-2 p-3 rounded-lg bg-amber-50 border border-amber-200 text-amber-900 text-xs">
+              <span className="material-symbols-outlined text-[16px]">info</span>
+              <span>More than {BULK_THRESHOLD} pairs — switched to quantity lines. Identical pairs were combined into one line.</span>
+              <button type="button" onClick={() => setBulkNotice(false)} className="ml-auto font-bold">OK</button>
+            </div>
+          )}
+
+          {bulkMode ? (
+            <>
+          {items.map((item, itemIdx) => (
+            <div key={itemIdx} className="bg-white/65 dark:bg-primary/65 backdrop-blur-xl border border-white/22 dark:border-white/10 rounded-xl p-4 md:p-5 shadow-sm space-y-3">
+              <div className="flex justify-between items-center">
+                <span className="text-sm font-semibold text-primary dark:text-primary-fixed">Line {itemIdx + 1}</span>
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    onClick={() => applyItems([...items.slice(0, itemIdx + 1), { ...item, services: [...item.services], qty: 1 }, ...items.slice(itemIdx + 1)])}
+                    className="flex items-center gap-1 text-primary font-semibold text-xs hover:underline"
+                    title="Copy this line"
+                  >
+                    <span className="material-symbols-outlined text-[16px]">content_copy</span>
+                    Copy
+                  </button>
+                  {items.length > 1 && (
+                    <button type="button" onClick={() => handleRemoveItem(itemIdx)} className="text-error font-medium hover:underline text-xs">
+                      Remove
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <select
+                  className="w-full bg-white/50 border border-black/5 rounded-lg py-2.5 px-3 text-sm"
+                  value={item.category}
+                  onChange={(e) => handleItemChange(itemIdx, "category", e.target.value)}
+                >
+                  <option value="" disabled>Product type</option>
+                  {categories.map((c) => (
+                    <option key={c} value={c}>{c}</option>
+                  ))}
+                </select>
+              {/* Cool Custom Select Services Dropdown List with multi-checkbox */}
+              <div className="relative">
+                
+                <button
+                  type="button"
+                  onClick={() => setOpenDropdownIdx(openDropdownIdx === itemIdx ? null : itemIdx)}
+                  className="w-full bg-white/50 border border-black/5 rounded-lg py-2.5 px-4 text-left font-body-md text-sm flex justify-between items-center"
+                >
+                  <span className="truncate">
+                    {item.services.length === 0
+                      ? "Select services..."
+                      : item.services.map(s => s === "Other" && item.customService ? `Other: ${item.customService}` : s).join(", ")
+                    }
+                  </span>
+                  <span className="material-symbols-outlined text-[20px] transition-transform duration-200" style={{ transform: openDropdownIdx === itemIdx ? "rotate(180deg)" : "rotate(0)" }}>
+                    keyboard_arrow_down
+                  </span>
+                </button>
+
+                {openDropdownIdx === itemIdx && (
+                  <>
+                    {/* Backdrop to close */}
+                    <div className="fixed inset-0 z-30" onClick={() => setOpenDropdownIdx(null)} />
+                    
+                    {/* Dropdown Card */}
+                    <div className="absolute left-0 right-0 mt-2 bg-white dark:bg-zinc-900 border border-black/10 rounded-xl shadow-xl z-40 max-h-60 overflow-y-auto p-3 grid grid-cols-1 md:grid-cols-2 gap-2">
+                      {availableServices.map((service) => {
+                        const isChecked = item.services.includes(service);
+                        return (
+                          <label key={service} className="flex items-center gap-3 cursor-pointer p-2 hover:bg-black/5 dark:hover:bg-white/5 rounded-lg">
+                            <input
+                              type="checkbox"
+                              checked={isChecked}
+                              onChange={() => handleServiceToggle(itemIdx, service)}
+                              className="rounded text-primary focus:ring-primary border-black/10 w-4 h-4"
+                            />
+                            <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300">{service}</span>
+                          </label>
+                        );
+                      })}
+                    </div>
+                  </>
+                )}
+
+                {/* Conditional Textbox if "Other" service is selected */}
+                {item.services.includes("Other") && (
+                  <div className="mt-3 animate-fadeIn">
+                    <label className="block text-xs font-semibold text-on-surface-variant uppercase mb-1.5">Specify Other Service</label>
+                    <input
+                      type="text"
+                      value={item.customService || ""}
+                      onChange={(e) => handleItemChange(itemIdx, "customService", e.target.value)}
+                      placeholder="e.g. Custom logo engraving"
+                      className="w-full bg-white/50 border border-black/5 rounded-lg py-2.5 px-4 font-body-md text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                    />
+                  </div>
+                )}
+              </div>
+
+              </div>
+
+              <div className="flex flex-wrap items-end gap-3">
+                <div>
+                  <span className="block text-[11px] font-semibold text-on-surface-variant uppercase mb-1">Pairs</span>
+                  <div className="flex items-center rounded-lg border border-black/10 bg-white/60 overflow-hidden">
+                    <button type="button" onClick={() => setLineQty(itemIdx, item.qty - 1)} className="w-10 h-10 text-lg font-bold text-primary hover:bg-black/5" aria-label="One less">−</button>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min={1}
+                      value={item.qty}
+                      onChange={(e) => setLineQty(itemIdx, Number(e.target.value))}
+                      className="w-14 h-10 text-center font-bold bg-transparent border-x border-black/10 focus:outline-none"
+                    />
+                    <button type="button" onClick={() => setLineQty(itemIdx, item.qty + 1)} className="w-10 h-10 text-lg font-bold text-primary hover:bg-black/5" aria-label="One more">+</button>
+                  </div>
+                </div>
+                <div>
+                  <span className="block text-[11px] font-semibold text-on-surface-variant uppercase mb-1">Price per pair</span>
+                  <div className="relative w-28">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-semibold">₹</span>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      min="0"
+                      value={item.price || ""}
+                      onChange={(e) => handleItemChange(itemIdx, "price", Number(e.target.value))}
+                      className="w-full h-10 bg-white/50 border border-black/10 rounded-lg pl-7 pr-2 font-bold focus:outline-none focus:border-primary"
+                      placeholder="0"
+                    />
+                  </div>
+                </div>
+                <div className="ml-auto text-right">
+                  <span className="block text-[11px] font-semibold text-on-surface-variant uppercase mb-1">Line total</span>
+                  <span className="text-lg font-bold text-primary dark:text-primary-fixed">
+                    ₹{((item.price || 0) * (item.qty || 1)).toLocaleString("en-IN")}
+                  </span>
+                </div>
+              </div>
+
+              <details className="text-sm">
+                <summary className="cursor-pointer text-xs text-on-surface-variant font-medium select-none">Brand, model & notes (optional)</summary>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mt-2">
+                  <input type="text" placeholder="Brand" value={item.brand} onChange={(e) => handleItemChange(itemIdx, "brand", e.target.value)} className="bg-white/50 border border-black/5 rounded-lg py-2 px-3 text-sm" />
+                  <input type="text" placeholder="Model / style" value={item.model} onChange={(e) => handleItemChange(itemIdx, "model", e.target.value)} className="bg-white/50 border border-black/5 rounded-lg py-2 px-3 text-sm" />
+                  <input type="text" placeholder="Notes (scuffs, colour…)" value={item.description} onChange={(e) => handleItemChange(itemIdx, "description", e.target.value)} className="bg-white/50 border border-black/5 rounded-lg py-2 px-3 text-sm" />
+                </div>
+              </details>
+            </div>
+          ))}
+            </>
+          ) : (
+            <>
           {items.map((item, itemIdx) => (
             <div key={itemIdx} className="bg-white/65 dark:bg-primary/65 backdrop-blur-xl border border-white/22 dark:border-white/10 rounded-xl p-8 shadow-sm space-y-6">
               <div className="flex justify-between items-center border-b border-black/5 pb-4">
@@ -586,21 +848,29 @@ export default function NewOrderPage() {
                     steps
                   </span>
                   <h2 className="font-headline-lg-mobile text-headline-lg-mobile text-primary dark:text-primary-fixed">
-                    Item #{itemIdx + 1}
+                    Pair #{itemIdx + 1}
                   </h2>
                 </div>
-                {items.length > 1 && (
+                <div className="flex items-center gap-3">
                   <button
                     type="button"
-                    onClick={() => {
-                      const updated = items.filter((_, idx) => idx !== itemIdx);
-                      setItems(updated);
-                    }}
-                    className="text-error font-medium hover:underline text-sm"
+                    onClick={() => handleRepeatItem(itemIdx)}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary/10 text-primary font-semibold text-sm hover:bg-primary/15"
+                    title="Add another pair exactly like this one"
                   >
-                    Remove Item
+                    <span className="material-symbols-outlined text-[18px]">content_copy</span>
+                    Repeat
                   </button>
-                )}
+                  {items.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveItem(itemIdx)}
+                      className="text-error font-medium hover:underline text-sm"
+                    >
+                      Remove
+                    </button>
+                  )}
+                </div>
               </div>
 
               {/* Item Details Form */}
@@ -727,13 +997,16 @@ export default function NewOrderPage() {
             </div>
           ))}
 
+            </>
+          )}
+
           {/* Add Another Pair / Item Button */}
           <button
             type="button"
             onClick={handleAddItem}
             className="w-full py-4 border-2 border-dashed border-primary-container/30 rounded-xl text-primary font-semibold flex items-center justify-center gap-2 hover:bg-primary-fixed/10 transition-colors"
           >
-            <span className="material-symbols-outlined">add_circle</span> + Add Another Pair / Item
+            <span className="material-symbols-outlined">add_circle</span> {bulkMode ? "Add another line" : "Add a different pair / item"}
           </button>
 
           {/* Unified Order Intake Photos Card (after all shoes are added) */}
@@ -911,14 +1184,21 @@ export default function NewOrderPage() {
                 </div>
 
                 {/* Per-item breakdown */}
-                {items.length > 1 && (
-                  <div className="bg-white/30 rounded-lg p-3 space-y-1 border border-black/5">
+                {(items.length > 1 || totalPairs > 1) && (
+                  <div className="bg-white/30 rounded-lg p-3 space-y-1 border border-black/5 max-h-48 overflow-y-auto">
                     {items.map((item, i) => (
-                      <div key={i} className="flex justify-between text-xs text-on-surface-variant">
-                        <span>Item #{i + 1} — {item.category || "Unset"}</span>
-                        <span>₹{(item.price || 0).toLocaleString("en-IN")}</span>
+                      <div key={i} className="flex justify-between text-xs text-on-surface-variant gap-2">
+                        <span className="truncate">
+                          {bulkMode ? `Line ${i + 1}` : `Pair #${i + 1}`} — {item.category || "Unset"}
+                          {(item.qty || 1) > 1 ? ` × ${item.qty}` : ""}
+                        </span>
+                        <span>₹{((item.price || 0) * (item.qty || 1)).toLocaleString("en-IN")}</span>
                       </div>
                     ))}
+                    <div className="flex justify-between text-xs font-semibold text-on-surface pt-1 border-t border-black/5">
+                      <span>{totalPairs} pairs</span>
+                      <span>₹{subtotal.toLocaleString("en-IN")}</span>
+                    </div>
                   </div>
                 )}
 
@@ -997,7 +1277,7 @@ export default function NewOrderPage() {
                 <button
                   type="button"
                   onClick={handleFormSubmit}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || mainUploading || additionalPhotos.some((p) => p.uploading)}
                   className="w-full mt-2 bg-primary text-on-primary hover:bg-primary/95 transition-all py-4 rounded-xl font-label-sm text-label-sm font-semibold flex justify-center items-center gap-2 shadow-lg shadow-primary-container/20 disabled:opacity-50"
                 >
                   <span className="material-symbols-outlined text-[20px]">save</span>

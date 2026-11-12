@@ -190,6 +190,7 @@ public class OrderAlertsWorker extends Worker {
         conn.setConnectTimeout(10000);
         conn.setReadTimeout(10000);
         conn.setRequestProperty("Accept", "application/json");
+        conn.setRequestProperty("X-Widget-Key", BuildConfig.WIDGET_API_KEY);
         try {
             if (conn.getResponseCode() != 200) {
                 throw new Exception("HTTP " + conn.getResponseCode());

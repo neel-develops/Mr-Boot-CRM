@@ -99,7 +99,8 @@ export default function ReadymadeBillingPage() {
       setPhotoUrl(url);
     } catch (err) {
       console.error("Photo upload failed:", err);
-      setPhotoUrl(URL.createObjectURL(file));
+      setPhotoUrl("");
+      alert("Photo upload failed. Please try again.");
     } finally {
       setUploading(false);
     }

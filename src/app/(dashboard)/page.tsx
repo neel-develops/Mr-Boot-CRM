@@ -6,16 +6,13 @@ import { GlassCard } from "@/components/ui/glass-card";
 import { DashboardClient } from "@/components/dashboard/dashboard-client";
 import WorkspaceWidget from "@/components/dashboard/workspace-widget";
 import { DashboardDateTracker } from "@/components/dashboard/dashboard-date-tracker";
+import { istDayBounds, formatIstDate } from "@/lib/dates";
 
 export default async function ExecutiveDashboardPage() {
-  const startOfToday = new Date();
-  startOfToday.setHours(0, 0, 0, 0);
-
-  const endOfToday = new Date();
-  endOfToday.setHours(23, 59, 59, 999);
-
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  // "Today" is the India-time day, not the server's UTC day.
+  const { start: startOfToday, end: startOfTomorrow } = istDayBounds();
+  const endOfToday = new Date(startOfTomorrow.getTime() - 1);
+  const thirtyDaysAgo = new Date(startOfToday.getTime() - 29 * 24 * 60 * 60 * 1000);
 
   // 1. Fetch data in parallel to avoid database roundtrip waterfalls
   const [
@@ -73,13 +70,12 @@ export default async function ExecutiveDashboardPage() {
   const dateMap = new Map<string, number>();
   // Pre-populate last 30 days
   for (let i = 29; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    dateMap.set(d.toLocaleDateString("en-US", { month: "short", day: "numeric" }), 0);
+    const d = new Date(startOfToday.getTime() - i * 24 * 60 * 60 * 1000);
+    dateMap.set(formatIstDate(d, { month: "short", day: "numeric" }), 0);
   }
 
   invoicesLast30Days.forEach((inv) => {
-    const dateStr = inv.createdAt.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    const dateStr = formatIstDate(inv.createdAt, { month: "short", day: "numeric" });
     dateMap.set(dateStr, (dateMap.get(dateStr) || 0) + Number(inv.amount));
   });
 

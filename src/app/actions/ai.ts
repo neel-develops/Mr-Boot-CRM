@@ -2,11 +2,18 @@
 
 import Groq from "groq-sdk";
 import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/lib/auth";
 
 const apiKey = process.env.GROQ_API_KEY || "";
 
 export async function askAssistant(chatHistory: Array<{ role: "user" | "assistant"; content: string }>) {
   try {
+    await requireUser();
+    // Only forward plain user/assistant turns, and only the recent ones.
+    chatHistory = (chatHistory || [])
+      .filter((m) => (m.role === "user" || m.role === "assistant") && typeof m.content === "string")
+      .slice(-20)
+      .map((m) => ({ role: m.role, content: m.content.slice(0, 4000) }));
     if (!apiKey) {
       return {
         success: false,

@@ -83,6 +83,8 @@ model OrderItem {
   model            String?
   description      String?
   services         String[] // e.g. ["Shoe Polish", "Waterproofing"]
+  price            Decimal? @db.Decimal(10, 2) // Price per pair; null on orders created before per-item pricing
+  quantity         Int      @default(1) // Identical pairs on this line (bulk orders)
   photoUrl         String?  // Main photo in Supabase storage
   additionalPhotos String[] // Additional before photos
   createdAt        DateTime @default(now())

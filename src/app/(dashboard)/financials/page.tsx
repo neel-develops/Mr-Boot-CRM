@@ -126,7 +126,7 @@ export default async function FinancialsPage() {
                       ₹{Number(inv.balanceDue).toLocaleString("en-IN")}
                     </td>
                     <td className="p-4 text-on-surface-variant">
-                      {new Date(inv.createdAt).toLocaleDateString("en-IN")}
+                      {new Date(inv.createdAt).toLocaleDateString("en-IN", { timeZone: "Asia/Kolkata" })}
                     </td>
                     <td className="p-4 pr-6">
                       <Link

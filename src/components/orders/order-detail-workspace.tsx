@@ -3,9 +3,9 @@
 import React, { useState } from "react";
 import { OrderStatus } from "@prisma/client";
 import { GlassCard } from "@/components/ui/glass-card";
-import { updateOrderStatus, assignArtisan, uploadProofPhoto, uploadMultipleProofPhotos, logReviewRequest, createInvoiceForOrder, deleteOrder, revertOrderToPending, updatePorterService, updateOrderDetails, addAddonToOrder, removeAddonFromOrder } from "@/app/actions/orders";
+import { updateOrderStatus, assignArtisan, uploadProofPhoto, uploadMultipleProofPhotos, logReviewRequest, createInvoiceForOrder, deleteOrder, revertOrderToPending, updatePorterService, updateOrderDetails, addAddonToOrder, removeAddonFromOrder, recordPayment } from "@/app/actions/orders";
 import { uploadImage } from "@/lib/upload";
-import { normalizeIndianPhone } from "@/lib/whatsapp";
+import { normalizeIndianPhone, fillTemplate } from "@/lib/whatsapp";
 import Link from "next/link";
 import { AddonsManager } from "@/components/invoices/addons-manager";
 
@@ -51,7 +51,10 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
 
   const [isEditing, setIsEditing] = useState(false);
   const [editPrice, setEditPrice] = useState(Number(order.price));
-  const [editDueDate, setEditDueDate] = useState(new Date(order.dueDate).toISOString().split('T')[0]);
+  // YYYY-MM-DD in India time (toISOString would give the UTC date, which can be a day off).
+  const [editDueDate, setEditDueDate] = useState(
+    new Date(order.dueDate).toLocaleDateString("en-CA", { timeZone: "Asia/Kolkata" })
+  );
   const [editNotes, setEditNotes] = useState(order.notes || "");
   const [savingEdit, setSavingEdit] = useState(false);
 
@@ -88,14 +91,34 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
   const appUrl = typeof window !== "undefined" ? window.location.origin : (process.env.NEXT_PUBLIC_APP_URL || "https://mr-boot-crm.vercel.app");
   const trackingLink = `${appUrl}/track/${order.publicOrderLinks[0]?.token || ""}`;
 
-  const formattedBillMsg = settings.billReadyTemplate
-    .replace("{{customer_first_name}}", customerName)
-    .replace("{{invoice_pdf_or_track_link}}", trackingLink);
+  const templateVars = {
+    customer_first_name: customerName,
+    invoice_pdf_or_track_link: trackingLink,
+    item_type: order.itemType,
+    google_review_link: settings.googleReviewLink,
+  };
+  const formattedBillMsg = fillTemplate(settings.billReadyTemplate, templateVars);
+  const formattedReviewMsg = fillTemplate(settings.reviewRequestTemplate, templateVars);
 
-  const formattedReviewMsg = settings.reviewRequestTemplate
-    .replace("{{customer_first_name}}", customerName)
-    .replace("{{item_type}}", order.itemType)
-    .replace("{{google_review_link}}", settings.googleReviewLink);
+  // Payment state
+  const invoice = order.invoices[0];
+  const balanceDue = invoice ? Number(invoice.balanceDue) : 0;
+  const [paymentAmount, setPaymentAmount] = useState<number>(balanceDue > 0 ? balanceDue : 0);
+  const [paymentMode, setPaymentMode] = useState<string>("CASH");
+  const [savingPayment, setSavingPayment] = useState(false);
+
+  const handleRecordPayment = async () => {
+    if (!paymentAmount || paymentAmount <= 0) return alert("Enter the amount received.");
+    if (paymentAmount > balanceDue) return alert(`Amount is more than the balance due (₹${balanceDue}).`);
+    setSavingPayment(true);
+    try {
+      const res = await recordPayment(order.id, paymentAmount, paymentMode);
+      if (res.success) window.location.reload();
+      else alert("Error recording payment: " + res.error);
+    } finally {
+      setSavingPayment(false);
+    }
+  };
 
   const waBillUrl = `https://wa.me/${phone}?text=${encodeURIComponent(formattedBillMsg)}`;
   const waReviewUrl = `https://wa.me/${phone}?text=${encodeURIComponent(formattedReviewMsg)}`;
@@ -114,30 +137,38 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
       alert("Error: You cannot close this entry or mark it as Ready/Delivered without uploading an After Photo (proof of completion). Please upload a proof photo first.");
       return;
     }
+    if (newStatus === OrderStatus.DELIVERED && balanceDue > 0) {
+      if (!confirm(`₹${balanceDue.toLocaleString("en-IN")} is still unpaid on this bill.\nRecord the payment first (Payment section), or press OK to mark delivered anyway.`)) return;
+    }
+    // Ask before the network call so the WhatsApp window opens from the click itself
+    // (popup blockers stop window.open after an await).
+    let waWindow: Window | null = null;
+    if (
+      newStatus === OrderStatus.READY &&
+      phone &&
+      confirm(`Mark READY and send WhatsApp pickup message to ${customerName}?`)
+    ) {
+      waWindow = window.open("about:blank", "_blank");
+    }
     setUpdatingStatus(true);
-    const res = await updateOrderStatus(order.id, newStatus);
-    setUpdatingStatus(false);
-    if (res.success) {
-      setStatus(newStatus);
-      // Auto-offer the WhatsApp "ready" blast the moment an order goes READY
-      if (
-        newStatus === OrderStatus.READY &&
-        phone &&
-        confirm(`Order marked READY ✅\nSend WhatsApp pickup message to ${customerName}?`)
-      ) {
-        window.open(waReadyUrl, "_blank");
+    try {
+      const res = await updateOrderStatus(order.id, newStatus);
+      if (res.success) {
+        setStatus(newStatus);
+        if (waWindow) waWindow.location.href = waReadyUrl;
+        window.location.reload();
+      } else {
+        waWindow?.close();
+        alert("Error changing status: " + res.error);
       }
-      // Reload order data to update log
-      window.location.reload();
-    } else {
-      alert("Error changing status: " + res.error);
+    } finally {
+      setUpdatingStatus(false);
     }
   };
 
   // Handle artisan updates
   const handleArtisanChange = async (newArtisanId: string) => {
     setArtisanId(newArtisanId);
-    if (!newArtisanId) return;
     const res = await assignArtisan(order.id, newArtisanId);
     if (res.success) {
       window.location.reload();
@@ -174,11 +205,9 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
   };
 
   const handleReviewTrigger = async () => {
-    // Log review_requested in activity log
-    await logReviewRequest(order.id);
-    // Open wa.me in new window
+    // Open WhatsApp first (directly from the click) so popup blockers allow it.
     window.open(waReviewUrl, "_blank");
-    // Refresh to show log
+    await logReviewRequest(order.id);
     window.location.reload();
   };
 
@@ -576,6 +605,56 @@ export const OrderDetailWorkspace: React.FC<OrderDetailWorkspaceProps> = ({
                     {generatingInvoice ? "Generating..." : "Generate Bill"}
                   </button>
                 </div>
+              </div>
+            )}
+
+            {/* Payment */}
+            {isInvoiceGenerated && (
+              <div className="p-4 rounded-xl border border-black/5 bg-white/40 dark:bg-zinc-800/40 flex flex-col gap-3 mt-4">
+                <div className="flex justify-between items-center text-xs">
+                  <span className="font-semibold uppercase tracking-wider text-on-surface-variant">Payment</span>
+                  {balanceDue <= 0 ? (
+                    <span className="px-2 py-0.5 rounded bg-green-100 text-green-800 font-bold">PAID IN FULL</span>
+                  ) : (
+                    <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-bold">₹{balanceDue.toLocaleString("en-IN")} DUE</span>
+                  )}
+                </div>
+                <div className="grid grid-cols-3 gap-1 text-[11px] text-on-surface-variant">
+                  <span>Total ₹{Number(invoice.amount).toLocaleString("en-IN")}</span>
+                  <span>Paid ₹{Number(invoice.advancePaid).toLocaleString("en-IN")}</span>
+                  <span>Mode {invoice.paymentMode}</span>
+                </div>
+                {balanceDue > 0 && (
+                  <div className="flex gap-2 items-center">
+                    <div className="relative flex-1">
+                      <span className="absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-xs">₹</span>
+                      <input
+                        type="number"
+                        min={0}
+                        max={balanceDue}
+                        value={paymentAmount || ""}
+                        onChange={(e) => setPaymentAmount(Number(e.target.value))}
+                        className="w-full bg-white/70 border border-black/5 rounded-lg py-1.5 pl-5 pr-2 text-xs focus:outline-none dark:bg-zinc-800 dark:border-zinc-700 text-on-surface"
+                      />
+                    </div>
+                    <select
+                      value={paymentMode}
+                      onChange={(e) => setPaymentMode(e.target.value)}
+                      className="bg-white/70 border border-black/5 rounded-lg py-1.5 px-2 text-xs focus:outline-none dark:bg-zinc-800 dark:border-zinc-700 text-on-surface"
+                    >
+                      <option value="CASH">CASH</option>
+                      <option value="UPI">UPI</option>
+                      <option value="CARD">CARD</option>
+                    </select>
+                    <button
+                      onClick={handleRecordPayment}
+                      disabled={savingPayment}
+                      className="py-1.5 px-3 bg-primary text-on-primary text-xs font-semibold rounded-lg hover:opacity-90 disabled:opacity-50"
+                    >
+                      {savingPayment ? "Saving..." : "Record Payment"}
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 

@@ -1,47 +1,28 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { istDayBounds, daysOverdue } from '@/lib/dates';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-const IST_OFFSET_MS = 5.5 * 60 * 60 * 1000;
-
-// End of "today" in IST, as a UTC Date.
-function endOfTodayIst(now: Date): Date {
-  const ist = new Date(now.getTime() + IST_OFFSET_MS);
-  const startOfDayUtc =
-    Date.UTC(ist.getUTCFullYear(), ist.getUTCMonth(), ist.getUTCDate()) - IST_OFFSET_MS;
-  return new Date(startOfDayUtc + 24 * 60 * 60 * 1000);
-}
-
+// Due dates are calendar days: overdue only once the India-time due day has passed.
 function dueLabel(dueDate: Date, now: Date): string {
-  const diffMs = dueDate.getTime() - now.getTime();
-  if (diffMs < 0) {
-    const daysLate = Math.floor(-diffMs / (24 * 60 * 60 * 1000));
-    if (daysLate >= 1) return `${daysLate}d late`;
-    const hoursLate = Math.floor(-diffMs / (60 * 60 * 1000));
-    return hoursLate >= 1 ? `${hoursLate}h late` : 'Just missed';
-  }
-  const time = new Intl.DateTimeFormat('en-IN', {
-    hour: 'numeric',
-    minute: '2-digit',
-    timeZone: 'Asia/Kolkata'
-  }).format(dueDate);
-  return `Today ${time}`;
+  const late = daysOverdue(dueDate, now);
+  return late >= 1 ? `${late}d late` : 'Today';
 }
 
 // Data for the "Due Today / Overdue" home-screen widget.
 export async function GET() {
   try {
     const now = new Date();
-    const endToday = endOfTodayIst(now);
+    const { start: startToday, end: endToday } = istDayBounds(now);
 
     const [overdueCount, dueTodayCount, urgentOrders] = await Promise.all([
       prisma.order.count({
-        where: { status: { not: 'DELIVERED' }, dueDate: { lt: now } }
+        where: { status: { not: 'DELIVERED' }, dueDate: { lt: startToday } }
       }),
       prisma.order.count({
-        where: { status: { not: 'DELIVERED' }, dueDate: { gte: now, lt: endToday } }
+        where: { status: { not: 'DELIVERED' }, dueDate: { gte: startToday, lt: endToday } }
       }),
       prisma.order.findMany({
         where: { status: { not: 'DELIVERED' }, dueDate: { lt: endToday } },
@@ -56,7 +37,7 @@ export async function GET() {
       customerName: `${order.customer.firstName} ${order.customer.lastName}`,
       serviceType: order.serviceType,
       itemType: order.itemType,
-      isOverdue: order.dueDate.getTime() < now.getTime(),
+      isOverdue: order.dueDate.getTime() < startToday.getTime(),
       dueLabel: dueLabel(order.dueDate, now)
     }));
 

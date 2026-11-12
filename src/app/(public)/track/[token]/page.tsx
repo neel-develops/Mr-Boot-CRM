@@ -34,6 +34,9 @@ export default async function PublicTrackingPage({ params }: PublicTrackingPageP
   }
 
   const order = publicLink.order;
+  // Customers only see progress events — not internal notes like price edits, payments or staff names.
+  const CUSTOMER_EVENTS = ["Order Intake Completed", "Order Status updated", "After Photo uploaded", "Delivery mode updated"];
+  const customerLogs = order.activityLogs.filter((log) => CUSTOMER_EVENTS.some((e) => log.event.startsWith(e)));
   const status = order.status;
   const statusSteps = [OrderStatus.RECEIVED, OrderStatus.IN_PROGRESS, OrderStatus.READY, OrderStatus.DELIVERED];
   const currentStepIndex = statusSteps.indexOf(status);
@@ -93,7 +96,7 @@ export default async function PublicTrackingPage({ params }: PublicTrackingPageP
             <div
               className="absolute top-[22px] left-[calc(1/6*100%)] h-[2px] bg-[#4e342e] transition-all duration-1000"
               style={{
-                width: currentStepIndex === 0 ? "0%" : currentStepIndex === 1 ? "33%" : currentStepIndex >= 2 ? "66%" : "100%",
+                width: currentStepIndex <= 0 ? "0%" : currentStepIndex === 1 ? "33%" : currentStepIndex === 2 ? "66%" : "100%",
               }}
             />
             <div className="flex justify-around items-start w-full">
@@ -202,17 +205,17 @@ export default async function PublicTrackingPage({ params }: PublicTrackingPageP
           {allPhotos.length > 0 && <PhotoCarousel photos={allPhotos} />}
 
           {/* Activity Timeline */}
-          {order.activityLogs && order.activityLogs.length > 0 && (
+          {customerLogs.length > 0 && (
             <div>
               <h2 className="text-[#4e342e] font-bold text-base mb-4 uppercase tracking-wider text-sm">Activity Timeline</h2>
               <div className="relative pl-6 space-y-4 before:absolute before:inset-y-0 before:left-2 before:w-px before:bg-black/5">
-                {order.activityLogs.slice(0, 5).map((log: any, idx: number) => (
+                {customerLogs.slice(0, 5).map((log: any, idx: number) => (
                   <div key={log.id || idx} className="relative flex gap-3">
                     <div className="absolute -left-6 w-3 h-3 rounded-full bg-[#4e342e] border-2 border-white top-1 z-10" />
                     <div>
                       <p className="text-sm font-semibold text-zinc-800">{log.event}</p>
                       <p className="text-xs text-zinc-400 mt-0.5">
-                        {new Date(log.timestamp).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" })}
+                        {new Date(log.timestamp).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" })}
                       </p>
                     </div>
                   </div>

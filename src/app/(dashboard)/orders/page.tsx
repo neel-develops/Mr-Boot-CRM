@@ -59,7 +59,12 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
   const orders = await prisma.order.findMany({
     where: {
       AND: [
-        statusFilter !== "ALL" ? { status: statusFilter as OrderStatus } : {},
+        // "In Progress" tab = everything not yet ready (matches its badge count, includes new intakes).
+        statusFilter === "IN_PROGRESS"
+          ? { status: { in: [OrderStatus.RECEIVED, OrderStatus.IN_PROGRESS] } }
+          : Object.values(OrderStatus).includes(statusFilter as OrderStatus)
+          ? { status: statusFilter as OrderStatus }
+          : {},
         categoryWhere,
         search
           ? {
@@ -157,7 +162,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
       {/* Category Tabs Selector Row */}
       <div className="flex overflow-x-auto pb-2 mb-4 gap-2 border-b border-black/5 snap-x scrollbar-hide hide-scrollbar">
         <Link
-          href={`/orders?category=ALL${statusFilter !== "ALL" ? `&status=${statusFilter}` : ""}${search ? `&search=${search}` : ""}`}
+          href={`/orders?category=ALL${statusFilter !== "ALL" ? `&status=${statusFilter}` : ""}${search ? `&search=${encodeURIComponent(search)}` : ""}`}
           className={`snap-start whitespace-nowrap px-4 py-2 rounded-lg font-semibold text-xs transition-all ${
             categoryFilter === "ALL"
               ? "bg-[#361f1a] text-white shadow-md"
@@ -167,7 +172,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           All Types ({allOrdersCount})
         </Link>
         <Link
-          href={`/orders?category=SHOE_MAKING${statusFilter !== "ALL" ? `&status=${statusFilter}` : ""}${search ? `&search=${search}` : ""}`}
+          href={`/orders?category=SHOE_MAKING${statusFilter !== "ALL" ? `&status=${statusFilter}` : ""}${search ? `&search=${encodeURIComponent(search)}` : ""}`}
           className={`snap-start whitespace-nowrap px-4 py-2 rounded-lg font-semibold text-xs transition-all flex items-center gap-1.5 ${
             categoryFilter === "SHOE_MAKING"
               ? "bg-[#361f1a] text-white shadow-md"
@@ -178,7 +183,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           Shoe Making ({shoeMakingCount})
         </Link>
         <Link
-          href={`/orders?category=RESTORATION${statusFilter !== "ALL" ? `&status=${statusFilter}` : ""}${search ? `&search=${search}` : ""}`}
+          href={`/orders?category=RESTORATION${statusFilter !== "ALL" ? `&status=${statusFilter}` : ""}${search ? `&search=${encodeURIComponent(search)}` : ""}`}
           className={`snap-start whitespace-nowrap px-4 py-2 rounded-lg font-semibold text-xs transition-all flex items-center gap-1.5 ${
             categoryFilter === "RESTORATION"
               ? "bg-[#361f1a] text-white shadow-md"
@@ -193,7 +198,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
       {/* Tabs Filter Bar (Status) */}
       <div className="flex overflow-x-auto pb-4 mb-4 gap-3 snap-x scrollbar-hide hide-scrollbar">
         <Link
-          href={`/orders?status=ALL${categoryFilter !== "ALL" ? `&category=${categoryFilter}` : ""}${search ? `&search=${search}` : ""}`}
+          href={`/orders?status=ALL${categoryFilter !== "ALL" ? `&category=${categoryFilter}` : ""}${search ? `&search=${encodeURIComponent(search)}` : ""}`}
           className={`snap-start whitespace-nowrap px-5 py-2 rounded-full font-label-sm text-label-sm transition-all ${
             statusFilter === "ALL"
               ? "bg-primary text-on-primary shadow-md"
@@ -203,7 +208,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           All Statuses <span className="ml-2 opacity-70">{totalCount}</span>
         </Link>
         <Link
-          href={`/orders?status=IN_PROGRESS${categoryFilter !== "ALL" ? `&category=${categoryFilter}` : ""}${search ? `&search=${search}` : ""}`}
+          href={`/orders?status=IN_PROGRESS${categoryFilter !== "ALL" ? `&category=${categoryFilter}` : ""}${search ? `&search=${encodeURIComponent(search)}` : ""}`}
           className={`snap-start whitespace-nowrap px-5 py-2 rounded-full font-label-sm text-label-sm transition-all ${
             statusFilter === "IN_PROGRESS"
               ? "bg-primary text-on-primary shadow-md"
@@ -213,7 +218,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           In Progress <span className="ml-2 bg-surface-variant text-on-surface px-2 py-0.5 rounded-full text-[11px]">{pendingCount}</span>
         </Link>
         <Link
-          href={`/orders?status=READY${categoryFilter !== "ALL" ? `&category=${categoryFilter}` : ""}${search ? `&search=${search}` : ""}`}
+          href={`/orders?status=READY${categoryFilter !== "ALL" ? `&category=${categoryFilter}` : ""}${search ? `&search=${encodeURIComponent(search)}` : ""}`}
           className={`snap-start whitespace-nowrap px-5 py-2 rounded-full font-label-sm text-label-sm transition-all flex items-center gap-2 ${
             statusFilter === "READY"
               ? "bg-primary text-on-primary shadow-md"
@@ -224,7 +229,7 @@ export default async function OrdersPage({ searchParams }: OrdersPageProps) {
           <span className="ml-1 bg-surface-variant text-on-surface px-2 py-0.5 rounded-full text-[11px]">{readyCount}</span>
         </Link>
         <Link
-          href={`/orders?status=DELIVERED${categoryFilter !== "ALL" ? `&category=${categoryFilter}` : ""}${search ? `&search=${search}` : ""}`}
+          href={`/orders?status=DELIVERED${categoryFilter !== "ALL" ? `&category=${categoryFilter}` : ""}${search ? `&search=${encodeURIComponent(search)}` : ""}`}
           className={`snap-start whitespace-nowrap px-5 py-2 rounded-full font-label-sm text-label-sm transition-all ${
             statusFilter === "DELIVERED"
               ? "bg-primary text-on-primary shadow-md"
